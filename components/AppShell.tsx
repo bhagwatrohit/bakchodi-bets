@@ -1,13 +1,17 @@
 import Link from "next/link";
-import { Trophy } from "lucide-react";
 import { signOutAction } from "@/app/actions/session";
-import { Button } from "@/components/ui/button";
 import type { SessionProfile } from "@/lib/types";
 
+const EDITION_DATE = new Intl.DateTimeFormat("en-US", {
+  weekday: "long",
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+}).format(new Date());
+
 /**
- * Authenticated app chrome: top bar + page container.
- * Pass the signed-in profile to show the user + sign-out.
- * Use on authenticated pages; the root layout renders the footer disclaimer.
+ * The masthead. Every authenticated page sits under "THE DAILY DEGEN".
+ * Pass the signed-in profile to show the byline + sign-out.
  */
 export function AppShell({
   profile,
@@ -18,40 +22,61 @@ export function AppShell({
 }) {
   return (
     <>
-      <header className="border-b border-border bg-card">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <Link href={profile ? "/dashboard" : "/"} className="flex items-center gap-2 font-extrabold">
-            <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <Trophy className="h-5 w-5" />
-            </span>
-            <span className="text-lg tracking-tight">Bakchodi Bets</span>
-          </Link>
-          {profile ? (
-            <div className="flex items-center gap-3">
-              <span className="hidden text-sm text-muted-foreground sm:inline">
-                {profile.displayName}
-              </span>
-              <form action={signOutAction}>
-                <Button type="submit" variant="ghost" size="sm">
-                  Sign out
-                </Button>
-              </form>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <Link href="/login">
-                <Button variant="ghost" size="sm">
+      <header className="border-b-2 border-ink bg-paper">
+        <div className="mx-auto max-w-5xl px-4">
+          {/* top dateline rail */}
+          <div className="flex items-center justify-between border-b border-hairline py-1.5 dateline">
+            <span>Vol. I · No. 42</span>
+            <span className="hidden sm:inline">{EDITION_DATE}</span>
+            <span>Price: 0¢ · No Cash Value</span>
+          </div>
+
+          {/* masthead */}
+          <div className="flex flex-col items-center py-3 text-center">
+            <Link href={profile ? "/dashboard" : "/"} className="block">
+              <h1 className="headline text-4xl sm:text-6xl tracking-tight">
+                The Daily Degen
+              </h1>
+            </Link>
+            <p className="kicker mt-1">
+              The Bakchodi Bets Gazette · Fictional Credits Only
+            </p>
+          </div>
+        </div>
+
+        {/* nav rail */}
+        <div className="border-t-2 border-ink bg-ink text-paper">
+          <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-1.5">
+            <nav className="flex items-center gap-4 font-condensed uppercase tracking-widest text-xs">
+              <Link href="/dashboard" className="hover:text-accent">
+                Front Page
+              </Link>
+            </nav>
+            {profile ? (
+              <div className="flex items-center gap-4 font-condensed uppercase tracking-widest text-xs">
+                <span className="hidden text-paper/70 sm:inline">
+                  By {profile.displayName}
+                </span>
+                <form action={signOutAction}>
+                  <button type="submit" className="hover:text-accent cursor-pointer uppercase">
+                    Sign out
+                  </button>
+                </form>
+              </div>
+            ) : (
+              <div className="flex items-center gap-4 font-condensed uppercase tracking-widest text-xs">
+                <Link href="/login" className="hover:text-accent">
                   Log in
-                </Button>
-              </Link>
-              <Link href="/signup">
-                <Button size="sm">Sign up</Button>
-              </Link>
-            </div>
-          )}
+                </Link>
+                <Link href="/signup" className="hover:text-accent">
+                  Subscribe
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">{children}</main>
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-7">{children}</main>
     </>
   );
 }

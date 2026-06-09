@@ -2,17 +2,18 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
+// Newsprint label / ink stamp.
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold",
+  "inline-flex items-center font-condensed uppercase tracking-widest text-[0.65rem] font-semibold border px-2 py-0.5",
   {
     variants: {
       variant: {
-        default: "bg-muted text-muted-foreground",
-        primary: "bg-primary/10 text-primary",
-        accent: "bg-accent/30 text-accent-foreground",
-        success: "bg-success/15 text-success",
-        danger: "bg-danger/15 text-danger",
-        outline: "border border-border text-foreground",
+        default: "border-ink bg-paper text-ink",
+        primary: "border-ink bg-ink text-paper",
+        accent: "border-accent bg-accent text-paper",
+        success: "border-success text-success bg-paper",
+        danger: "border-danger text-danger bg-paper",
+        outline: "border-ink text-ink bg-transparent",
       },
     },
     defaultVariants: { variant: "default" },

@@ -1,34 +1,52 @@
 @import "tailwindcss";
 
 /*
-  Bakchodi Bets design system — playful, social, NOT casino.
-  Tailwind v4 CSS-first config. Tokens exposed via @theme so utilities like
-  bg-card / text-muted-foreground / border-border work.
+  ============================================================
+  THE DAILY DEGEN — newsprint / sports-broadsheet design system
+  ============================================================
+  Fully committed editorial theme: cream newsprint, black ink,
+  one vermilion accent, ruled boxes, serif headlines, condensed
+  all-caps labels, monospaced ledger figures, halftone + grain.
+
+  Existing token names are KEPT but remapped to newsprint values,
+  so every component re-skins automatically:
+    primary  = ink  (black stamp buttons on cream)
+    accent   = vermilion
+    radius   = 0     (newspapers have sharp corners)
 */
 
 :root {
-  --background: #fbfaff;
-  --foreground: #1a1730;
-  --card: #ffffff;
-  --card-foreground: #1a1730;
-  --muted: #f1eefb;
-  --muted-foreground: #6b6890;
-  --border: #e7e3f5;
-  --input: #e7e3f5;
-  --ring: #7c3aed;
+  /* Raw newsprint palette */
+  --paper: #f4efe1;        /* warm newsprint */
+  --paper-2: #efe8d6;      /* boxed columns */
+  --ink: #14110c;          /* near-black, warm */
+  --ink-soft: #5d5747;     /* caption / muted ink */
+  --hairline: #b7ad92;     /* light rules / borders */
+  --accent: #b1281b;       /* editorial vermilion */
+  --gain: #2f6b3f;         /* ink green (positive) */
+  --loss: #a3160c;         /* ink red (negative) */
 
-  /* Brand: electric violet + lime accent (fun, fantasy-sports vibe) */
-  --primary: #7c3aed;
-  --primary-foreground: #ffffff;
-  --accent: #c2f24a;
-  --accent-foreground: #1a1730;
+  /* Remapped semantic tokens (consumed by every component) */
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: #faf6ea;
+  --card-foreground: var(--ink);
+  --muted: var(--paper-2);
+  --muted-foreground: var(--ink-soft);
+  --border: var(--hairline);
+  --input: var(--ink);
+  --ring: var(--ink);
 
-  --success: #16a34a;
-  --success-foreground: #ffffff;
-  --danger: #e11d48;
-  --danger-foreground: #ffffff;
+  --primary: var(--ink);              /* solid black ink */
+  --primary-foreground: var(--paper);
+  --accent-foreground: var(--paper);
 
-  --radius: 0.875rem;
+  --success: var(--gain);
+  --success-foreground: var(--paper);
+  --danger: var(--loss);
+  --danger-foreground: var(--paper);
+
+  --radius: 0px;
 }
 
 @theme inline {
@@ -50,19 +68,114 @@
   --color-danger: var(--danger);
   --color-danger-foreground: var(--danger-foreground);
 
-  --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 0.25rem);
-  --radius-sm: calc(var(--radius) - 0.45rem);
+  /* extra raw tokens for explicit use: bg-paper, text-ink, border-ink… */
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-hairline: var(--hairline);
+  --color-gain: var(--gain);
+  --color-loss: var(--loss);
 
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --radius-lg: var(--radius);
+  --radius-md: var(--radius);
+  --radius-sm: var(--radius);
+
+  --font-display: var(--font-playfair);
+  --font-serif: var(--font-source-serif);
+  --font-condensed: var(--font-oswald);
+  --font-mono: var(--font-jetbrains);
+  --font-sans: var(--font-source-serif);
 }
 
 * {
   border-color: var(--border);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
+html {
+  -webkit-font-smoothing: antialiased;
 }
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-source-serif), Georgia, "Times New Roman", serif;
+  /* subtle paper grain */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+}
+
+/* ---------- Editorial typography helpers ---------- */
+
+.font-display { font-family: var(--font-playfair), Georgia, serif; }
+.font-condensed { font-family: var(--font-oswald), "Arial Narrow", sans-serif; }
+
+.headline {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.01em;
+}
+
+.kicker {
+  font-family: var(--font-oswald), sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-weight: 600;
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+}
+
+.dateline {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+}
+
+.tabular {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Drop cap for lede paragraphs */
+.dropcap::first-letter {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-weight: 900;
+  font-size: 3.1em;
+  line-height: 0.7;
+  float: left;
+  padding: 0.06em 0.12em 0 0;
+  color: var(--ink);
+}
+
+/* ---------- Rules (ink lines) ---------- */
+.rule { border: 0; border-top: 1px solid var(--ink); }
+.rule-thick { border: 0; border-top: 3px solid var(--ink); }
+.rule-double {
+  border: 0;
+  border-top: 3px double var(--ink);
+}
+.rule-hair { border: 0; border-top: 1px solid var(--hairline); }
+
+/* ---------- Halftone dot field ---------- */
+.halftone {
+  background-image: radial-gradient(var(--ink) 22%, transparent 23%);
+  background-size: 6px 6px;
+  opacity: 0.12;
+}
+
+/* ---------- Ink stamp (status badges, "PAID", "VOID", "OPEN") ---------- */
+.stamp {
+  font-family: var(--font-oswald), sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  border: 2px solid currentColor;
+  padding: 0.1rem 0.5rem;
+  display: inline-block;
+}
+.stamp-rotated { transform: rotate(-5deg); }
+
+/* selection */
+::selection { background: var(--accent); color: var(--paper); }

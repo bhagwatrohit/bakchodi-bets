@@ -3,6 +3,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
+// Newsprint section tabs: condensed all-caps "editions", active = ink underline.
 interface TabsContextValue {
   value: string;
   setValue: (v: string) => void;
@@ -28,7 +29,12 @@ export function Tabs({
 
 export function TabsList({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
-    <div className={cn("inline-flex items-center gap-1 rounded-md bg-muted p-1", className)}>
+    <div
+      className={cn(
+        "flex items-stretch gap-0 border-y-2 border-ink divide-x divide-ink",
+        className,
+      )}
+    >
       {children}
     </div>
   );
@@ -43,8 +49,8 @@ export function TabsTrigger({ value, children }: { value: string; children: Reac
       type="button"
       onClick={() => ctx.setValue(value)}
       className={cn(
-        "rounded-sm px-3 py-1.5 text-sm font-medium transition-colors",
-        active ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+        "flex-1 px-4 py-2 font-condensed uppercase tracking-widest text-xs font-semibold transition-colors",
+        active ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-muted",
       )}
     >
       {children}
@@ -52,7 +58,15 @@ export function TabsTrigger({ value, children }: { value: string; children: Reac
   );
 }
 
-export function TabsContent({ value, className, children }: { value: string; className?: string; children: React.ReactNode }) {
+export function TabsContent({
+  value,
+  className,
+  children,
+}: {
+  value: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
   const ctx = React.useContext(TabsContext);
   if (!ctx) throw new Error("TabsContent must be used within Tabs");
   if (ctx.value !== value) return null;

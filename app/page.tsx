@@ -1,101 +1,87 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Disclaimer } from "@/components/Disclaimer";
+import { Trophy } from "@/components/Trophy";
+import { Flag } from "@/components/Flag";
 import { getSessionProfile } from "@/lib/services/auth";
 
-const EDITION_DATE = new Intl.DateTimeFormat("en-US", {
-  weekday: "long",
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-}).format(new Date());
+const TICKER = [
+  "Mexico",
+  "Brazil",
+  "Argentina",
+  "France",
+  "Germany",
+  "Spain",
+  "England",
+  "United States",
+  "Portugal",
+  "Japan",
+  "Morocco",
+  "Netherlands",
+];
 
 export default async function LandingPage() {
   const profile = await getSessionProfile();
 
   return (
     <div className="flex-1">
-      <div className="mx-auto max-w-5xl px-4">
-        {/* Dateline rail */}
-        <div className="flex items-center justify-between border-b border-hairline py-1.5 dateline">
-          <span>Vol. I · No. 42</span>
-          <span className="hidden sm:inline">{EDITION_DATE}</span>
-          <span>Price: 0¢ · No Cash Value</span>
+      <div className="mx-auto max-w-4xl px-4">
+        {/* Marquee */}
+        <div className="flex flex-col items-center pt-10 text-center sm:pt-16">
+          <Trophy className="h-20 w-20" />
+          <h1 className="headline mt-5 text-2xl sm:text-4xl">BAKCHODI BETS</h1>
+          <p className="kicker mt-4">World Cup &apos;26 · Prediction Arcade</p>
         </div>
 
-        {/* Masthead */}
-        <div className="border-b-2 border-ink py-5 text-center">
-          <p className="kicker mb-1">Late City Final · Sports Desk</p>
-          <h1 className="headline text-5xl sm:text-7xl">The Daily Degen</h1>
-          <p className="mt-2 font-condensed uppercase tracking-[0.3em] text-xs text-ink-soft">
-            The Bakchodi Bets Gazette
+        {/* flag ticker */}
+        <div className="mt-7 flex flex-wrap items-center justify-center gap-2 border-y-2 border-grid py-3">
+          {TICKER.map((t) => (
+            <Flag key={t} team={t} size="md" className="border-grid" />
+          ))}
+        </div>
+
+        {/* Pitch */}
+        <div className="mt-9 text-center">
+          <p className="mx-auto max-w-2xl text-xl leading-relaxed text-phosphor">
+            Run a private World Cup prediction pool with your friends. Spin up a
+            clan, talk trash, bet fake credits, settle the matches, and grind for
+            the top of the leaderboard.
+          </p>
+          <p className="mt-4 font-pixel text-[0.6rem] uppercase text-neon-amber blink">
+            ▶ Insert fake coin to play
           </p>
         </div>
 
-        {/* Lede + sidebar */}
-        <div className="grid gap-0 border-b-2 border-ink md:grid-cols-3">
-          <article className="border-ink p-5 md:col-span-2 md:border-r">
-            <p className="kicker text-accent">Exclusive · Sports Pool</p>
-            <h2 className="headline mt-2 text-3xl sm:text-5xl">
-              Run a private World Cup prediction pool with your friends.
-            </h2>
-            <p className="dropcap mt-4 text-lg leading-relaxed">
-              Create a clan, invite your friends, bet fake credits, settle
-              matches, and fight for bragging rights. It&apos;s the old group-chat
-              spreadsheet — finally given the front-page treatment it always
-              deserved. No bookies. No cash. Just a permanent, public record of
-              who called it and who choked.
-            </p>
-            <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-              <Link href={profile ? "/clans/new" : "/signup"}>
-                <Button size="lg">Start Your Clan</Button>
-              </Link>
-              <Link href={profile ? "/dashboard" : "/login"}>
-                <Button size="lg" variant="outline">
-                  Join With Invite Code
-                </Button>
-              </Link>
-            </div>
-          </article>
-
-          <aside className="p-5">
-            <p className="kicker border-b border-ink pb-1">In This Edition</p>
-            <ul className="mt-3 flex flex-col divide-y divide-hairline">
-              {[
-                ["Your crew, your rules", "Set the starting bankroll, max bet, and who sees which wagers."],
-                ["Pot-split payouts", "Winners carve up the losing pot in proportion to their stake."],
-                ["Leaderboard of Shame", "Standings, wins, losses, and biggest hits — on the record."],
-              ].map(([h, b]) => (
-                <li key={h} className="py-2">
-                  <h3 className="font-condensed uppercase tracking-wide text-sm font-semibold">
-                    {h}
-                  </h3>
-                  <p className="text-sm italic text-ink-soft">{b}</p>
-                </li>
-              ))}
-            </ul>
-          </aside>
+        {/* CTAs */}
+        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <Link href={profile ? "/clans/new" : "/signup"}>
+            <Button size="lg">Start Your Clan</Button>
+          </Link>
+          <Link href={profile ? "/dashboard" : "/login"}>
+            <Button size="lg" variant="outline">
+              Join With Code
+            </Button>
+          </Link>
         </div>
 
-        {/* Example "betting line" strip */}
-        <div className="grid grid-cols-1 gap-0 border-b-2 border-ink sm:grid-cols-3">
+        {/* How it plays */}
+        <div className="mt-12 grid gap-4 sm:grid-cols-3">
           {[
-            ["Argentina v Brazil", "Tonight · 8:00"],
-            ["Germany v France", "Tomorrow · 5:00"],
-            ["USA v Mexico", "Sat · 3:30"],
-          ].map(([m, t], i) => (
-            <div
-              key={m}
-              className={`p-4 ${i < 2 ? "border-b sm:border-b-0 sm:border-r border-hairline" : ""}`}
-            >
-              <p className="dateline">{t}</p>
-              <p className="headline text-xl">{m}</p>
-              <p className="mt-1 text-xs italic text-ink-soft">Lines open · place your wager</p>
+            ["1·UP", "Your crew, your rules", "Set the bankroll, the max bet, and who can peek at the wagers."],
+            ["POT", "Pot-split payouts", "Winners carve up the losing pot in proportion to their stake."],
+            ["HI-SCORE", "Leaderboard of shame", "Wins, losses, biggest hits — all on the high-score board."],
+          ].map(([tag, h, b]) => (
+            <div key={h} className="border-2 border-grid bg-card p-4">
+              <p className="font-pixel text-[0.55rem] text-neon-magenta glow-magenta">{tag}</p>
+              <h3 className="mt-3 font-pixel text-[0.7rem] uppercase text-neon-green leading-relaxed">
+                {h}
+              </h3>
+              <p className="mt-2 text-base text-muted-foreground">{b}</p>
             </div>
           ))}
         </div>
 
-        <div className="py-6">
+        <div className="mt-10 pb-12">
           <Disclaimer variant="inline" />
         </div>
       </div>

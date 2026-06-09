@@ -2,51 +2,61 @@
 
 /*
   ============================================================
-  THE DAILY DEGEN — newsprint / sports-broadsheet design system
+  BAKCHODI BETS — "ARCADE" CRT / retro video-game design system
   ============================================================
-  Fully committed editorial theme: cream newsprint, black ink,
-  one vermilion accent, ruled boxes, serif headlines, condensed
-  all-caps labels, monospaced ledger figures, halftone + grain.
+  Dark CRT cabinet: deep space-navy ground, neon phosphor type,
+  pixel + terminal fonts, scanlines, glow. Square pixels (radius 0).
 
-  Existing token names are KEPT but remapped to newsprint values,
-  so every component re-skins automatically:
-    primary  = ink  (black stamp buttons on cream)
-    accent   = vermilion
-    radius   = 0     (newspapers have sharp corners)
+  Token names are KEPT and remapped so components re-skin:
+    primary = neon green (dark text), accent = neon magenta
+    ink ≈ light phosphor (foreground), paper ≈ dark ground
 */
 
 :root {
-  /* Raw newsprint palette */
-  --paper: #f4efe1;        /* warm newsprint */
-  --paper-2: #efe8d6;      /* boxed columns */
-  --ink: #14110c;          /* near-black, warm */
-  --ink-soft: #5d5747;     /* caption / muted ink */
-  --hairline: #b7ad92;     /* light rules / borders */
-  --accent: #b1281b;       /* editorial vermilion */
-  --gain: #2f6b3f;         /* ink green (positive) */
-  --loss: #a3160c;         /* ink red (negative) */
+  /* Raw arcade palette */
+  --bg: #0a0e1a;          /* CRT ground */
+  --bg-2: #121a35;        /* panel / cabinet */
+  --phosphor: #d8ffe9;    /* phosphor text */
+  --neon-green: #39ff14;
+  --neon-cyan: #21e6ff;
+  --neon-magenta: #ff2bd6;
+  --neon-pink: #ff3b6b;
+  --neon-amber: #ffd23f;
+  --dim: #7488b5;         /* muted */
+  --grid: #243156;        /* borders / grid */
 
   /* Remapped semantic tokens (consumed by every component) */
-  --background: var(--paper);
-  --foreground: var(--ink);
-  --card: #faf6ea;
-  --card-foreground: var(--ink);
-  --muted: var(--paper-2);
-  --muted-foreground: var(--ink-soft);
-  --border: var(--hairline);
-  --input: var(--ink);
-  --ring: var(--ink);
+  --background: var(--bg);
+  --foreground: var(--phosphor);
+  --card: var(--bg-2);
+  --card-foreground: var(--phosphor);
+  --muted: #182246;
+  --muted-foreground: var(--dim);
+  --border: var(--grid);
+  --input: var(--neon-cyan);
+  --ring: var(--neon-cyan);
 
-  --primary: var(--ink);              /* solid black ink */
-  --primary-foreground: var(--paper);
-  --accent-foreground: var(--paper);
+  --primary: var(--neon-green);
+  --primary-foreground: #04210a;
+  --accent: var(--neon-magenta);
+  --accent-foreground: #1b0017;
 
-  --success: var(--gain);
-  --success-foreground: var(--paper);
-  --danger: var(--loss);
-  --danger-foreground: var(--paper);
+  --success: var(--neon-green);
+  --success-foreground: #04210a;
+  --danger: var(--neon-pink);
+  --danger-foreground: #2a0410;
 
   --radius: 0px;
+
+  /* Legacy token aliases (so existing .text-ink/.bg-paper utilities resolve
+     correctly on the dark theme): ink = foreground, paper = ground. */
+  --ink: var(--phosphor);
+  --paper: var(--bg);
+  --paper-2: var(--bg-2);
+  --ink-soft: var(--dim);
+  --hairline: var(--grid);
+  --gain: var(--neon-green);
+  --loss: var(--neon-pink);
 }
 
 @theme inline {
@@ -68,10 +78,20 @@
   --color-danger: var(--danger);
   --color-danger-foreground: var(--danger-foreground);
 
-  /* extra raw tokens for explicit use: bg-paper, text-ink, border-ink… */
+  /* arcade raw tokens (use bg-neon-green, text-neon-cyan, border-grid, …) */
+  --color-neon-green: var(--neon-green);
+  --color-neon-cyan: var(--neon-cyan);
+  --color-neon-magenta: var(--neon-magenta);
+  --color-neon-pink: var(--neon-pink);
+  --color-neon-amber: var(--neon-amber);
+  --color-phosphor: var(--phosphor);
+  --color-grid: var(--grid);
+  --color-bg-2: var(--bg-2);
+
+  /* legacy aliases */
+  --color-ink: var(--ink);
   --color-paper: var(--paper);
   --color-paper-2: var(--paper-2);
-  --color-ink: var(--ink);
   --color-ink-soft: var(--ink-soft);
   --color-hairline: var(--hairline);
   --color-gain: var(--gain);
@@ -81,11 +101,13 @@
   --radius-md: var(--radius);
   --radius-sm: var(--radius);
 
-  --font-display: var(--font-playfair);
-  --font-serif: var(--font-source-serif);
-  --font-condensed: var(--font-oswald);
-  --font-mono: var(--font-jetbrains);
-  --font-sans: var(--font-source-serif);
+  --font-pixel: var(--font-press-start);
+  --font-terminal: var(--font-vt323);
+  --font-display: var(--font-press-start);
+  --font-condensed: var(--font-vt323);
+  --font-serif: var(--font-vt323);
+  --font-sans: var(--font-vt323);
+  --font-mono: var(--font-vt323);
 }
 
 * {
@@ -93,89 +115,123 @@
 }
 
 html {
-  -webkit-font-smoothing: antialiased;
+  font-size: 18px; /* VT323 renders small; bump base */
 }
 
 body {
-  background-color: var(--paper);
-  color: var(--ink);
-  font-family: var(--font-source-serif), Georgia, "Times New Roman", serif;
-  /* subtle paper grain */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  background-color: var(--bg);
+  color: var(--phosphor);
+  font-family: var(--font-vt323), ui-monospace, monospace;
+  background-image:
+    radial-gradient(circle at 50% 0%, rgba(33, 230, 255, 0.08), transparent 60%),
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 100% 100%, 44px 44px, 44px 44px;
+  background-position: 0 0, 0 0, 0 0;
 }
 
-/* ---------- Editorial typography helpers ---------- */
+/* CRT scanlines overlay */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0.18) 3px,
+    rgba(0, 0, 0, 0) 4px
+  );
+  mix-blend-mode: multiply;
+}
 
-.font-display { font-family: var(--font-playfair), Georgia, serif; }
-.font-condensed { font-family: var(--font-oswald), "Arial Narrow", sans-serif; }
+/* ---------- Arcade typography helpers (same names, new look) ---------- */
+
+.font-pixel { font-family: var(--font-press-start), monospace; }
+.font-display { font-family: var(--font-press-start), monospace; }
+.font-condensed { font-family: var(--font-vt323), monospace; }
 
 .headline {
-  font-family: var(--font-playfair), Georgia, serif;
-  font-weight: 800;
-  line-height: 0.98;
-  letter-spacing: -0.01em;
+  font-family: var(--font-press-start), monospace;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  color: var(--neon-green);
+  text-shadow: 0 0 6px rgba(57, 255, 20, 0.6), 0 0 18px rgba(57, 255, 20, 0.35);
 }
 
 .kicker {
-  font-family: var(--font-oswald), sans-serif;
+  font-family: var(--font-press-start), monospace;
   text-transform: uppercase;
-  letter-spacing: 0.18em;
-  font-weight: 600;
-  font-size: 0.7rem;
-  color: var(--ink-soft);
+  letter-spacing: 0.1em;
+  font-size: 0.6rem;
+  color: var(--neon-cyan);
+  text-shadow: 0 0 8px rgba(33, 230, 255, 0.5);
 }
 
 .dateline {
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-family: var(--font-vt323), monospace;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.7rem;
-  color: var(--ink-soft);
+  letter-spacing: 0.12em;
+  font-size: 0.95rem;
+  color: var(--dim);
 }
 
 .tabular {
-  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-family: var(--font-vt323), ui-monospace, monospace;
   font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
 }
 
-/* Drop cap for lede paragraphs */
+/* drop cap doesn't fit arcade — just neon-emphasize the first letter */
 .dropcap::first-letter {
-  font-family: var(--font-playfair), Georgia, serif;
-  font-weight: 900;
-  font-size: 3.1em;
-  line-height: 0.7;
-  float: left;
-  padding: 0.06em 0.12em 0 0;
-  color: var(--ink);
+  font-family: var(--font-press-start), monospace;
+  color: var(--neon-magenta);
+  font-size: 1.4em;
+  padding-right: 0.08em;
 }
 
-/* ---------- Rules (ink lines) ---------- */
-.rule { border: 0; border-top: 1px solid var(--ink); }
-.rule-thick { border: 0; border-top: 3px solid var(--ink); }
-.rule-double {
-  border: 0;
-  border-top: 3px double var(--ink);
-}
-.rule-hair { border: 0; border-top: 1px solid var(--hairline); }
+/* glow helpers */
+.glow-green { text-shadow: 0 0 6px rgba(57, 255, 20, 0.7), 0 0 16px rgba(57, 255, 20, 0.4); }
+.glow-cyan { text-shadow: 0 0 6px rgba(33, 230, 255, 0.7), 0 0 16px rgba(33, 230, 255, 0.4); }
+.glow-magenta { text-shadow: 0 0 6px rgba(255, 43, 214, 0.7), 0 0 16px rgba(255, 43, 214, 0.4); }
+.glow-amber { text-shadow: 0 0 6px rgba(255, 210, 63, 0.7), 0 0 16px rgba(255, 210, 63, 0.4); }
+.box-glow { box-shadow: 0 0 0 1px rgba(33, 230, 255, 0.25), 0 0 14px rgba(33, 230, 255, 0.25); }
 
-/* ---------- Halftone dot field ---------- */
+/* ---------- Rules (neon dividers) ---------- */
+.rule { border: 0; border-top: 2px solid var(--grid); }
+.rule-thick { border: 0; border-top: 3px solid var(--neon-cyan); box-shadow: 0 1px 8px rgba(33,230,255,0.4); }
+.rule-double { border: 0; border-top: 3px double var(--neon-green); }
+.rule-hair { border: 0; border-top: 1px solid var(--grid); }
+
+/* ---------- Scanline / grid strip ---------- */
 .halftone {
-  background-image: radial-gradient(var(--ink) 22%, transparent 23%);
-  background-size: 6px 6px;
-  opacity: 0.12;
+  background-image: repeating-linear-gradient(
+    to bottom, var(--neon-cyan) 0 1px, transparent 1px 4px
+  );
+  opacity: 0.25;
 }
 
-/* ---------- Ink stamp (status badges, "PAID", "VOID", "OPEN") ---------- */
+/* ---------- Status "stamp" → neon chip ---------- */
 .stamp {
-  font-family: var(--font-oswald), sans-serif;
+  font-family: var(--font-press-start), monospace;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-weight: 700;
+  letter-spacing: 0.06em;
+  font-size: 0.55rem;
   border: 2px solid currentColor;
-  padding: 0.1rem 0.5rem;
+  padding: 0.25rem 0.45rem;
   display: inline-block;
+  box-shadow: 0 0 8px currentColor;
 }
-.stamp-rotated { transform: rotate(-5deg); }
+.stamp-rotated { transform: none; } /* no rotation in arcade */
 
-/* selection */
-::selection { background: var(--accent); color: var(--paper); }
+/* pixel-art image rendering for flags/sprites that want it */
+.pixelated { image-rendering: pixelated; }
+
+::selection { background: var(--neon-magenta); color: #fff; }
+
+/* blink for "insert coin" style prompts */
+@keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0.25; } }
+.blink { animation: blink 1.1s steps(1) infinite; }

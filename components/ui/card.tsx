@@ -1,12 +1,12 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-// Newsprint "boxed column": square corners, ink hairline, paper ground.
+// Arcade "cabinet panel": square, neon-grid border, subtle inner glow.
 export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cn(
-        "border border-ink bg-card text-card-foreground",
+        "border-2 border-grid bg-card text-card-foreground shadow-[0_0_0_1px_rgba(36,49,86,0.6),0_0_18px_rgba(33,230,255,0.08)]",
         className,
       )}
       {...props}
@@ -17,10 +17,7 @@ export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
 export function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn(
-        "flex flex-col gap-1 border-b border-ink px-5 py-3",
-        className,
-      )}
+      className={cn("flex flex-col gap-1 border-b-2 border-grid px-5 py-3", className)}
       {...props}
     />
   );
@@ -30,7 +27,7 @@ export function CardTitle({ className, ...props }: React.HTMLAttributes<HTMLHead
   return (
     <h3
       className={cn(
-        "font-condensed uppercase tracking-wide text-lg font-semibold leading-tight",
+        "font-pixel uppercase text-sm leading-snug text-neon-cyan glow-cyan",
         className,
       )}
       {...props}
@@ -39,7 +36,7 @@ export function CardTitle({ className, ...props }: React.HTMLAttributes<HTMLHead
 }
 
 export function CardDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={cn("text-sm italic text-muted-foreground", className)} {...props} />;
+  return <p className={cn("text-base text-muted-foreground", className)} {...props} />;
 }
 
 export function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {

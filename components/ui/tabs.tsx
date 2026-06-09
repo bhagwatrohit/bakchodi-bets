@@ -3,7 +3,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-// Newsprint section tabs: condensed all-caps "editions", active = ink underline.
+// Arcade mode-select tabs: neon pixel labels, active = lit neon.
 interface TabsContextValue {
   value: string;
   setValue: (v: string) => void;
@@ -31,7 +31,7 @@ export function TabsList({ className, children }: { className?: string; children
   return (
     <div
       className={cn(
-        "flex items-stretch gap-0 border-y-2 border-ink divide-x divide-ink",
+        "flex items-stretch gap-0 border-2 border-grid divide-x-2 divide-grid",
         className,
       )}
     >
@@ -49,8 +49,10 @@ export function TabsTrigger({ value, children }: { value: string; children: Reac
       type="button"
       onClick={() => ctx.setValue(value)}
       className={cn(
-        "flex-1 px-4 py-2 font-condensed uppercase tracking-widest text-xs font-semibold transition-colors",
-        active ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-muted",
+        "flex-1 px-4 py-2 font-pixel uppercase tracking-wide text-[0.6rem] transition-all",
+        active
+          ? "bg-neon-cyan text-background shadow-[0_0_14px_rgba(33,230,255,0.6)]"
+          : "bg-transparent text-muted-foreground hover:text-neon-cyan",
       )}
     >
       {children}

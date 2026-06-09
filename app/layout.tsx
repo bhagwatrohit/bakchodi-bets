@@ -1,39 +1,22 @@
 import type { Metadata } from "next";
-import {
-  Playfair_Display,
-  Source_Serif_4,
-  Oswald,
-  JetBrains_Mono,
-} from "next/font/google";
+import { Press_Start_2P, VT323 } from "next/font/google";
 import { Toaster } from "sonner";
 import { Disclaimer } from "@/components/Disclaimer";
 import "./globals.css";
 
-const playfair = Playfair_Display({
+const pressStart = Press_Start_2P({
   subsets: ["latin"],
-  variable: "--font-playfair",
-  weight: ["700", "800", "900"],
-  style: ["normal", "italic"],
+  variable: "--font-press-start",
+  weight: "400",
 });
-const sourceSerif = Source_Serif_4({
+const vt323 = VT323({
   subsets: ["latin"],
-  variable: "--font-source-serif",
-  weight: ["400", "600", "700"],
-  style: ["normal", "italic"],
-});
-const oswald = Oswald({
-  subsets: ["latin"],
-  variable: "--font-oswald",
-  weight: ["400", "500", "600", "700"],
-});
-const jetbrains = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains",
-  weight: ["400", "500", "700"],
+  variable: "--font-vt323",
+  weight: "400",
 });
 
 export const metadata: Metadata = {
-  title: "The Daily Degen — Bakchodi Bets",
+  title: "Bakchodi Bets — World Cup '26 Prediction Arcade",
   description:
     "A private World Cup prediction pool for friends. Fictional credits, real bragging rights. No cash value.",
 };
@@ -42,10 +25,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="en"
-      className={`${playfair.variable} ${sourceSerif.variable} ${oswald.variable} ${jetbrains.variable} h-full`}
-    >
+    <html lang="en" className={`${pressStart.variable} ${vt323.variable} h-full`}>
       <body className="min-h-full flex flex-col">
         {children}
         <Disclaimer />
@@ -54,12 +34,14 @@ export default function RootLayout({
           toastOptions={{
             style: {
               borderRadius: 0,
-              border: "2px solid #14110c",
-              background: "#faf6ea",
-              color: "#14110c",
-              fontFamily: "var(--font-oswald), sans-serif",
+              border: "2px solid #39ff14",
+              background: "#0a0e1a",
+              color: "#d8ffe9",
+              fontFamily: "var(--font-vt323), monospace",
+              fontSize: "1.05rem",
               textTransform: "uppercase",
               letterSpacing: "0.06em",
+              boxShadow: "0 0 16px rgba(57,255,20,0.4)",
             },
           }}
         />

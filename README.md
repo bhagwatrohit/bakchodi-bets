@@ -71,6 +71,36 @@ Settlement is a pure, unit-tested function wrapped in a DB transaction.
 See `docs/superpowers/specs/` and `docs/superpowers/plans/` for the design + plan,
 and `docs/NEXT16-NOTES.md` for Next 16 conventions.
 
+## Deploy (Vercel + Neon — free, low-traffic)
+
+The app is dynamic (Server Actions + Postgres), so it needs a Node host, not
+static hosting. Simplest free path: **Vercel** (host) + **Neon** (Postgres).
+
+**1. Push to GitHub** (source of truth; Vercel deploys from it).
+
+**2. Create the database (Neon).**
+- Sign in at [neon.tech](https://neon.tech) → New Project (pick a region near you).
+- Copy the **pooled** connection string (the host contains `-pooler`), e.g.
+  `postgres://USER:PASS@ep-xxx-pooler.REGION.aws.neon.tech/neondb?sslmode=require`.
+
+**3. Run migrations against Neon** (once, from your machine):
+```bash
+DATABASE_URL='<your-neon-pooled-url>' npm run db:migrate
+# optional demo data:
+DATABASE_URL='<your-neon-pooled-url>' npm run db:seed
+```
+
+**4. Deploy on Vercel.**
+- [vercel.com](https://vercel.com) → Add New → Project → import the GitHub repo.
+- Add Environment Variables (Production):
+  - `DATABASE_URL` = your Neon pooled URL
+  - `AUTH_SECRET` = a 32+ char random string (`openssl rand -hex 32`)
+- Deploy. Vercel auto-redeploys on every push to `main`.
+
+Notes: the Postgres client already runs with `prepare: false` (required for
+Neon's transaction pooler), and session cookies are `secure` in production. Set
+the env vars **before** the first build.
+
 ## Moving to Lakebase
 
 Lakebase is Databricks-managed Postgres — wire-compatible with vanilla Postgres.

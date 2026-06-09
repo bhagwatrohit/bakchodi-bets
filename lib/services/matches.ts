@@ -1,0 +1,215 @@
+import "server-only";
+import { and, eq, asc, sql } from "drizzle-orm";
+import { db, schema } from "@/lib/db";
+import { requireAdmin, requireMember } from "@/lib/services/clans";
+import { notFound, validation } from "@/lib/errors";
+import { parseMoney, isPositive } from "@/lib/money";
+import type {
+  MatchDetail,
+  MatchListItem,
+  MatchOutcome,
+  MatchStatus,
+  ViewerBet,
+} from "@/lib/types";
+import type { BetRow, MatchOutcomeRow, MatchRow } from "@/lib/db/schema";
+
+const VALID_STATUS: MatchStatus[] = ["open", "locked", "final", "settled"];
+
+async function loadOutcomes(matchId: string): Promise<MatchOutcome[]> {
+  const rows = await db
+    .select()
+    .from(schema.matchOutcomes)
+    .where(eq(schema.matchOutcomes.matchId, matchId))
+    .orderBy(asc(schema.matchOutcomes.sortOrder));
+  return rows.map((r: MatchOutcomeRow) => ({
+    id: r.id,
+    label: r.label,
+    sortOrder: r.sortOrder,
+  }));
+}
+
+function viewerBet(bet: BetRow | undefined, outcomes: MatchOutcome[]): ViewerBet | null {
+  if (!bet) return null;
+  const outcome = outcomes.find((o) => o.id === bet.outcomeId);
+  return {
+    id: bet.id,
+    outcomeId: bet.outcomeId,
+    outcomeLabel: outcome?.label ?? "—",
+    stake: bet.stake,
+    status: bet.status as ViewerBet["status"],
+    payout: bet.payout,
+    profit: bet.profit,
+  };
+}
+
+export async function createMatch(input: {
+  clanId: string;
+  title?: string;
+  teamA: string;
+  teamB: string;
+  startsAt: string; // ISO string
+  maxBet?: string;
+  includeDraw: boolean;
+  outcomeALabel?: string;
+  outcomeBLabel?: string;
+}): Promise<{ matchId: string }> {
+  const admin = await requireAdmin(input.clanId);
+  const teamA = input.teamA.trim();
+  const teamB = input.teamB.trim();
+  if (!teamA || !teamB) throw validation("Both teams are required.");
+
+  const startsAt = new Date(input.startsAt);
+  if (Number.isNaN(startsAt.getTime())) throw validation("Enter a valid start time.");
+
+  let maxBet: string | null = null;
+  if (input.maxBet && input.maxBet.trim() !== "") {
+    const m = parseMoney(input.maxBet);
+    if (!m || !isPositive(m)) throw validation("Max bet must be greater than zero.");
+    maxBet = m;
+  }
+
+  const title = (input.title?.trim() || `${teamA} vs ${teamB}`).slice(0, 200);
+  const labelA = input.outcomeALabel?.trim() || teamA;
+  const labelB = input.outcomeBLabel?.trim() || teamB;
+
+  const matchId = await db.transaction(async (tx) => {
+    const [match] = await tx
+      .insert(schema.matches)
+      .values({
+        clanId: input.clanId,
+        title,
+        teamA,
+        teamB,
+        startsAt,
+        maxBet,
+        status: "open",
+        createdBy: admin.userId,
+      })
+      .returning({ id: schema.matches.id });
+
+    const outcomeValues = [
+      { matchId: match.id, label: labelA, sortOrder: 0 },
+      ...(input.includeDraw
+        ? [{ matchId: match.id, label: "Draw", sortOrder: 1 }]
+        : []),
+      { matchId: match.id, label: labelB, sortOrder: 2 },
+    ];
+    await tx.insert(schema.matchOutcomes).values(outcomeValues);
+    return match.id;
+  });
+
+  return { matchId };
+}
+
+export async function updateMatch(
+  matchId: string,
+  patch: { title?: string; teamA?: string; teamB?: string; startsAt?: string; maxBet?: string | null },
+): Promise<void> {
+  const match = await db.query.matches.findFirst({ where: eq(schema.matches.id, matchId) });
+  if (!match) throw notFound("Match not found.");
+  await requireAdmin(match.clanId);
+  if (match.status === "settled") throw validation("A settled match can't be edited.");
+
+  const values: Record<string, unknown> = { updatedAt: new Date() };
+  if (patch.title !== undefined) values.title = patch.title.trim();
+  if (patch.teamA !== undefined) values.teamA = patch.teamA.trim();
+  if (patch.teamB !== undefined) values.teamB = patch.teamB.trim();
+  if (patch.startsAt !== undefined) {
+    const d = new Date(patch.startsAt);
+    if (Number.isNaN(d.getTime())) throw validation("Enter a valid start time.");
+    values.startsAt = d;
+  }
+  if (patch.maxBet !== undefined) {
+    if (patch.maxBet === null || patch.maxBet === "") values.maxBet = null;
+    else {
+      const m = parseMoney(patch.maxBet);
+      if (!m || !isPositive(m)) throw validation("Max bet must be greater than zero.");
+      values.maxBet = m;
+    }
+  }
+  await db.update(schema.matches).set(values).where(eq(schema.matches.id, matchId));
+}
+
+/** Lock / unlock / mark final. Settling is done via settlement.settleMatch. */
+export async function setMatchStatus(matchId: string, status: MatchStatus): Promise<void> {
+  if (!VALID_STATUS.includes(status)) throw validation("Invalid match status.");
+  if (status === "settled") throw validation("Use the settle action to settle a match.");
+  const match = await db.query.matches.findFirst({ where: eq(schema.matches.id, matchId) });
+  if (!match) throw notFound("Match not found.");
+  await requireAdmin(match.clanId);
+  if (match.status === "settled") throw validation("This match is already settled.");
+  await db
+    .update(schema.matches)
+    .set({ status, updatedAt: new Date() })
+    .where(eq(schema.matches.id, matchId));
+}
+
+function effectiveMaxBet(matchMaxBet: string | null, clanDefault: string): string {
+  return matchMaxBet ?? clanDefault;
+}
+
+async function buildListItem(
+  match: MatchRow,
+  clanDefaultMaxBet: string,
+  myUserId: string,
+): Promise<MatchListItem> {
+  const outcomes = await loadOutcomes(match.id);
+  const myBetRow = await db.query.bets.findFirst({
+    where: and(eq(schema.bets.matchId, match.id), eq(schema.bets.userId, myUserId)),
+  });
+  const [{ totalPot, betCount }] = await db
+    .select({
+      totalPot: sql<string>`coalesce(sum(${schema.bets.stake}), 0)::text`,
+      betCount: sql<number>`count(*)::int`,
+    })
+    .from(schema.bets)
+    .where(eq(schema.bets.matchId, match.id));
+
+  return {
+    id: match.id,
+    title: match.title,
+    teamA: match.teamA,
+    teamB: match.teamB,
+    startsAt: match.startsAt,
+    status: match.status as MatchStatus,
+    maxBet: effectiveMaxBet(match.maxBet, clanDefaultMaxBet),
+    outcomes,
+    winningOutcomeId: match.winningOutcomeId,
+    myBet: viewerBet(myBetRow, outcomes),
+    totalPot,
+    betCount,
+  };
+}
+
+export async function listMatches(clanId: string): Promise<MatchListItem[]> {
+  const membership = await requireMember(clanId);
+  const clan = await db.query.clans.findFirst({ where: eq(schema.clans.id, clanId) });
+  if (!clan) throw notFound("Clan not found.");
+  const matchRows = await db
+    .select()
+    .from(schema.matches)
+    .where(eq(schema.matches.clanId, clanId))
+    .orderBy(asc(schema.matches.startsAt));
+  const items: MatchListItem[] = [];
+  for (const m of matchRows) {
+    items.push(await buildListItem(m, clan.defaultMaxBet, membership.userId));
+  }
+  return items;
+}
+
+export async function getMatchDetail(clanId: string, matchId: string): Promise<MatchDetail> {
+  const membership = await requireMember(clanId);
+  const clan = await db.query.clans.findFirst({ where: eq(schema.clans.id, clanId) });
+  if (!clan) throw notFound("Clan not found.");
+  const match = await db.query.matches.findFirst({
+    where: and(eq(schema.matches.id, matchId), eq(schema.matches.clanId, clanId)),
+  });
+  if (!match) throw notFound("Match not found.");
+  const base = await buildListItem(match, clan.defaultMaxBet, membership.userId);
+  return {
+    ...base,
+    availableBalance: membership.balance,
+    currencyName: clan.currencyName,
+    clanLockAtStart: clan.lockBetsAtMatchStart,
+  };
+}

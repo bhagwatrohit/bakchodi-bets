@@ -11,6 +11,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "smoke": "node scripts/smoke-bet.mjs",
+    "check": "node scripts/check-match.mjs",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx lib/db/migrate.ts",
     "db:push": "drizzle-kit push",

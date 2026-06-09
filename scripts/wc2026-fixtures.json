@@ -1,0 +1,88 @@
+{
+  "source_notes": "Cross-checked across ESPN (espn.com 2026 WC schedule), Yahoo Sports daily-schedule article, and Yahoo Sports schedule/groups article; group rosters confirmed against Wikipedia 2026 FIFA World Cup. All four anchor facts verified.",
+  "matches": [
+    { "group": "A", "date": "2026-06-11", "kickoff_et": "15:00", "venue": "Mexico City", "team_a": "Mexico", "team_b": "South Africa", "uncertain": false },
+    { "group": "A", "date": "2026-06-11", "kickoff_et": "22:00", "venue": "Guadalajara", "team_a": "South Korea", "team_b": "Czechia", "uncertain": false },
+    { "group": "A", "date": "2026-06-18", "kickoff_et": "12:00", "venue": "Atlanta", "team_a": "Czechia", "team_b": "South Africa", "uncertain": false },
+    { "group": "A", "date": "2026-06-18", "kickoff_et": "21:00", "venue": "Guadalajara", "team_a": "Mexico", "team_b": "South Korea", "uncertain": false },
+    { "group": "A", "date": "2026-06-24", "kickoff_et": "21:00", "venue": "Mexico City", "team_a": "Czechia", "team_b": "Mexico", "uncertain": false },
+    { "group": "A", "date": "2026-06-24", "kickoff_et": "21:00", "venue": "Monterrey", "team_a": "South Africa", "team_b": "South Korea", "uncertain": false },
+
+    { "group": "B", "date": "2026-06-12", "kickoff_et": "15:00", "venue": "Toronto", "team_a": "Canada", "team_b": "Bosnia and Herzegovina", "uncertain": false },
+    { "group": "B", "date": "2026-06-13", "kickoff_et": "15:00", "venue": "Santa Clara", "team_a": "Qatar", "team_b": "Switzerland", "uncertain": false },
+    { "group": "B", "date": "2026-06-18", "kickoff_et": "15:00", "venue": "Inglewood", "team_a": "Switzerland", "team_b": "Bosnia and Herzegovina", "uncertain": false },
+    { "group": "B", "date": "2026-06-18", "kickoff_et": "18:00", "venue": "Vancouver", "team_a": "Canada", "team_b": "Qatar", "uncertain": false },
+    { "group": "B", "date": "2026-06-24", "kickoff_et": "15:00", "venue": "Vancouver", "team_a": "Switzerland", "team_b": "Canada", "uncertain": false },
+    { "group": "B", "date": "2026-06-24", "kickoff_et": "15:00", "venue": "Seattle", "team_a": "Bosnia and Herzegovina", "team_b": "Qatar", "uncertain": false },
+
+    { "group": "C", "date": "2026-06-13", "kickoff_et": "18:00", "venue": "East Rutherford", "team_a": "Brazil", "team_b": "Morocco", "uncertain": false },
+    { "group": "C", "date": "2026-06-13", "kickoff_et": "21:00", "venue": "Foxborough", "team_a": "Haiti", "team_b": "Scotland", "uncertain": false },
+    { "group": "C", "date": "2026-06-19", "kickoff_et": "18:00", "venue": "Foxborough", "team_a": "Scotland", "team_b": "Morocco", "uncertain": false },
+    { "group": "C", "date": "2026-06-19", "kickoff_et": "20:30", "venue": "Philadelphia", "team_a": "Brazil", "team_b": "Haiti", "uncertain": false },
+    { "group": "C", "date": "2026-06-24", "kickoff_et": "18:00", "venue": "Miami", "team_a": "Scotland", "team_b": "Brazil", "uncertain": false },
+    { "group": "C", "date": "2026-06-24", "kickoff_et": "18:00", "venue": "Atlanta", "team_a": "Morocco", "team_b": "Haiti", "uncertain": false },
+
+    { "group": "D", "date": "2026-06-12", "kickoff_et": "21:00", "venue": "Inglewood", "team_a": "United States", "team_b": "Paraguay", "uncertain": false },
+    { "group": "D", "date": "2026-06-14", "kickoff_et": "00:00", "venue": "Vancouver", "team_a": "Australia", "team_b": "Turkey", "uncertain": false },
+    { "group": "D", "date": "2026-06-19", "kickoff_et": "15:00", "venue": "Seattle", "team_a": "United States", "team_b": "Australia", "uncertain": false },
+    { "group": "D", "date": "2026-06-20", "kickoff_et": "00:00", "venue": "Santa Clara", "team_a": "Turkey", "team_b": "Paraguay", "uncertain": false },
+    { "group": "D", "date": "2026-06-25", "kickoff_et": "22:00", "venue": "Inglewood", "team_a": "Turkey", "team_b": "United States", "uncertain": false },
+    { "group": "D", "date": "2026-06-25", "kickoff_et": "22:00", "venue": "Santa Clara", "team_a": "Paraguay", "team_b": "Australia", "uncertain": false },
+
+    { "group": "E", "date": "2026-06-14", "kickoff_et": "13:00", "venue": "Houston", "team_a": "Germany", "team_b": "Curacao", "uncertain": false },
+    { "group": "E", "date": "2026-06-14", "kickoff_et": "19:00", "venue": "Philadelphia", "team_a": "Ivory Coast", "team_b": "Ecuador", "uncertain": false },
+    { "group": "E", "date": "2026-06-20", "kickoff_et": "16:00", "venue": "Toronto", "team_a": "Germany", "team_b": "Ivory Coast", "uncertain": false },
+    { "group": "E", "date": "2026-06-20", "kickoff_et": "20:00", "venue": "Kansas City", "team_a": "Ecuador", "team_b": "Curacao", "uncertain": false },
+    { "group": "E", "date": "2026-06-25", "kickoff_et": "16:00", "venue": "East Rutherford", "team_a": "Ecuador", "team_b": "Germany", "uncertain": false },
+    { "group": "E", "date": "2026-06-25", "kickoff_et": "16:00", "venue": "Philadelphia", "team_a": "Curacao", "team_b": "Ivory Coast", "uncertain": false },
+
+    { "group": "F", "date": "2026-06-14", "kickoff_et": "16:00", "venue": "Dallas", "team_a": "Netherlands", "team_b": "Japan", "uncertain": false },
+    { "group": "F", "date": "2026-06-14", "kickoff_et": "22:00", "venue": "Monterrey", "team_a": "Sweden", "team_b": "Tunisia", "uncertain": false },
+    { "group": "F", "date": "2026-06-20", "kickoff_et": "13:00", "venue": "Houston", "team_a": "Netherlands", "team_b": "Sweden", "uncertain": false },
+    { "group": "F", "date": "2026-06-21", "kickoff_et": "00:00", "venue": "Monterrey", "team_a": "Tunisia", "team_b": "Japan", "uncertain": false },
+    { "group": "F", "date": "2026-06-25", "kickoff_et": "19:00", "venue": "Dallas", "team_a": "Japan", "team_b": "Sweden", "uncertain": false },
+    { "group": "F", "date": "2026-06-25", "kickoff_et": "19:00", "venue": "Kansas City", "team_a": "Tunisia", "team_b": "Netherlands", "uncertain": false },
+
+    { "group": "G", "date": "2026-06-15", "kickoff_et": "15:00", "venue": "Seattle", "team_a": "Belgium", "team_b": "Egypt", "uncertain": false },
+    { "group": "G", "date": "2026-06-15", "kickoff_et": "21:00", "venue": "Inglewood", "team_a": "Iran", "team_b": "New Zealand", "uncertain": false },
+    { "group": "G", "date": "2026-06-21", "kickoff_et": "15:00", "venue": "Inglewood", "team_a": "Belgium", "team_b": "Iran", "uncertain": false },
+    { "group": "G", "date": "2026-06-21", "kickoff_et": "21:00", "venue": "Vancouver", "team_a": "New Zealand", "team_b": "Egypt", "uncertain": false },
+    { "group": "G", "date": "2026-06-26", "kickoff_et": "23:00", "venue": "Seattle", "team_a": "Egypt", "team_b": "Iran", "uncertain": false },
+    { "group": "G", "date": "2026-06-26", "kickoff_et": "23:00", "venue": "Vancouver", "team_a": "New Zealand", "team_b": "Belgium", "uncertain": false },
+
+    { "group": "H", "date": "2026-06-15", "kickoff_et": "12:00", "venue": "Atlanta", "team_a": "Spain", "team_b": "Cape Verde", "uncertain": false },
+    { "group": "H", "date": "2026-06-15", "kickoff_et": "18:00", "venue": "Miami", "team_a": "Saudi Arabia", "team_b": "Uruguay", "uncertain": false },
+    { "group": "H", "date": "2026-06-21", "kickoff_et": "12:00", "venue": "Atlanta", "team_a": "Spain", "team_b": "Saudi Arabia", "uncertain": false },
+    { "group": "H", "date": "2026-06-21", "kickoff_et": "18:00", "venue": "Miami", "team_a": "Uruguay", "team_b": "Cape Verde", "uncertain": false },
+    { "group": "H", "date": "2026-06-26", "kickoff_et": "20:00", "venue": "Houston", "team_a": "Cape Verde", "team_b": "Saudi Arabia", "uncertain": false },
+    { "group": "H", "date": "2026-06-26", "kickoff_et": "20:00", "venue": "Guadalajara", "team_a": "Uruguay", "team_b": "Spain", "uncertain": false },
+
+    { "group": "I", "date": "2026-06-16", "kickoff_et": "15:00", "venue": "East Rutherford", "team_a": "France", "team_b": "Senegal", "uncertain": false },
+    { "group": "I", "date": "2026-06-16", "kickoff_et": "18:00", "venue": "Foxborough", "team_a": "Iraq", "team_b": "Norway", "uncertain": false },
+    { "group": "I", "date": "2026-06-22", "kickoff_et": "17:00", "venue": "Philadelphia", "team_a": "France", "team_b": "Iraq", "uncertain": false },
+    { "group": "I", "date": "2026-06-22", "kickoff_et": "20:00", "venue": "East Rutherford", "team_a": "Norway", "team_b": "Senegal", "uncertain": false },
+    { "group": "I", "date": "2026-06-26", "kickoff_et": "15:00", "venue": "Foxborough", "team_a": "Norway", "team_b": "France", "uncertain": false },
+    { "group": "I", "date": "2026-06-26", "kickoff_et": "15:00", "venue": "Toronto", "team_a": "Senegal", "team_b": "Iraq", "uncertain": false },
+
+    { "group": "J", "date": "2026-06-16", "kickoff_et": "21:00", "venue": "Kansas City", "team_a": "Argentina", "team_b": "Algeria", "uncertain": false },
+    { "group": "J", "date": "2026-06-17", "kickoff_et": "00:00", "venue": "Santa Clara", "team_a": "Austria", "team_b": "Jordan", "uncertain": false },
+    { "group": "J", "date": "2026-06-22", "kickoff_et": "13:00", "venue": "Dallas", "team_a": "Argentina", "team_b": "Austria", "uncertain": false },
+    { "group": "J", "date": "2026-06-22", "kickoff_et": "23:00", "venue": "Santa Clara", "team_a": "Jordan", "team_b": "Algeria", "uncertain": false },
+    { "group": "J", "date": "2026-06-27", "kickoff_et": "22:00", "venue": "Kansas City", "team_a": "Algeria", "team_b": "Austria", "uncertain": false },
+    { "group": "J", "date": "2026-06-27", "kickoff_et": "22:00", "venue": "Dallas", "team_a": "Jordan", "team_b": "Argentina", "uncertain": false },
+
+    { "group": "K", "date": "2026-06-17", "kickoff_et": "13:00", "venue": "Houston", "team_a": "Portugal", "team_b": "Congo DR", "uncertain": false },
+    { "group": "K", "date": "2026-06-17", "kickoff_et": "22:00", "venue": "Mexico City", "team_a": "Uzbekistan", "team_b": "Colombia", "uncertain": false },
+    { "group": "K", "date": "2026-06-23", "kickoff_et": "13:00", "venue": "Houston", "team_a": "Portugal", "team_b": "Uzbekistan", "uncertain": false },
+    { "group": "K", "date": "2026-06-23", "kickoff_et": "22:00", "venue": "Guadalajara", "team_a": "Colombia", "team_b": "Congo DR", "uncertain": false },
+    { "group": "K", "date": "2026-06-27", "kickoff_et": "19:30", "venue": "Miami", "team_a": "Colombia", "team_b": "Portugal", "uncertain": false },
+    { "group": "K", "date": "2026-06-27", "kickoff_et": "19:30", "venue": "Atlanta", "team_a": "Congo DR", "team_b": "Uzbekistan", "uncertain": false },
+
+    { "group": "L", "date": "2026-06-17", "kickoff_et": "16:00", "venue": "Dallas", "team_a": "England", "team_b": "Croatia", "uncertain": false },
+    { "group": "L", "date": "2026-06-17", "kickoff_et": "19:00", "venue": "Toronto", "team_a": "Ghana", "team_b": "Panama", "uncertain": false },
+    { "group": "L", "date": "2026-06-23", "kickoff_et": "16:00", "venue": "Foxborough", "team_a": "England", "team_b": "Ghana", "uncertain": false },
+    { "group": "L", "date": "2026-06-23", "kickoff_et": "19:00", "venue": "Toronto", "team_a": "Panama", "team_b": "Croatia", "uncertain": false },
+    { "group": "L", "date": "2026-06-27", "kickoff_et": "17:00", "venue": "East Rutherford", "team_a": "Panama", "team_b": "England", "uncertain": false },
+    { "group": "L", "date": "2026-06-27", "kickoff_et": "17:00", "venue": "Philadelphia", "team_a": "Croatia", "team_b": "Ghana", "uncertain": false }
+  ]
+}

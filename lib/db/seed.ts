@@ -5,6 +5,9 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { and, eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
 import * as schema from "./schema";
 
 /*
@@ -14,7 +17,8 @@ import * as schema from "./schema";
   Seeds:
     - clan "Bakchodi World Cup" (Bakchodi Bucks, 1000 start, 100 max bet)
     - members Rohit (admin), Ankit, Sumit, Ritika — all password "password"
-    - 4 matches, each with outcomes [Team A, Draw, Team B]
+    - the real 2026 FIFA World Cup group-stage fixtures (72 matches), each with
+      outcomes [Team A, Draw, Team B]. Source: scripts/wc2026-fixtures.json.
 */
 
 const SEED_INVITE = "WORLDCUP";
@@ -27,12 +31,24 @@ const SEED_USERS = [
   { displayName: "Ritika", email: "ritika@bakchodi.test", role: "member" as const },
 ];
 
-const SEED_MATCHES = [
-  { teamA: "Argentina", teamB: "Brazil", daysFromNow: 1 },
-  { teamA: "India", teamB: "Pakistan", daysFromNow: 2 },
-  { teamA: "Germany", teamB: "France", daysFromNow: 3 },
-  { teamA: "USA", teamB: "Mexico", daysFromNow: 4 },
-];
+interface Fixture {
+  group: string;
+  date: string; // YYYY-MM-DD
+  kickoff_et: string; // HH:MM, US Eastern
+  venue: string;
+  team_a: string;
+  team_b: string;
+}
+
+// Real 2026 FIFA World Cup group-stage fixtures (kickoffs in US Eastern = EDT, UTC-4 in June).
+function loadFixtures(): Fixture[] {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const path = resolve(here, "../../scripts/wc2026-fixtures.json");
+  const data = JSON.parse(readFileSync(path, "utf8")) as { matches: Fixture[] };
+  return data.matches;
+}
+
+const SEED_MATCHES = loadFixtures();
 
 async function main() {
   const url = process.env.DATABASE_URL;
@@ -41,7 +57,6 @@ async function main() {
   const db = drizzle(client, { schema });
 
   const passwordHash = await bcrypt.hash(PASSWORD, 10);
-  const now = Date.now();
 
   // Upsert profiles + credentials.
   const profileIds: Record<string, string> = {};
@@ -118,29 +133,108 @@ async function main() {
   });
   if (existingMatches.length === 0) {
     for (const m of SEED_MATCHES) {
-      const startsAt = new Date(now + m.daysFromNow * 24 * 60 * 60 * 1000);
+      // Kickoff is US Eastern; June is EDT (UTC-4).
+      const startsAt = new Date(`${m.date}T${m.kickoff_et}:00-04:00`);
       const [match] = await db
         .insert(schema.matches)
         .values({
           clanId: clan.id,
-          title: `${m.teamA} vs ${m.teamB}`,
-          teamA: m.teamA,
-          teamB: m.teamB,
+          title: `${m.team_a} vs ${m.team_b}`,
+          teamA: m.team_a,
+          teamB: m.team_b,
           startsAt,
           status: "open",
           createdBy: adminId,
         })
         .returning({ id: schema.matches.id });
       await db.insert(schema.matchOutcomes).values([
-        { matchId: match.id, label: m.teamA, sortOrder: 0 },
+        { matchId: match.id, label: m.team_a, sortOrder: 0 },
         { matchId: match.id, label: "Draw", sortOrder: 1 },
-        { matchId: match.id, label: m.teamB, sortOrder: 2 },
+        { matchId: match.id, label: m.team_b, sortOrder: 2 },
       ]);
+    }
+  }
+
+  // ---- Demo match: ready to settle, with bets already placed ----
+  // Lets you test the close/settle loop end-to-end immediately. Mirrors the
+  // classic pot-split example: Ankit 100 + Ritika 50 on Bakchodi XI vs Sumit
+  // 150 on Internet FC. Settle "Bakchodi XI" as winner and watch the payouts.
+  const DEMO_TITLE = "Bakchodi XI vs Internet FC";
+  const demoExists = await db.query.matches.findFirst({
+    where: and(eq(schema.matches.clanId, clan.id), eq(schema.matches.title, DEMO_TITLE)),
+  });
+  if (!demoExists) {
+    const startsAt = new Date(Date.now() + 3 * 60 * 60 * 1000); // 3h out, still open
+    const [demo] = await db
+      .insert(schema.matches)
+      .values({
+        clanId: clan.id,
+        title: DEMO_TITLE,
+        teamA: "Bakchodi XI",
+        teamB: "Internet FC",
+        startsAt,
+        status: "open",
+        createdBy: adminId,
+      })
+      .returning({ id: schema.matches.id });
+    const demoOutcomes = await db
+      .insert(schema.matchOutcomes)
+      .values([
+        { matchId: demo.id, label: "Bakchodi XI", sortOrder: 0 },
+        { matchId: demo.id, label: "Draw", sortOrder: 1 },
+        { matchId: demo.id, label: "Internet FC", sortOrder: 2 },
+      ])
+      .returning();
+    const outcomeByLabel = (label: string) =>
+      demoOutcomes.find((o) => o.label === label)!.id;
+
+    const demoBets = [
+      { email: "ankit@bakchodi.test", pick: "Bakchodi XI", stake: "100" },
+      { email: "ritika@bakchodi.test", pick: "Bakchodi XI", stake: "50" },
+      { email: "sumit@bakchodi.test", pick: "Internet FC", stake: "150" },
+    ];
+    for (const b of demoBets) {
+      const userId = profileIds[b.email];
+      const member = await db.query.clanMembers.findFirst({
+        where: and(
+          eq(schema.clanMembers.clanId, clan.id),
+          eq(schema.clanMembers.userId, userId),
+        ),
+      });
+      if (!member) continue;
+      const newBalance = (Number(member.balance) - Number(b.stake)).toString();
+      const [bet] = await db
+        .insert(schema.bets)
+        .values({
+          clanId: clan.id,
+          matchId: demo.id,
+          userId,
+          outcomeId: outcomeByLabel(b.pick),
+          stake: b.stake,
+          status: "pending",
+        })
+        .returning({ id: schema.bets.id });
+      await db
+        .update(schema.clanMembers)
+        .set({ balance: newBalance })
+        .where(eq(schema.clanMembers.id, member.id));
+      await db.insert(schema.ledgerEntries).values({
+        clanId: clan.id,
+        userId,
+        betId: bet.id,
+        transactionType: "bet_placed",
+        amount: (-Number(b.stake)).toString(),
+        balanceAfter: newBalance,
+        reason: `Bet on ${b.pick}`,
+        createdBy: userId,
+      });
     }
   }
 
   console.log("Seed complete.");
   console.log(`  Clan: Bakchodi World Cup  (invite code: ${SEED_INVITE})`);
+  console.log(`  Matches: ${SEED_MATCHES.length} (2026 FIFA World Cup group stage) + 1 demo`);
+  console.log(`  Demo match "Bakchodi XI vs Internet FC" has 3 bets — settle it to test payouts.`);
   console.log(`  Logins (password "${PASSWORD}"):`);
   for (const u of SEED_USERS) console.log(`    ${u.email}  [${u.role}]`);
   await client.end();

@@ -22,8 +22,9 @@
   --neon-magenta: #ff2bd6;
   --neon-pink: #ff3b6b;
   --neon-amber: #ffd23f;
-  --dim: #7488b5;         /* muted */
-  --grid: #243156;        /* borders / grid */
+  --dim: #93a6cf;         /* muted (lightened for readability) */
+  --grid: #2a3a66;        /* borders */
+  --grid-line: #161f3c;   /* faint background grid */
 
   /* Remapped semantic tokens (consumed by every component) */
   --background: var(--bg);
@@ -123,10 +124,10 @@ body {
   color: var(--phosphor);
   font-family: var(--font-vt323), ui-monospace, monospace;
   background-image:
-    radial-gradient(circle at 50% 0%, rgba(33, 230, 255, 0.08), transparent 60%),
-    linear-gradient(var(--grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 100% 100%, 44px 44px, 44px 44px;
+    radial-gradient(circle at 50% 0%, rgba(33, 230, 255, 0.06), transparent 62%),
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 100% 100%, 54px 54px, 54px 54px;
   background-position: 0 0, 0 0, 0 0;
 }
 
@@ -156,10 +157,22 @@ body::before {
 .headline {
   font-family: var(--font-press-start), monospace;
   font-weight: 400;
-  line-height: 1.2;
-  letter-spacing: 0.02em;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
   color: var(--neon-green);
-  text-shadow: 0 0 6px rgba(57, 255, 20, 0.6), 0 0 18px rgba(57, 255, 20, 0.35);
+  text-shadow: 0 0 5px rgba(57, 255, 20, 0.45), 0 0 14px rgba(57, 255, 20, 0.22);
+  overflow-wrap: anywhere; /* never overflow the viewport on mobile */
+}
+
+/* Team matchups & other long readable text: terminal font (compact + legible),
+   NOT the wide pixel font. Pairs with responsive Tailwind text sizes. */
+.matchup {
+  font-family: var(--font-vt323), ui-monospace, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 1.05;
+  color: var(--phosphor);
+  text-shadow: 0 0 7px rgba(216, 255, 233, 0.25);
 }
 
 .kicker {

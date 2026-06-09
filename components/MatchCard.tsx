@@ -48,12 +48,16 @@ export function MatchCard({
           <p className="dateline">{formatTime(match.startsAt)}</p>
           <span className={`stamp text-xs ${status.color}`}>{status.label}</span>
         </div>
-        <h3 className="headline flex flex-wrap items-center gap-2 text-xl leading-tight">
-          <Flag team={match.teamA} size="md" />
-          {match.teamA}
-          <span className="text-neon-magenta font-normal">vs</span>
-          {match.teamB}
-          <Flag team={match.teamB} size="md" />
+        <h3 className="matchup flex flex-col gap-1.5 text-2xl sm:text-3xl">
+          <span className="flex items-center gap-2">
+            <Flag team={match.teamA} size="md" />
+            <span className="min-w-0">{match.teamA}</span>
+          </span>
+          <span className="flex items-center gap-2">
+            <span className="font-pixel text-[0.6rem] text-neon-magenta glow-magenta">vs</span>
+            <Flag team={match.teamB} size="md" />
+            <span className="min-w-0">{match.teamB}</span>
+          </span>
         </h3>
         {match.title !== `${match.teamA} vs ${match.teamB}` ? (
           <p className="dateline">{match.title}</p>

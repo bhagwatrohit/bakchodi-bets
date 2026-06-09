@@ -26,7 +26,7 @@ function MatchGrid({
 }) {
   if (matches.length === 0) return <EmptyState message={empty} />;
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {matches.map((m) => (
         <MatchCard key={m.id} match={m} clanId={clanId} currencyName={currencyName} />
       ))}

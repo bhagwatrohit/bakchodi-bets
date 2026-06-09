@@ -93,12 +93,16 @@ export default async function MatchDetailPage({
           <div className="flex flex-wrap items-start justify-between gap-3 border-b-2 border-grid pb-3">
             <div className="flex flex-col gap-1">
               <p className="kicker">MATCH</p>
-              <h1 className="headline flex flex-wrap items-center gap-3 text-3xl sm:text-5xl leading-tight">
-                <Flag team={match.teamA} size="lg" />
-                {match.teamA}
-                <span className="text-neon-magenta font-normal">vs</span>
-                {match.teamB}
-                <Flag team={match.teamB} size="lg" />
+              <h1 className="matchup flex flex-col gap-2 text-3xl sm:text-5xl">
+                <span className="flex items-center gap-3">
+                  <Flag team={match.teamA} size="lg" />
+                  <span className="min-w-0">{match.teamA}</span>
+                </span>
+                <span className="flex items-center gap-3">
+                  <span className="font-pixel text-xs text-neon-magenta glow-magenta">vs</span>
+                  <Flag team={match.teamB} size="lg" />
+                  <span className="min-w-0">{match.teamB}</span>
+                </span>
               </h1>
               {match.title !== `${match.teamA} vs ${match.teamB}` ? (
                 <p className="dateline">{match.title}</p>

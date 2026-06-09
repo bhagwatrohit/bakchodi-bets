@@ -40,7 +40,7 @@ function MatchRow({
         <p className="dateline">{formatKickoff(match.startsAt)}</p>
         <div className="mt-0.5 flex items-center gap-2">
           <Flag team={match.teamA} size="sm" />
-          <p className="headline truncate text-lg">{match.title}</p>
+          <p className="matchup truncate text-lg sm:text-xl">{match.title}</p>
           <Flag team={match.teamB} size="sm" />
         </div>
         {match.myBet ? (
@@ -99,7 +99,7 @@ export default async function ClanHomePage({
         <div>
           <div className="flex flex-col items-center gap-3">
             <Trophy className="h-12 w-12" />
-            <h1 className="headline text-center text-4xl sm:text-6xl">{clan.name}</h1>
+            <h1 className="headline text-center text-2xl sm:text-5xl">{clan.name}</h1>
           </div>
           <hr className="rule-thick mt-3" />
           <div className="flex flex-col gap-1 py-2 dateline sm:flex-row sm:items-center sm:justify-between">
@@ -229,7 +229,7 @@ export default async function ClanHomePage({
                       <p className="dateline">{formatKickoff(m.startsAt)}</p>
                       <div className="mt-0.5 flex items-center gap-2">
                         <Flag team={m.teamA} size="sm" />
-                        <p className="headline truncate text-lg">{m.title}</p>
+                        <p className="matchup truncate text-lg sm:text-xl">{m.title}</p>
                         <Flag team={m.teamB} size="sm" />
                       </div>
                       {winner ? (

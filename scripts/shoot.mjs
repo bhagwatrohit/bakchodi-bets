@@ -20,8 +20,13 @@ const token = await new SignJWT({ sub: rohit.id })
   .setProtectedHeader({ alg: "HS256" }).setIssuedAt().setExpirationTime("604800s")
   .sign(new TextEncoder().encode(process.env.AUTH_SECRET));
 
+const W = Number(process.env.SHOT_W || 1280);
+const H = Number(process.env.SHOT_H || 1400);
+const OUTDIR = process.env.SHOT_DIR || OUT;
+mkdirSync(OUTDIR, { recursive: true });
+
 const browser = await chromium.launch();
-const ctx = await browser.newContext({ viewport: { width: 1280, height: 1400 }, deviceScaleFactor: 2 });
+const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 2 });
 await ctx.addCookies([{ name: "bb_session", value: token, domain: "localhost", path: "/", httpOnly: true, sameSite: "Lax" }]);
 const page = await ctx.newPage();
 
@@ -38,7 +43,7 @@ const shots = [
 for (const [name, url] of shots) {
   await page.goto(url, { waitUntil: "networkidle" });
   await page.waitForTimeout(300);
-  await page.screenshot({ path: `${OUT}/${name}.png`, fullPage: true });
+  await page.screenshot({ path: `${OUTDIR}/${name}.png`, fullPage: true });
   console.log(`shot: ${name}`);
 }
 await browser.close();

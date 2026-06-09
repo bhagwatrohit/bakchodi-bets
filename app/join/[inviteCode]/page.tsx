@@ -24,8 +24,8 @@ export default async function JoinPage({
     const body = (
       <Card>
         <CardHeader>
-          <p className="kicker text-accent">Late Edition</p>
-          <CardTitle className="mt-1">Issue Not Found</CardTitle>
+          <p className="kicker text-neon-pink">Invalid Code</p>
+          <CardTitle className="mt-1">Game Not Found</CardTitle>
           <CardDescription>
             The link may be mistyped or the clan may no longer exist. Ask a clan member for a fresh
             invite.
@@ -33,7 +33,7 @@ export default async function JoinPage({
         </CardHeader>
         <CardContent>
           <Link href={profile ? "/dashboard" : "/"}>
-            <Button variant="outline">{profile ? "Back to Front Page" : "Back to the Stand"}</Button>
+            <Button variant="outline">{profile ? "Back to Dashboard" : "Back to Start"}</Button>
           </Link>
         </CardContent>
       </Card>
@@ -56,17 +56,17 @@ export default async function JoinPage({
   const preview = (
     <Card>
       <CardHeader className="text-center">
-        <p className="kicker text-accent">You&apos;re Invited · Subscription Offer</p>
-        <hr className="rule-double my-2" />
+        <p className="kicker text-neon-cyan">You&apos;re Invited · Join Game</p>
+        <hr className="rule-thick my-2" />
         <CardTitle className="headline text-3xl normal-case tracking-tight">{clan.name}</CardTitle>
         <CardDescription className="dateline not-italic">
-          {clan.memberCount} {clan.memberCount === 1 ? "Subscriber" : "Subscribers"} on the Rolls
+          {clan.memberCount} {clan.memberCount === 1 ? "Player" : "Players"} in the Game
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <dl className="grid grid-cols-3 divide-x divide-hairline border-y border-ink text-center">
+        <dl className="grid grid-cols-3 divide-x divide-grid border-y-2 border-grid text-center">
           <div className="px-2 py-3">
-            <dt className="kicker">Members</dt>
+            <dt className="kicker">Players</dt>
             <dd className="tabular mt-1 text-lg font-semibold">{clan.memberCount}</dd>
           </div>
           <div className="px-2 py-3">
@@ -76,7 +76,7 @@ export default async function JoinPage({
             </dd>
           </div>
           <div className="px-2 py-3">
-            <dt className="kicker">Opening Stake</dt>
+            <dt className="kicker">Starting Credits</dt>
             <dd className="tabular mt-1 text-lg font-semibold">
               {format(clan.startingBalance, clan.currencyName)}
             </dd>
@@ -87,8 +87,8 @@ export default async function JoinPage({
           <ClanJoinButton inviteCode={inviteCode} />
         ) : (
           <div className="flex flex-col gap-3">
-            <p className="text-sm italic text-ink-soft">
-              Log in or subscribe to claim your spot on the rolls.
+            <p className="text-sm text-muted-foreground">
+              Log in or sign up to claim your spot in the game.
             </p>
             <div className="flex flex-col gap-2 sm:flex-row">
               <Link href={`/login?next=/join/${inviteCode}`} className="sm:flex-1">
@@ -96,7 +96,7 @@ export default async function JoinPage({
               </Link>
               <Link href="/signup" className="sm:flex-1">
                 <Button variant="outline" className="w-full">
-                  Subscribe
+                  Sign Up
                 </Button>
               </Link>
             </div>

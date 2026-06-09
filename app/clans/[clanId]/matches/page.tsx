@@ -34,11 +34,11 @@ export default async function MatchesPage({
     <AppShell profile={profile}>
       <div className="flex flex-col gap-6">
         <header className="flex flex-col gap-2">
-          <p className="kicker text-accent">The Fixtures · {ctx.clan.name}</p>
-          <h1 className="headline text-3xl sm:text-5xl">Today&apos;s Card</h1>
-          <p className="text-sm italic text-ink-soft">
-            Place your fake-credit wagers and chase the standings — every call
-            goes on the record.
+          <p className="kicker">MATCHES · {ctx.clan.name}</p>
+          <h1 className="headline text-3xl sm:text-5xl">MATCH SELECT</h1>
+          <p className="dateline">
+            Drop your fake-credit picks and climb the high-score board — every
+            call goes on the record.
           </p>
           <hr className="rule-thick mt-1" />
         </header>

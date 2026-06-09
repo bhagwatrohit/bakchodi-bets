@@ -26,7 +26,7 @@ export function AuthForm({
 
       {isSignup ? (
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="displayName">Byline name</Label>
+          <Label htmlFor="displayName">Player name</Label>
           <Input
             id="displayName"
             name="displayName"
@@ -67,20 +67,20 @@ export function AuthForm({
       {state.error ? (
         <p
           role="alert"
-          className="border-2 border-danger px-3 py-2 font-condensed uppercase tracking-wide text-sm text-danger"
+          className="border-2 border-neon-pink px-3 py-2 font-pixel text-[0.6rem] uppercase tracking-wide text-neon-pink"
         >
-          ✶ Stop the presses — {state.error}
+          ✶ Game over — {state.error}
         </p>
       ) : null}
 
       <Button type="submit" size="lg" disabled={pending} className="mt-1 w-full">
         {pending
           ? isSignup
-            ? "Issuing press pass…"
-            : "Stamping ticket…"
+            ? "Inserting coin…"
+            : "Loading…"
           : isSignup
-            ? "Get my press pass"
-            : "Punch the ticket"}
+            ? "Insert Coin"
+            : "Press Start"}
       </Button>
     </form>
   );

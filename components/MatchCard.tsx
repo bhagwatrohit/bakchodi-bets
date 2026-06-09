@@ -1,22 +1,23 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Flag } from "@/components/Flag";
 import { format } from "@/lib/money";
 import type { MatchListItem, MatchStatus } from "@/lib/types";
 
-// Status as an ink stamp; color via text-*.
+// Status as a neon stamp; color via text-*.
 const STATUS_META: Record<MatchStatus, { label: string; color: string }> = {
-  open: { label: "Open", color: "text-accent" },
-  locked: { label: "Locked", color: "text-ink" },
-  final: { label: "Final", color: "text-ink" },
-  settled: { label: "Settled", color: "text-ink-soft" },
+  open: { label: "OPEN", color: "text-neon-green" },
+  locked: { label: "LOCKED", color: "text-neon-amber" },
+  final: { label: "FINAL", color: "text-neon-cyan" },
+  settled: { label: "SETTLED", color: "text-muted-foreground" },
 };
 
 const BET_STATUS_META: Record<string, { label: string; color: string }> = {
-  pending: { label: "Pending", color: "text-ink-soft" },
-  won: { label: "Won", color: "text-success" },
-  lost: { label: "Lost", color: "text-danger" },
-  void: { label: "Void", color: "text-ink-soft" },
+  pending: { label: "PENDING", color: "text-muted-foreground" },
+  won: { label: "WON", color: "text-neon-green" },
+  lost: { label: "LOST", color: "text-neon-pink" },
+  void: { label: "VOID", color: "text-muted-foreground" },
 };
 
 function formatTime(date: Date): string {
@@ -47,38 +48,41 @@ export function MatchCard({
           <p className="dateline">{formatTime(match.startsAt)}</p>
           <span className={`stamp text-xs ${status.color}`}>{status.label}</span>
         </div>
-        <h3 className="headline text-xl leading-tight">
-          {match.teamA} <span className="text-ink-soft font-normal">v</span>{" "}
+        <h3 className="headline flex flex-wrap items-center gap-2 text-xl leading-tight">
+          <Flag team={match.teamA} size="md" />
+          {match.teamA}
+          <span className="text-neon-magenta font-normal">vs</span>
           {match.teamB}
+          <Flag team={match.teamB} size="md" />
         </h3>
         {match.title !== `${match.teamA} vs ${match.teamB}` ? (
-          <p className="text-xs italic text-ink-soft">{match.title}</p>
+          <p className="dateline">{match.title}</p>
         ) : null}
       </CardHeader>
 
       <CardContent className="flex flex-1 flex-col gap-3">
         <hr className="rule-hair" />
-        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-soft">
+        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
           <span className="kicker">
             Max{" "}
-            <span className="tabular text-ink">{format(match.maxBet, currencyName)}</span>
+            <span className="tabular text-phosphor">{format(match.maxBet, currencyName)}</span>
           </span>
           <span className="kicker">
             Pot{" "}
-            <span className="tabular text-ink">{format(match.totalPot, currencyName)}</span>
+            <span className="tabular text-phosphor">{format(match.totalPot, currencyName)}</span>
           </span>
           <span className="kicker">
-            <span className="tabular text-ink">{match.betCount}</span>{" "}
-            {match.betCount === 1 ? "Wager" : "Wagers"}
+            <span className="tabular text-phosphor">{match.betCount}</span>{" "}
+            {match.betCount === 1 ? "Bet" : "Bets"}
           </span>
         </div>
 
         {match.myBet && myBetStatus ? (
-          <div className="flex items-center justify-between border-l-2 border-ink bg-muted px-3 py-2 text-sm">
+          <div className="flex items-center justify-between border-l-2 border-neon-cyan bg-muted px-3 py-2 text-sm">
             <span>
-              <span className="kicker">Your call · </span>
-              <span className="font-semibold">{match.myBet.outcomeLabel}</span>{" "}
-              <span className="tabular text-ink-soft">
+              <span className="kicker">Your pick · </span>
+              <span className="font-semibold text-phosphor">{match.myBet.outcomeLabel}</span>{" "}
+              <span className="tabular text-muted-foreground">
                 ({format(match.myBet.stake, currencyName)})
               </span>
             </span>
@@ -94,9 +98,7 @@ export function MatchCard({
               variant={match.status === "open" && !match.myBet ? "primary" : "outline"}
               className="w-full"
             >
-              {match.status === "open" && !match.myBet
-                ? "Place a Wager"
-                : "Read the Report"}
+              {match.status === "open" && !match.myBet ? "BET NOW" : "VIEW"}
             </Button>
           </Link>
         </div>

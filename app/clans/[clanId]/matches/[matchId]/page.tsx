@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { BetForm } from "@/components/BetForm";
+import { Flag } from "@/components/Flag";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,17 +21,17 @@ import { format } from "@/lib/money";
 import type { BetHistoryRow, MatchDetail, MatchStatus } from "@/lib/types";
 
 const STATUS_META: Record<MatchStatus, { label: string; color: string }> = {
-  open: { label: "Open", color: "text-accent" },
-  locked: { label: "Locked", color: "text-ink" },
-  final: { label: "Final", color: "text-ink" },
-  settled: { label: "Settled", color: "text-ink-soft" },
+  open: { label: "OPEN", color: "text-neon-green" },
+  locked: { label: "LOCKED", color: "text-neon-amber" },
+  final: { label: "FINAL", color: "text-neon-cyan" },
+  settled: { label: "SETTLED", color: "text-muted-foreground" },
 };
 
 const BET_STATUS_META: Record<string, { label: string; color: string }> = {
-  pending: { label: "Pending", color: "text-ink-soft" },
-  won: { label: "Won", color: "text-success" },
-  lost: { label: "Lost", color: "text-danger" },
-  void: { label: "Void", color: "text-ink-soft" },
+  pending: { label: "PENDING", color: "text-muted-foreground" },
+  won: { label: "WON", color: "text-neon-green" },
+  lost: { label: "LOST", color: "text-neon-pink" },
+  void: { label: "VOID", color: "text-muted-foreground" },
 };
 
 function formatTime(date: Date): string {
@@ -85,30 +86,33 @@ export default async function MatchDetailPage({
         <div className="flex flex-col gap-3">
           <Link
             href={`/clans/${clanId}/matches`}
-            className="dateline hover:text-accent"
+            className="dateline hover:text-neon-cyan"
           >
-            ← Back to the Card
+            « MATCH SELECT
           </Link>
-          <div className="flex flex-wrap items-start justify-between gap-3 border-b-2 border-ink pb-3">
+          <div className="flex flex-wrap items-start justify-between gap-3 border-b-2 border-grid pb-3">
             <div className="flex flex-col gap-1">
-              <p className="kicker text-accent">Match Report</p>
-              <h1 className="headline text-3xl sm:text-5xl leading-tight">
-                {match.teamA} <span className="text-ink-soft font-normal">v</span>{" "}
+              <p className="kicker">MATCH</p>
+              <h1 className="headline flex flex-wrap items-center gap-3 text-3xl sm:text-5xl leading-tight">
+                <Flag team={match.teamA} size="lg" />
+                {match.teamA}
+                <span className="text-neon-magenta font-normal">vs</span>
                 {match.teamB}
+                <Flag team={match.teamB} size="lg" />
               </h1>
               {match.title !== `${match.teamA} vs ${match.teamB}` ? (
-                <p className="text-sm italic text-ink-soft">{match.title}</p>
+                <p className="dateline">{match.title}</p>
               ) : null}
               <p className="dateline mt-1">{formatTime(match.startsAt)}</p>
             </div>
-            <span className={`stamp stamp-rotated ${status.color}`}>
+            <span className={`stamp ${status.color}`}>
               {status.label}
             </span>
           </div>
         </div>
 
         <Card>
-          <CardContent className="grid grid-cols-2 gap-y-3 py-5 sm:grid-cols-4 sm:divide-x sm:divide-hairline">
+          <CardContent className="grid grid-cols-2 gap-y-3 py-5 sm:grid-cols-4 sm:divide-x sm:divide-grid">
             <div className="sm:px-4 sm:first:pl-0">
               <p className="kicker">Max Bet</p>
               <p className="tabular text-lg font-semibold">
@@ -128,21 +132,21 @@ export default async function MatchDetailPage({
               </p>
             </div>
             <div className="sm:px-4">
-              <p className="kicker">Wagers</p>
+              <p className="kicker">Bets</p>
               <p className="tabular text-lg font-semibold">{match.betCount}</p>
             </div>
           </CardContent>
         </Card>
 
         {match.status === "settled" && winningOutcome ? (
-          <Card className="border-2 border-ink">
+          <Card className="border-2 border-neon-green">
             <CardHeader>
-              <p className="kicker text-accent">Final Whistle</p>
-              <CardTitle className="headline text-2xl">The Result Is In</CardTitle>
+              <p className="kicker">FINAL SCORE</p>
+              <CardTitle className="headline text-2xl">GAME OVER</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
               <p className="kicker">Winning Outcome</p>
-              <span className="stamp stamp-rotated w-fit text-success text-base">
+              <span className="stamp w-fit text-neon-green text-base">
                 {winningOutcome.label}
               </span>
             </CardContent>
@@ -150,17 +154,22 @@ export default async function MatchDetailPage({
         ) : null}
 
         {match.myBet ? (
-          <Card className="border-2 border-dashed border-ink bg-paper-2">
+          <Card className="border-2 border-dashed border-neon-cyan bg-card">
             <CardHeader>
-              <p className="kicker text-accent">Coupon Stub · Retained</p>
-              <CardTitle className="headline text-2xl">Your Bet</CardTitle>
+              <p className="kicker">SAVED</p>
+              <CardTitle className="headline text-2xl">YOUR BET</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-3 text-sm">
               <hr className="rule-hair" />
               <div className="flex flex-wrap items-end gap-x-8 gap-y-3">
                 <div>
                   <p className="kicker">Pick</p>
-                  <p className="font-semibold">{match.myBet.outcomeLabel}</p>
+                  <p className="flex items-center gap-2 font-semibold">
+                    {match.myBet.outcomeLabel !== "Draw" ? (
+                      <Flag team={match.myBet.outcomeLabel} size="sm" />
+                    ) : null}
+                    {match.myBet.outcomeLabel}
+                  </p>
                 </div>
                 <div>
                   <p className="kicker">Stake</p>
@@ -200,8 +209,8 @@ export default async function MatchDetailPage({
         {showBetForm ? (
           <Card>
             <CardHeader>
-              <p className="kicker text-accent">Wager Coupon</p>
-              <CardTitle className="headline text-2xl">Place Your Wager</CardTitle>
+              <p className="kicker">MAKE YOUR PICK</p>
+              <CardTitle className="headline text-2xl">PLACE YOUR BET</CardTitle>
             </CardHeader>
             <CardContent>
               <BetForm
@@ -217,9 +226,9 @@ export default async function MatchDetailPage({
         ) : !match.myBet && match.status === "open" ? (
           <Card>
             <CardContent className="py-6 text-center">
-              <p className="kicker">Lines Closed</p>
-              <p className="mt-1 font-serif italic text-ink-soft">
-                The book is shut on this fixture.
+              <p className="kicker text-neon-amber">Lines Closed</p>
+              <p className="mt-1 dateline">
+                The book is shut on this match.
               </p>
             </CardContent>
           </Card>
@@ -228,8 +237,8 @@ export default async function MatchDetailPage({
         {allBets && allBets.length > 0 ? (
           <Card>
             <CardHeader>
-              <p className="kicker text-accent">On The Record</p>
-              <CardTitle className="headline text-2xl">The Wagers</CardTitle>
+              <p className="kicker">ON THE RECORD</p>
+              <CardTitle className="headline text-2xl">ALL BETS</CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
               <Table>
@@ -245,7 +254,14 @@ export default async function MatchDetailPage({
                   {allBets.map((b) => (
                     <TableRow key={b.id}>
                       <TableCell className="font-medium">{b.displayName}</TableCell>
-                      <TableCell>{b.pick}</TableCell>
+                      <TableCell>
+                        <span className="flex items-center gap-2">
+                          {b.pick !== "Draw" ? (
+                            <Flag team={b.pick} size="sm" />
+                          ) : null}
+                          {b.pick}
+                        </span>
+                      </TableCell>
                       <TableCell className="tabular">
                         {format(b.stake, match.currencyName)}
                       </TableCell>
@@ -267,7 +283,7 @@ export default async function MatchDetailPage({
         {match.myBet ? (
           <div>
             <Link href={`/clans/${clanId}/matches`}>
-              <Button variant="outline">Back to the Card</Button>
+              <Button variant="outline">« MATCH SELECT</Button>
             </Link>
           </div>
         ) : null}

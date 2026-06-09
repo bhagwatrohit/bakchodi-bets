@@ -15,12 +15,12 @@ export function ClanJoinButton({ inviteCode }: { inviteCode: string }) {
       <input type="hidden" name="inviteCode" value={inviteCode} />
       {state.error ? (
         <p className="border-2 border-danger bg-danger/10 px-3 py-2 text-sm font-semibold text-danger">
-          <span className="stamp text-danger mr-2">Stop Press</span>
+          <span className="stamp text-neon-pink mr-2">Game Over</span>
           {state.error}
         </p>
       ) : null}
       <Button type="submit" size="lg" disabled={pending}>
-        {pending ? "Signing the Rolls…" : "Join the Newsroom"}
+        {pending ? "Loading…" : "Join Clan"}
       </Button>
     </form>
   );

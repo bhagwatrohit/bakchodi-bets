@@ -16,7 +16,7 @@ export function CreateMatchForm({ clanId }: { clanId: string }) {
 
   useEffect(() => {
     if (state.ok && !lastOk.current) {
-      toast.success("Match is live — go place your bets.");
+      toast.success("Match added — go place your bets.");
       formRef.current?.reset();
     }
     lastOk.current = !!state.ok;
@@ -61,7 +61,7 @@ export function CreateMatchForm({ clanId }: { clanId: string }) {
         </div>
       </div>
 
-      <label className="flex cursor-pointer items-start gap-3 border border-ink p-3 transition-colors hover:bg-muted">
+      <label className="flex cursor-pointer items-start gap-3 border border-grid p-3 transition-colors hover:bg-muted">
         <input
           type="checkbox"
           name="includeDraw"
@@ -69,7 +69,7 @@ export function CreateMatchForm({ clanId }: { clanId: string }) {
         />
         <span className="flex flex-col gap-0.5">
           <span className="font-condensed text-sm font-semibold uppercase tracking-wide">Allow a draw</span>
-          <span className="text-xs italic text-ink-soft">Adds a third “Draw” outcome.</span>
+          <span className="text-xs text-muted-foreground">Adds a third “Draw” outcome.</span>
         </span>
       </label>
 
@@ -89,7 +89,7 @@ export function CreateMatchForm({ clanId }: { clanId: string }) {
       ) : null}
 
       <Button type="submit" disabled={pending}>
-        {pending ? "Filing…" : "File the Fixture"}
+        {pending ? "Adding…" : "ADD MATCH"}
       </Button>
     </form>
   );

@@ -1,13 +1,14 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Flag } from "@/components/Flag";
 import { format } from "@/lib/money";
 import type { BetHistoryRow, BetStatus } from "@/lib/types";
 
-// Stamp colour per status, in the newsprint ink palette.
+// Stamp colour per status, in the arcade neon palette.
 const STATUS_STAMP: Record<BetStatus, string> = {
-  pending: "text-ink",
-  won: "text-success",
-  lost: "text-danger",
-  void: "text-ink-soft",
+  pending: "text-neon-cyan",
+  won: "text-neon-green",
+  lost: "text-neon-pink",
+  void: "text-muted-foreground",
 };
 
 const STATUS_LABEL: Record<BetStatus, string> = {
@@ -41,10 +42,10 @@ export function BetHistoryTable({
 }) {
   if (rows.length === 0) {
     return (
-      <div className="border-2 border-ink bg-paper-2 p-8 text-center">
-        <p className="kicker">Late Edition</p>
-        <p className="headline mt-1 text-xl">No wagers on the books</p>
-        <p className="mt-2 text-sm italic text-ink-soft">The ledger is empty — go place one.</p>
+      <div className="border-2 border-grid bg-card p-8 text-center">
+        <p className="kicker">No Plays Yet</p>
+        <p className="headline mt-1 text-xl">No bets on the board</p>
+        <p className="mt-2 text-sm text-muted-foreground">No bets yet — go place one.</p>
       </div>
     );
   }
@@ -67,7 +68,12 @@ export function BetHistoryTable({
           <TableRow key={row.id}>
             {showPlayer ? <TableCell className="font-medium">{row.displayName}</TableCell> : null}
             <TableCell className="font-medium">{matchLabel(row)}</TableCell>
-            <TableCell>{row.pick}</TableCell>
+            <TableCell>
+              <span className="inline-flex items-center gap-1.5">
+                {row.pick !== "Draw" ? <Flag team={row.pick} size="sm" /> : null}
+                {row.pick}
+              </span>
+            </TableCell>
             <TableCell className="tabular text-right">{format(row.stake, currencyName)}</TableCell>
             <TableCell>
               <span className={`stamp ${STATUS_STAMP[row.status]}`}>

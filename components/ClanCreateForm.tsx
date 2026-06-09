@@ -20,7 +20,7 @@ function Toggle({
   defaultChecked?: boolean;
 }) {
   return (
-    <label className="flex cursor-pointer items-start gap-3 border border-ink bg-paper p-3 transition-colors hover:bg-muted">
+    <label className="flex cursor-pointer items-start gap-3 border-2 border-grid bg-background p-3 transition-colors hover:bg-muted">
       <input
         type="checkbox"
         name={name}
@@ -29,7 +29,7 @@ function Toggle({
       />
       <span className="flex flex-col gap-0.5">
         <span className="font-condensed uppercase tracking-wide text-sm font-semibold">{label}</span>
-        <span className="text-xs italic text-ink-soft">{hint}</span>
+        <span className="text-xs text-muted-foreground">{hint}</span>
       </span>
     </label>
   );
@@ -41,7 +41,7 @@ export function ClanCreateForm() {
   return (
     <form action={formAction} className="flex flex-col gap-5">
       <div className="flex flex-col gap-1.5">
-        <p className="kicker">The Masthead</p>
+        <p className="kicker">Clan Name</p>
         <Label htmlFor="name">Clan name</Label>
         <Input
           id="name"
@@ -53,16 +53,16 @@ export function ClanCreateForm() {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <p className="kicker">The Currency Desk</p>
+        <p className="kicker">Currency</p>
         <Label htmlFor="currencyName">What do you call your funny money?</Label>
         <Input id="currencyName" name="currencyName" defaultValue="credits" placeholder="credits" />
-        <p className="text-xs italic text-ink-soft">
+        <p className="text-xs text-muted-foreground">
           Fictional credits only — no cash value. Name them whatever you like.
         </p>
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <p className="kicker">Opening Ledger</p>
+        <p className="kicker">Starting Credits</p>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="startingBalance">Starting balance</Label>
@@ -76,7 +76,7 @@ export function ClanCreateForm() {
               required
               className="tabular"
             />
-            <p className="text-xs italic text-ink-soft">Everyone starts here.</p>
+            <p className="text-xs text-muted-foreground">Everyone starts here.</p>
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="defaultMaxBet">Default max bet</Label>
@@ -90,13 +90,13 @@ export function ClanCreateForm() {
               required
               className="tabular"
             />
-            <p className="text-xs italic text-ink-soft">Per-match cap (you can override later).</p>
+            <p className="text-xs text-muted-foreground">Per-match cap (you can override later).</p>
           </div>
         </div>
       </div>
 
       <fieldset className="flex flex-col gap-2">
-        <legend className="kicker mb-1">House Rules</legend>
+        <legend className="kicker mb-1">Game Settings</legend>
         <Toggle
           name="lockBetsAtMatchStart"
           label="Lock bets at kickoff"
@@ -118,13 +118,13 @@ export function ClanCreateForm() {
 
       {state.error ? (
         <p className="border-2 border-danger bg-danger/10 px-3 py-2 text-sm font-semibold text-danger">
-          <span className="stamp text-danger mr-2">Stop Press</span>
+          <span className="stamp text-neon-pink mr-2">Game Over</span>
           {state.error}
         </p>
       ) : null}
 
       <Button type="submit" size="lg" disabled={pending}>
-        {pending ? "Setting Type…" : "Print the First Edition"}
+        {pending ? "Loading…" : "Create Clan"}
       </Button>
     </form>
   );

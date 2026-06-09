@@ -22,7 +22,7 @@ function Toggle({
   defaultChecked?: boolean;
 }) {
   return (
-    <label className="flex cursor-pointer items-start gap-3 border border-ink p-3 transition-colors hover:bg-muted">
+    <label className="flex cursor-pointer items-start gap-3 border border-grid p-3 transition-colors hover:bg-muted">
       <input
         type="checkbox"
         name={name}
@@ -31,7 +31,7 @@ function Toggle({
       />
       <span className="flex flex-col gap-0.5">
         <span className="font-condensed text-sm font-semibold uppercase tracking-wide">{label}</span>
-        <span className="text-xs italic text-ink-soft">{hint}</span>
+        <span className="text-xs text-muted-foreground">{hint}</span>
       </span>
     </label>
   );
@@ -42,7 +42,7 @@ export function ClanSettingsForm({ clan }: { clan: Clan }) {
   const lastOk = useRef(false);
 
   useEffect(() => {
-    if (state.ok && !lastOk.current) toast.success("House rules updated.");
+    if (state.ok && !lastOk.current) toast.success("Game settings updated.");
     lastOk.current = !!state.ok;
   }, [state.ok]);
 
@@ -64,7 +64,7 @@ export function ClanSettingsForm({ clan }: { clan: Clan }) {
             defaultValue={clan.currencyName}
             placeholder="credits"
           />
-          <p className="text-xs italic text-ink-soft">Fictional credits only — no cash value.</p>
+          <p className="text-xs text-muted-foreground">Fictional credits only — no cash value.</p>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="settings-maxbet">Default max bet</Label>
@@ -78,7 +78,7 @@ export function ClanSettingsForm({ clan }: { clan: Clan }) {
             required
             className="tabular"
           />
-          <p className="text-xs italic text-ink-soft">Per-match cap unless a match overrides it.</p>
+          <p className="text-xs text-muted-foreground">Per-match cap unless a match overrides it.</p>
         </div>
       </div>
 
@@ -109,7 +109,7 @@ export function ClanSettingsForm({ clan }: { clan: Clan }) {
       ) : null}
 
       <Button type="submit" disabled={pending}>
-        {pending ? "Updating…" : "Update the Masthead"}
+        {pending ? "Saving…" : "SAVE SETTINGS"}
       </Button>
     </form>
   );

@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Flag } from "@/components/Flag";
 import { placeBetAction, type BetState } from "@/app/actions/bets";
 import { cn } from "@/lib/utils";
 import { format } from "@/lib/money";
@@ -58,7 +59,7 @@ export function BetForm({
     <form
       ref={formRef}
       action={formAction}
-      className="flex flex-col gap-5 border-2 border-dashed border-ink bg-paper-2 p-4"
+      className="flex flex-col gap-5 border-2 border-dashed border-neon-cyan bg-card p-4"
     >
       <input type="hidden" name="clanId" value={clanId} />
       <input type="hidden" name="matchId" value={matchId} />
@@ -76,12 +77,13 @@ export function BetForm({
                 onClick={() => setOutcomeId(o.id)}
                 aria-pressed={active}
                 className={cn(
-                  "border-2 px-4 py-2 font-condensed uppercase tracking-widest text-xs font-semibold transition-colors",
+                  "flex items-center gap-2 border-2 px-4 py-2 font-condensed uppercase tracking-widest text-xs font-semibold transition-colors",
                   active
-                    ? "border-ink bg-ink text-paper"
-                    : "border-ink bg-paper hover:bg-muted",
+                    ? "border-neon-green bg-neon-green text-background"
+                    : "border-grid bg-background text-phosphor hover:bg-muted",
                 )}
               >
+                {o.label !== "Draw" ? <Flag team={o.label} size="sm" /> : null}
                 {o.label}
               </button>
             );

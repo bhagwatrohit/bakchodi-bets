@@ -45,7 +45,7 @@ export function AdjustBalanceForm({
           id="adjust-member"
           name="targetUserId"
           required
-          className="flex h-11 w-full border border-ink bg-card px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex h-11 w-full border border-grid bg-card px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <option value="">Pick a member…</option>
           {members.map((m) => (
@@ -67,7 +67,7 @@ export function AdjustBalanceForm({
           placeholder="e.g. 50 to credit, -50 to debit"
           className="tabular"
         />
-        <p className="text-xs italic text-ink-soft">
+        <p className="text-xs text-muted-foreground">
           Positive credits, negative debits. Can&apos;t push a balance below zero.
         </p>
       </div>
@@ -82,7 +82,7 @@ export function AdjustBalanceForm({
       ) : null}
 
       <Button type="submit" disabled={pending}>
-        {pending ? "Adjusting…" : "Adjust the Books"}
+        {pending ? "Adjusting…" : "ADJUST"}
       </Button>
     </form>
   );

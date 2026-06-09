@@ -10,6 +10,7 @@ import {
   type AdminActionState,
 } from "@/app/actions/admin";
 import { Button } from "@/components/ui/button";
+import { Flag } from "@/components/Flag";
 import type { MatchListItem } from "@/lib/types";
 
 const initial: AdminActionState = {};
@@ -17,13 +18,13 @@ const initial: AdminActionState = {};
 function statusBadge(status: MatchListItem["status"]) {
   switch (status) {
     case "open":
-      return <span className="stamp text-ink">Open</span>;
+      return <span className="stamp text-neon-cyan">Open</span>;
     case "locked":
-      return <span className="stamp text-ink-soft">Locked</span>;
+      return <span className="stamp text-muted-foreground">Locked</span>;
     case "final":
-      return <span className="stamp text-accent">Final</span>;
+      return <span className="stamp text-neon-amber">Final</span>;
     case "settled":
-      return <span className="stamp text-success">Settled</span>;
+      return <span className="stamp text-neon-green">Settled</span>;
   }
 }
 
@@ -67,7 +68,7 @@ export function SettleMatchForm({
   const [settleState, settleAction, settlePending] = useActionState(settleMatchAction, initial);
   const lastSettleOk = useRef(false);
   useEffect(() => {
-    if (settleState.ok && !lastSettleOk.current) toast.success("Chaos settled — winners paid out.");
+    if (settleState.ok && !lastSettleOk.current) toast.success("Match settled — winners paid out.");
     lastSettleOk.current = !!settleState.ok;
   }, [settleState.ok]);
 
@@ -75,10 +76,14 @@ export function SettleMatchForm({
   const winningOutcome = match.outcomes.find((o) => o.id === match.winningOutcomeId);
 
   return (
-    <div className="flex flex-col gap-3 border-2 border-ink p-4">
+    <div className="flex flex-col gap-3 border-2 border-grid p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate font-semibold">{match.title}</p>
+          <p className="flex items-center gap-1.5 truncate font-semibold">
+            <Flag team={match.teamA} size="sm" />
+            <span className="truncate">{match.title}</span>
+            <Flag team={match.teamB} size="sm" />
+          </p>
           <p className="dateline mt-0.5">
             {match.betCount} bet{match.betCount === 1 ? "" : "s"}
             {settled && winningOutcome ? ` · won by ${winningOutcome.label}` : null}
@@ -88,8 +93,8 @@ export function SettleMatchForm({
       </div>
 
       {settled ? (
-        <p className="text-sm italic text-ink-soft">
-          Story&apos;s gone to press — nothing more to do here.
+        <p className="text-sm text-muted-foreground">
+          Game over — nothing more to do here.
         </p>
       ) : (
         <>
@@ -103,7 +108,7 @@ export function SettleMatchForm({
                 okMessage="Betting locked."
               >
                 <Button type="submit" variant="outline" size="sm">
-                  Lock the Lines
+                  LOCK
                 </Button>
               </ActionForm>
             ) : (
@@ -114,7 +119,7 @@ export function SettleMatchForm({
                 okMessage="Betting re-opened."
               >
                 <Button type="submit" variant="outline" size="sm">
-                  Re-open the Lines
+                  RE-OPEN
                 </Button>
               </ActionForm>
             )}
@@ -126,13 +131,13 @@ export function SettleMatchForm({
               okMessage="Match voided — everyone got their stake back."
             >
               <Button type="submit" variant="danger" size="sm">
-                Spike the Story
+                VOID
               </Button>
             </ActionForm>
           </div>
 
           {/* Settle */}
-          <form action={settleAction} className="flex flex-col gap-2 border-t-2 border-ink pt-3">
+          <form action={settleAction} className="flex flex-col gap-2 border-t-2 border-grid pt-3">
             <input type="hidden" name="clanId" value={clanId} />
             <input type="hidden" name="matchId" value={match.id} />
             <p className="kicker">Call the Result</p>
@@ -140,7 +145,7 @@ export function SettleMatchForm({
               {match.outcomes.map((o) => (
                 <label
                   key={o.id}
-                  className="flex cursor-pointer items-center gap-2 border border-ink px-3 py-2 text-sm transition-colors hover:bg-muted"
+                  className="flex cursor-pointer items-center gap-2 border border-grid px-3 py-2 text-sm transition-colors hover:bg-muted"
                 >
                   <input
                     type="radio"
@@ -157,7 +162,7 @@ export function SettleMatchForm({
               <p className="stamp w-fit text-danger">{settleState.error}</p>
             ) : null}
             <Button type="submit" variant="success" size="sm" disabled={settlePending}>
-              {settlePending ? "Calling It…" : "Call It & Pay Out"}
+              {settlePending ? "Settling…" : "SETTLE"}
             </Button>
           </form>
         </>

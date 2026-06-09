@@ -25,27 +25,27 @@ export default async function LoginPage({
 
   return (
     <div className="mx-auto w-full max-w-md flex-1 px-4 py-10">
-      <div className="mb-5 border-b-2 border-ink pb-3 text-center">
-        <p className="dateline">Subscriber Entrance · Members Only</p>
-        <p className="kicker mt-2 text-accent">Press Pass</p>
-        <h1 className="headline mt-1 text-4xl">Welcome back, degen.</h1>
-        <p className="mt-2 text-sm italic text-ink-soft">
-          Flash your credentials and get back on the beat.
+      <div className="mb-5 border-b-2 border-neon-cyan pb-3 text-center">
+        <p className="dateline">Player 1 · Continue</p>
+        <p className="kicker mt-2 text-neon-magenta glow-magenta">Log In</p>
+        <h1 className="headline mt-1 text-2xl sm:text-3xl">Welcome back, player.</h1>
+        <p className="mt-2 text-base text-muted-foreground">
+          Enter your credentials and jump back into the game.
         </p>
       </div>
 
       <Card className="w-full">
         <CardHeader>
-          <CardTitle className="text-xl">Subscriber Login</CardTitle>
+          <CardTitle className="text-xl">Continue</CardTitle>
           <CardDescription>Log in to get back to your clans.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-5">
           <AuthForm mode="login" action={signInAction} next={next} />
           <hr className="rule-hair" />
-          <p className="text-center font-condensed uppercase tracking-wide text-sm text-ink-soft">
-            Not a subscriber?{" "}
-            <Link href={signupHref} className="text-accent underline underline-offset-4 decoration-2 hover:text-ink">
-              Start here.
+          <p className="text-center font-pixel text-[0.6rem] uppercase tracking-wide text-muted-foreground">
+            New player?{" "}
+            <Link href={signupHref} className="text-neon-cyan underline underline-offset-4 decoration-2 hover:glow-cyan">
+              Insert coin.
             </Link>
           </p>
         </CardContent>

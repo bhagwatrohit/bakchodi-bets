@@ -7,6 +7,8 @@ import { getLeaderboard } from "@/lib/services/bets";
 import { AppShell } from "@/components/AppShell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InviteCopy } from "@/components/InviteCopy";
+import { Trophy } from "@/components/Trophy";
+import { Flag } from "@/components/Flag";
 import { format } from "@/lib/money";
 import type { MatchListItem } from "@/lib/types";
 
@@ -36,19 +38,23 @@ function MatchRow({
     >
       <div className="min-w-0">
         <p className="dateline">{formatKickoff(match.startsAt)}</p>
-        <p className="headline mt-0.5 truncate text-lg">{match.title}</p>
+        <div className="mt-0.5 flex items-center gap-2">
+          <Flag team={match.teamA} size="sm" />
+          <p className="headline truncate text-lg">{match.title}</p>
+          <Flag team={match.teamB} size="sm" />
+        </div>
         {match.myBet ? (
-          <p className="mt-0.5 text-xs italic text-ink-soft">
+          <p className="mt-0.5 text-xs text-muted-foreground">
             Your call: {match.myBet.outcomeLabel}
           </p>
         ) : (
-          <p className="tabular mt-0.5 text-xs text-ink-soft">
+          <p className="tabular mt-0.5 text-xs text-muted-foreground">
             {format(match.totalPot, currencyName)} in the pot
           </p>
         )}
       </div>
       <span
-        className={`stamp shrink-0 ${match.status === "locked" ? "text-ink" : "text-accent"}`}
+        className={`stamp shrink-0 ${match.status === "locked" ? "text-neon-amber" : "text-neon-green"}`}
       >
         {match.status === "locked" ? "Locked" : "Open"}
       </span>
@@ -89,64 +95,66 @@ export default async function ClanHomePage({
   return (
     <AppShell profile={profile}>
       <div className="flex flex-col gap-7">
-        {/* Masthead band */}
+        {/* Title band */}
         <div>
-          <p className="kicker text-center text-accent">The Official Gazette of</p>
-          <h1 className="headline mt-1 text-center text-4xl sm:text-6xl">{clan.name}</h1>
-          <hr className="rule-double mt-3" />
+          <div className="flex flex-col items-center gap-3">
+            <Trophy className="h-12 w-12" />
+            <h1 className="headline text-center text-4xl sm:text-6xl">{clan.name}</h1>
+          </div>
+          <hr className="rule-thick mt-3" />
           <div className="flex flex-col gap-1 py-2 dateline sm:flex-row sm:items-center sm:justify-between">
             <span>
-              {isAdmin ? "Editor-in-Chief" : "Subscriber"} · {profile.displayName}
+              {isAdmin ? "Player 1 · Admin" : "Player"} · {profile.displayName}
             </span>
             <span>
-              On Account: <span className="tabular text-ink">{format(membership.balance, clan.currencyName)}</span>
+              Credits: <span className="tabular text-neon-green">{format(membership.balance, clan.currencyName)}</span>
             </span>
             <span>
-              {myRow ? `Standing No. ${myRow.rank}` : "Unranked"} of {leaderboard.length}
+              {myRow ? `Rank ${myRow.rank}` : "Unranked"} of {leaderboard.length}
             </span>
           </div>
           <hr className="rule" />
         </div>
 
         {/* Section nav rail */}
-        <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-y border-hairline py-2 font-condensed uppercase tracking-widest text-xs">
-          <Link href={`/clans/${clanId}/matches`} className="hover:text-accent">
-            Fixtures
+        <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-y-2 border-grid py-2 font-pixel uppercase tracking-widest text-[0.55rem]">
+          <Link href={`/clans/${clanId}/matches`} className="text-neon-cyan hover:glow-cyan">
+            Matches
           </Link>
-          <span className="text-hairline">·</span>
-          <Link href={`/clans/${clanId}/leaderboard`} className="hover:text-accent">
-            Standings
+          <span className="text-grid">·</span>
+          <Link href={`/clans/${clanId}/leaderboard`} className="text-neon-cyan hover:glow-cyan">
+            High Scores
           </Link>
-          <span className="text-hairline">·</span>
-          <Link href={`/clans/${clanId}/bets`} className="hover:text-accent">
-            The Ledger
+          <span className="text-grid">·</span>
+          <Link href={`/clans/${clanId}/bets`} className="text-neon-cyan hover:glow-cyan">
+            My Bets
           </Link>
           {isAdmin ? (
             <>
-              <span className="text-hairline">·</span>
-              <Link href={`/clans/${clanId}/admin`} className="text-accent hover:underline">
-                Editor&apos;s Desk
+              <span className="text-grid">·</span>
+              <Link href={`/clans/${clanId}/admin`} className="text-neon-magenta hover:glow-magenta">
+                Admin
               </Link>
             </>
           ) : null}
         </nav>
 
-        {/* Wire code column */}
+        {/* Clan code column */}
         <div className="mx-auto w-full max-w-md">
-          <p className="kicker mb-2 text-center">Pass the Wire — Recruit Your Crew</p>
+          <p className="kicker mb-2 text-center">Clan Code — Recruit Your Crew</p>
           <InviteCopy inviteCode={clan.inviteCode} />
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
-          {/* Today's Card */}
+          {/* Now Playing */}
           <Card>
             <CardHeader className="flex-row items-center justify-between">
-              <CardTitle>Today&apos;s Card</CardTitle>
+              <CardTitle>Now Playing</CardTitle>
               <Link
                 href={`/clans/${clanId}/matches`}
-                className="font-condensed uppercase tracking-widest text-xs text-accent hover:underline"
+                className="font-pixel uppercase tracking-widest text-[0.55rem] text-neon-cyan hover:glow-cyan"
               >
-                Full Fixtures →
+                All Matches →
               </Link>
             </CardHeader>
             <CardContent className="flex flex-col gap-3">
@@ -155,21 +163,21 @@ export default async function ClanHomePage({
                   <MatchRow key={m.id} clanId={clanId} match={m} currencyName={clan.currencyName} />
                 ))
               ) : (
-                <p className="text-sm italic text-ink-soft">
-                  No fixtures on the wire yet.{" "}
-                  {isAdmin ? "Head to the Editor's Desk to file one." : "Check back soon."}
+                <p className="text-sm text-muted-foreground">
+                  No matches loaded yet.{" "}
+                  {isAdmin ? "Head to Admin to add one." : "Check back soon."}
                 </p>
               )}
             </CardContent>
           </Card>
 
-          {/* League Standings preview */}
+          {/* High Scores preview */}
           <Card>
             <CardHeader className="flex-row items-center justify-between">
-              <CardTitle>League Standings</CardTitle>
+              <CardTitle>High Scores</CardTitle>
               <Link
                 href={`/clans/${clanId}/leaderboard`}
-                className="font-condensed uppercase tracking-widest text-xs text-accent hover:underline"
+                className="font-pixel uppercase tracking-widest text-[0.55rem] text-neon-cyan hover:glow-cyan"
               >
                 Full Table →
               </Link>
@@ -180,12 +188,12 @@ export default async function ClanHomePage({
                   {topFive.map((row) => (
                     <li
                       key={row.userId}
-                      className={`flex items-center justify-between gap-3 border-b border-hairline py-2 text-sm last:border-b-0 ${
-                        row.isMe ? "font-semibold text-accent" : ""
+                      className={`flex items-center justify-between gap-3 border-b border-grid py-2 text-sm last:border-b-0 ${
+                        row.isMe ? "font-semibold text-neon-green glow-green" : ""
                       }`}
                     >
                       <span className="flex min-w-0 items-center gap-3">
-                        <span className="tabular w-6 shrink-0 text-ink-soft">{row.rank}</span>
+                        <span className="tabular w-6 shrink-0 text-muted-foreground">{row.rank}</span>
                         <span className="truncate font-condensed uppercase tracking-wide">
                           {row.displayName}
                           {row.isMe ? " (you)" : ""}
@@ -196,17 +204,17 @@ export default async function ClanHomePage({
                   ))}
                 </ol>
               ) : (
-                <p className="text-sm italic text-ink-soft">No names on the rolls yet.</p>
+                <p className="text-sm text-muted-foreground">No players on the board yet.</p>
               )}
             </CardContent>
           </Card>
         </div>
 
-        {/* Latest Results */}
+        {/* Final Scores */}
         {recent.length ? (
           <Card>
             <CardHeader>
-              <CardTitle>Latest Results</CardTitle>
+              <CardTitle>Final Scores</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-3">
               {recent.map((m) => {
@@ -215,24 +223,28 @@ export default async function ClanHomePage({
                   <Link
                     key={m.id}
                     href={`/clans/${clanId}/matches/${m.id}`}
-                    className="flex items-start justify-between gap-3 border-b border-hairline pb-3 transition-colors last:border-b-0 last:pb-0 hover:text-accent"
+                    className="flex items-start justify-between gap-3 border-b border-grid pb-3 transition-colors last:border-b-0 last:pb-0 hover:text-neon-cyan"
                   >
                     <div className="min-w-0">
                       <p className="dateline">{formatKickoff(m.startsAt)}</p>
-                      <p className="headline mt-0.5 truncate text-lg">{m.title}</p>
+                      <div className="mt-0.5 flex items-center gap-2">
+                        <Flag team={m.teamA} size="sm" />
+                        <p className="headline truncate text-lg">{m.title}</p>
+                        <Flag team={m.teamB} size="sm" />
+                      </div>
                       {winner ? (
-                        <p className="mt-0.5 text-xs italic text-ink-soft">
+                        <p className="mt-0.5 text-xs text-muted-foreground">
                           Final call: {winner.label}
                         </p>
                       ) : null}
                       {m.myBet ? (
                         <p
-                          className={`mt-0.5 text-xs italic ${
+                          className={`mt-0.5 text-xs ${
                             m.myBet.status === "won"
-                              ? "text-success"
+                              ? "text-neon-green"
                               : m.myBet.status === "lost"
-                                ? "text-danger"
-                                : "text-ink-soft"
+                                ? "text-neon-pink"
+                                : "text-muted-foreground"
                           }`}
                         >
                           Your call: {m.myBet.outcomeLabel}
@@ -240,7 +252,7 @@ export default async function ClanHomePage({
                       ) : null}
                     </div>
                     <span
-                      className={`stamp shrink-0 ${winner ? "text-success" : "text-ink"}`}
+                      className={`stamp shrink-0 ${winner ? "text-neon-green" : "text-neon-amber"}`}
                     >
                       {winner ? "Result" : "Settled"}
                     </span>

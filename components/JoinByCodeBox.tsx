@@ -21,15 +21,15 @@ export function JoinByCodeBox() {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
       <Label htmlFor="join-code" className="kicker">
-        Join by Wire Code
+        Enter Clan Code
       </Label>
       <div className="flex flex-col gap-2 sm:flex-row">
         <Input
           id="join-code"
           name="code"
           value={code}
-          onChange={(e) => setCode(e.target.value)}
-          placeholder="WIRE CODE"
+          onChange={(e) => setCode(e.target.value.toUpperCase())}
+          placeholder="CLAN CODE"
           autoComplete="off"
           autoCapitalize="characters"
           spellCheck={false}
@@ -37,7 +37,7 @@ export function JoinByCodeBox() {
           aria-label="Clan invite code"
         />
         <Button type="submit" variant="outline" disabled={!code.trim()}>
-          Join
+          Go
         </Button>
       </div>
     </form>

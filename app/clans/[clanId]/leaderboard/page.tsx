@@ -4,6 +4,7 @@ import { getClanContext } from "@/lib/services/clans";
 import { getLeaderboard } from "@/lib/services/bets";
 import { AppShell } from "@/components/AppShell";
 import { LeaderboardTable } from "@/components/LeaderboardTable";
+import { Trophy } from "@/components/Trophy";
 
 export default async function LeaderboardPage({
   params,
@@ -25,8 +26,10 @@ export default async function LeaderboardPage({
     <AppShell profile={profile}>
       <div className="flex flex-col gap-6">
         <div>
-          <p className="kicker text-accent">Leaderboard of Shame</p>
-          <h1 className="headline mt-1 text-3xl sm:text-5xl">League Standings — The Table</h1>
+          <p className="kicker text-neon-cyan">Top Players</p>
+          <h1 className="headline mt-1 flex items-center gap-3 text-3xl sm:text-5xl">
+            <Trophy className="h-9 w-9 shrink-0" /> HIGH SCORES
+          </h1>
           <hr className="rule-thick mt-3" />
           <p className="dateline mt-2">
             Who&apos;s flush and who&apos;s broke in {clan.name} · Bragging rights only · No cash value

@@ -10,18 +10,18 @@ export function ClanCard({ clan }: { clan: ClanCardData }) {
   const isAdmin = clan.role === "admin";
 
   return (
-    <Card className="flex flex-col transition-shadow hover:shadow-md">
+    <Card className="flex flex-col border-2 border-grid transition-shadow hover:border-neon-cyan hover:box-glow">
       <CardHeader className="gap-1">
         <p className="kicker flex items-center gap-1">
           {isAdmin ? (
             <>
-              <Crown className="h-3 w-3 text-accent" /> Editor-in-Chief
+              <Crown className="h-3 w-3 text-accent" /> Host
             </>
           ) : (
-            "Staff Writer"
+            "Player"
           )}
         </p>
-        <CardTitle className="headline truncate text-2xl normal-case tracking-tight">
+        <CardTitle className="headline truncate text-base normal-case tracking-tight">
           {clan.name}
         </CardTitle>
       </CardHeader>
@@ -29,7 +29,7 @@ export function ClanCard({ clan }: { clan: ClanCardData }) {
       <CardContent className="flex flex-1 flex-col gap-3">
         <div>
           <p className="dateline">Your balance</p>
-          <p className="tabular mt-0.5 text-2xl font-bold tracking-tight">
+          <p className="tabular glow-green mt-0.5 text-2xl font-bold tracking-tight text-neon-green">
             {format(clan.balance, clan.currencyName)}
           </p>
         </div>
@@ -38,29 +38,29 @@ export function ClanCard({ clan }: { clan: ClanCardData }) {
 
         <dl className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <div className="flex flex-col">
-            <dt className="dateline">Standing</dt>
-            <dd className="tabular text-sm font-semibold">RANK #{clan.rank}</dd>
+            <dt className="dateline">Rank</dt>
+            <dd className="tabular text-sm font-semibold text-neon-amber glow-amber">RANK #{clan.rank}</dd>
           </div>
-          <div className="flex flex-col border-l border-hairline pl-4">
+          <div className="flex flex-col border-l border-grid pl-4">
             <dt className="dateline flex items-center gap-1">
-              <Users className="h-3 w-3" /> Crew
+              <Users className="h-3 w-3" /> Players
             </dt>
-            <dd className="tabular text-sm font-semibold">
-              {clan.memberCount} {clan.memberCount === 1 ? "writer" : "writers"}
+            <dd className="tabular text-sm font-semibold text-neon-cyan">
+              {clan.memberCount} {clan.memberCount === 1 ? "player" : "players"}
             </dd>
           </div>
-          <div className="flex flex-col border-l border-hairline pl-4">
+          <div className="flex flex-col border-l border-grid pl-4">
             <dt className="dateline flex items-center gap-1">
               <Swords className="h-3 w-3" /> Open
             </dt>
-            <dd className="tabular text-sm font-semibold">{clan.openMatchCount} matches</dd>
+            <dd className="tabular text-sm font-semibold text-neon-cyan">{clan.openMatchCount} matches</dd>
           </div>
         </dl>
       </CardContent>
 
       <CardFooter>
         <Link href={`/clans/${clan.clanId}`} className="w-full">
-          <Button className="w-full">Open the desk</Button>
+          <Button className="w-full">Enter</Button>
         </Link>
       </CardFooter>
     </Card>

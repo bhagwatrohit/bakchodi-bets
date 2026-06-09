@@ -66,7 +66,7 @@ export default async function MatchDetailPage({
   if (!ctx) redirect("/dashboard");
 
   const match = await getMatchDetail(clanId, matchId);
-  const status = STATUS_META[match.status];
+  const status = STATUS_META[match.displayStatus];
   const showBetForm = canBet(match);
   const winningOutcome = match.winningOutcomeId
     ? match.outcomes.find((o) => o.id === match.winningOutcomeId)

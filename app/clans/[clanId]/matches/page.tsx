@@ -25,9 +25,9 @@ export default async function MatchesPage({
   const locked: MatchListItem[] = [];
   const settled: MatchListItem[] = [];
   for (const m of matches) {
-    if (m.status === "open") open.push(m);
-    else if (m.status === "locked" || m.status === "final") locked.push(m);
-    else if (m.status === "settled") settled.push(m);
+    if (m.displayStatus === "open") open.push(m);
+    else if (m.displayStatus === "locked" || m.displayStatus === "final") locked.push(m);
+    else if (m.displayStatus === "settled") settled.push(m);
   }
 
   return (

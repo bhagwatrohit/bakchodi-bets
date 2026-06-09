@@ -36,8 +36,9 @@ export function MatchCard({
   clanId: string;
   currencyName: string;
 }) {
-  const status = STATUS_META[match.status];
+  const status = STATUS_META[match.displayStatus];
   const href = `/clans/${clanId}/matches/${match.id}`;
+  const canBet = match.displayStatus === "open" && !match.myBet;
 
   const myBetStatus = match.myBet ? BET_STATUS_META[match.myBet.status] : null;
 
@@ -98,11 +99,8 @@ export function MatchCard({
 
         <div className="mt-auto pt-1">
           <Link href={href} className="block">
-            <Button
-              variant={match.status === "open" && !match.myBet ? "primary" : "outline"}
-              className="w-full"
-            >
-              {match.status === "open" && !match.myBet ? "BET NOW" : "VIEW"}
+            <Button variant={canBet ? "primary" : "outline"} className="w-full">
+              {canBet ? "BET NOW" : "VIEW"}
             </Button>
           </Link>
         </div>

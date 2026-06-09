@@ -148,10 +148,24 @@ function effectiveMaxBet(matchMaxBet: string | null, clanDefault: string): strin
   return matchMaxBet ?? clanDefault;
 }
 
+/** Status to display: open match past kickoff in a lock-at-start clan → locked. */
+function deriveDisplayStatus(
+  status: MatchStatus,
+  startsAt: Date,
+  clanLockAtStart: boolean,
+  now: Date,
+): MatchStatus {
+  if (status === "open" && clanLockAtStart && now.getTime() >= startsAt.getTime()) {
+    return "locked";
+  }
+  return status;
+}
+
 async function buildListItem(
   match: MatchRow,
   clanDefaultMaxBet: string,
   myUserId: string,
+  clanLockAtStart: boolean,
 ): Promise<MatchListItem> {
   const outcomes = await loadOutcomes(match.id);
   const myBetRow = await db.query.bets.findFirst({
@@ -172,6 +186,12 @@ async function buildListItem(
     teamB: match.teamB,
     startsAt: match.startsAt,
     status: match.status as MatchStatus,
+    displayStatus: deriveDisplayStatus(
+      match.status as MatchStatus,
+      match.startsAt,
+      clanLockAtStart,
+      new Date(),
+    ),
     maxBet: effectiveMaxBet(match.maxBet, clanDefaultMaxBet),
     outcomes,
     winningOutcomeId: match.winningOutcomeId,
@@ -192,7 +212,9 @@ export async function listMatches(clanId: string): Promise<MatchListItem[]> {
     .orderBy(asc(schema.matches.startsAt));
   const items: MatchListItem[] = [];
   for (const m of matchRows) {
-    items.push(await buildListItem(m, clan.defaultMaxBet, membership.userId));
+    items.push(
+      await buildListItem(m, clan.defaultMaxBet, membership.userId, clan.lockBetsAtMatchStart),
+    );
   }
   return items;
 }
@@ -205,7 +227,12 @@ export async function getMatchDetail(clanId: string, matchId: string): Promise<M
     where: and(eq(schema.matches.id, matchId), eq(schema.matches.clanId, clanId)),
   });
   if (!match) throw notFound("Match not found.");
-  const base = await buildListItem(match, clan.defaultMaxBet, membership.userId);
+  const base = await buildListItem(
+    match,
+    clan.defaultMaxBet,
+    membership.userId,
+    clan.lockBetsAtMatchStart,
+  );
   return {
     ...base,
     availableBalance: membership.balance,

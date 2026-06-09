@@ -84,7 +84,13 @@ export interface MatchListItem {
   teamA: string;
   teamB: string;
   startsAt: Date;
-  status: MatchStatus;
+  status: MatchStatus; // stored status (source of truth for admin/settlement)
+  /**
+   * Status to SHOW: a still-`open` match whose kickoff has passed in a
+   * lock-at-start clan is shown as `locked` (betting auto-closes at kickoff
+   * without a background job). Use this for badges, CTAs, and bucketing.
+   */
+  displayStatus: MatchStatus;
   maxBet: Money; // effective: match override or clan default
   outcomes: MatchOutcome[];
   winningOutcomeId: string | null;

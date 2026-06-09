@@ -54,9 +54,9 @@ function MatchRow({
         )}
       </div>
       <span
-        className={`stamp shrink-0 ${match.status === "locked" ? "text-neon-amber" : "text-neon-green"}`}
+        className={`stamp shrink-0 ${match.displayStatus === "locked" ? "text-neon-amber" : "text-neon-green"}`}
       >
-        {match.status === "locked" ? "Locked" : "Open"}
+        {match.displayStatus === "locked" ? "Locked" : "Open"}
       </span>
     </Link>
   );
@@ -82,10 +82,10 @@ export default async function ClanHomePage({
   ]);
 
   const upcoming = matches
-    .filter((m) => m.status === "open" || m.status === "locked")
+    .filter((m) => m.displayStatus === "open" || m.displayStatus === "locked")
     .slice(0, 3);
   const recent = matches
-    .filter((m) => m.status === "settled")
+    .filter((m) => m.displayStatus === "settled")
     .sort((a, b) => b.startsAt.getTime() - a.startsAt.getTime())
     .slice(0, 3);
   const topFive = leaderboard.slice(0, 5);

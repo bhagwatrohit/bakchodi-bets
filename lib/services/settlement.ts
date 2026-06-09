@@ -1,4 +1,5 @@
-import { add, sub, mul, div, isZero, neg, isPositive, type Money } from "@/lib/money";
+import { add, mul, div, isZero, neg, isPositive, round2, type Money } from "@/lib/money";
+import { conflict, notFound, validation } from "@/lib/errors";
 import type {
   SettlementInputBet,
   SettlementBetResult,
@@ -69,13 +70,144 @@ export function computeSettlement(
 /* so this module stays test-importable. Must be admin-only + atomic.  */
 /* ------------------------------------------------------------------ */
 
-export async function settleMatch(_input: {
+export async function settleMatch(input: {
   matchId: string;
   winningOutcomeId: string;
 }): Promise<void> {
-  throw new Error("settleMatch not implemented (Phase 4).");
+  const { matchId, winningOutcomeId } = input;
+  // Lazy imports keep this module test-importable (no top-level server-only/DB).
+  const { db, schema, withTransaction } = await import("@/lib/db");
+  const { eq, and } = await import("drizzle-orm");
+  const { requireAdmin } = await import("@/lib/services/clans");
+
+  const match = await db.query.matches.findFirst({
+    where: eq(schema.matches.id, matchId),
+  });
+  if (!match) throw notFound("Match not found.");
+
+  await requireAdmin(match.clanId);
+
+  if (match.status === "settled") throw conflict("Match already settled.");
+
+  const winningOutcome = await db.query.matchOutcomes.findFirst({
+    where: and(
+      eq(schema.matchOutcomes.id, winningOutcomeId),
+      eq(schema.matchOutcomes.matchId, matchId),
+    ),
+  });
+  if (!winningOutcome) throw validation("Pick a valid winning outcome for this match.");
+
+  const pendingBets = await db
+    .select()
+    .from(schema.bets)
+    .where(and(eq(schema.bets.matchId, matchId), eq(schema.bets.status, "pending")));
+
+  const inputs: SettlementInputBet[] = pendingBets.map((b) => ({
+    betId: b.id,
+    userId: b.userId,
+    outcomeId: b.outcomeId,
+    stake: b.stake,
+  }));
+
+  const { results } = computeSettlement(inputs, winningOutcomeId);
+
+  await withTransaction(async (tx) => {
+    for (const r of results) {
+      const payout = round2(r.payout);
+      const profit = round2(r.profit);
+      await tx
+        .update(schema.bets)
+        .set({ status: r.status, payout, profit, settledAt: new Date() })
+        .where(eq(schema.bets.id, r.betId));
+
+      if (r.status === "won") {
+        const member = await tx.query.clanMembers.findFirst({
+          where: and(
+            eq(schema.clanMembers.clanId, match.clanId),
+            eq(schema.clanMembers.userId, r.userId),
+          ),
+        });
+        if (!member) continue;
+        const newBalance = round2(add(member.balance, payout));
+        await tx
+          .update(schema.clanMembers)
+          .set({ balance: newBalance })
+          .where(eq(schema.clanMembers.id, member.id));
+        await tx.insert(schema.ledgerEntries).values({
+          clanId: match.clanId,
+          userId: r.userId,
+          betId: r.betId,
+          transactionType: "bet_won_payout",
+          amount: payout,
+          balanceAfter: newBalance,
+          reason: "Won bet",
+          createdBy: member.userId,
+        });
+      }
+    }
+
+    await tx
+      .update(schema.matches)
+      .set({ status: "settled", winningOutcomeId, updatedAt: new Date() })
+      .where(eq(schema.matches.id, matchId));
+  });
 }
 
-export async function voidMatch(_input: { matchId: string }): Promise<void> {
-  throw new Error("voidMatch not implemented (Phase 4).");
+export async function voidMatch(input: { matchId: string }): Promise<void> {
+  const { matchId } = input;
+  const { db, schema, withTransaction } = await import("@/lib/db");
+  const { eq, and } = await import("drizzle-orm");
+  const { requireAdmin } = await import("@/lib/services/clans");
+
+  const match = await db.query.matches.findFirst({
+    where: eq(schema.matches.id, matchId),
+  });
+  if (!match) throw notFound("Match not found.");
+
+  await requireAdmin(match.clanId);
+
+  if (match.status === "settled") throw conflict("Match already settled.");
+
+  const pendingBets = await db
+    .select()
+    .from(schema.bets)
+    .where(and(eq(schema.bets.matchId, matchId), eq(schema.bets.status, "pending")));
+
+  await withTransaction(async (tx) => {
+    for (const b of pendingBets) {
+      const refund = round2(b.stake);
+      await tx
+        .update(schema.bets)
+        .set({ status: "void", payout: refund, profit: "0", settledAt: new Date() })
+        .where(eq(schema.bets.id, b.id));
+
+      const member = await tx.query.clanMembers.findFirst({
+        where: and(
+          eq(schema.clanMembers.clanId, match.clanId),
+          eq(schema.clanMembers.userId, b.userId),
+        ),
+      });
+      if (!member) continue;
+      const newBalance = round2(add(member.balance, refund));
+      await tx
+        .update(schema.clanMembers)
+        .set({ balance: newBalance })
+        .where(eq(schema.clanMembers.id, member.id));
+      await tx.insert(schema.ledgerEntries).values({
+        clanId: match.clanId,
+        userId: b.userId,
+        betId: b.id,
+        transactionType: "bet_void_refund",
+        amount: refund,
+        balanceAfter: newBalance,
+        reason: "Match voided",
+        createdBy: member.userId,
+      });
+    }
+
+    await tx
+      .update(schema.matches)
+      .set({ status: "settled", updatedAt: new Date() })
+      .where(eq(schema.matches.id, matchId));
+  });
 }

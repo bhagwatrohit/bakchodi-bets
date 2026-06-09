@@ -1,28 +1,22 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { format } from "@/lib/money";
 import type { MatchListItem, MatchStatus } from "@/lib/types";
 
-const STATUS_META: Record<
-  MatchStatus,
-  { label: string; variant: "success" | "default" | "accent" | "outline" }
-> = {
-  open: { label: "Open", variant: "success" },
-  locked: { label: "Locked", variant: "default" },
-  final: { label: "Final", variant: "accent" },
-  settled: { label: "Settled", variant: "outline" },
+// Status as an ink stamp; color via text-*.
+const STATUS_META: Record<MatchStatus, { label: string; color: string }> = {
+  open: { label: "Open", color: "text-accent" },
+  locked: { label: "Locked", color: "text-ink" },
+  final: { label: "Final", color: "text-ink" },
+  settled: { label: "Settled", color: "text-ink-soft" },
 };
 
-const BET_STATUS_META: Record<
-  string,
-  { label: string; variant: "default" | "success" | "danger" | "outline" }
-> = {
-  pending: { label: "Pending", variant: "default" },
-  won: { label: "Won", variant: "success" },
-  lost: { label: "Lost", variant: "danger" },
-  void: { label: "Void", variant: "outline" },
+const BET_STATUS_META: Record<string, { label: string; color: string }> = {
+  pending: { label: "Pending", color: "text-ink-soft" },
+  won: { label: "Won", color: "text-success" },
+  lost: { label: "Lost", color: "text-danger" },
+  void: { label: "Void", color: "text-ink-soft" },
 };
 
 function formatTime(date: Date): string {
@@ -44,54 +38,53 @@ export function MatchCard({
   const status = STATUS_META[match.status];
   const href = `/clans/${clanId}/matches/${match.id}`;
 
+  const myBetStatus = match.myBet ? BET_STATUS_META[match.myBet.status] : null;
+
   return (
     <Card className="flex flex-col">
       <CardHeader className="gap-2">
         <div className="flex items-start justify-between gap-3">
-          <div className="flex flex-col gap-0.5">
-            <span className="text-base font-bold leading-tight">
-              {match.teamA} <span className="text-muted-foreground">vs</span> {match.teamB}
-            </span>
-            {match.title !== `${match.teamA} vs ${match.teamB}` ? (
-              <span className="text-xs text-muted-foreground">{match.title}</span>
-            ) : null}
-          </div>
-          <Badge variant={status.variant}>{status.label}</Badge>
+          <p className="dateline">{formatTime(match.startsAt)}</p>
+          <span className={`stamp text-xs ${status.color}`}>{status.label}</span>
         </div>
-        <p className="text-xs text-muted-foreground">{formatTime(match.startsAt)}</p>
+        <h3 className="headline text-xl leading-tight">
+          {match.teamA} <span className="text-ink-soft font-normal">v</span>{" "}
+          {match.teamB}
+        </h3>
+        {match.title !== `${match.teamA} vs ${match.teamB}` ? (
+          <p className="text-xs italic text-ink-soft">{match.title}</p>
+        ) : null}
       </CardHeader>
 
       <CardContent className="flex flex-1 flex-col gap-3">
-        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-          <span>
-            Max bet:{" "}
-            <span className="font-semibold text-foreground">
-              {format(match.maxBet, currencyName)}
-            </span>
+        <hr className="rule-hair" />
+        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-soft">
+          <span className="kicker">
+            Max{" "}
+            <span className="tabular text-ink">{format(match.maxBet, currencyName)}</span>
           </span>
-          <span>
-            Pot:{" "}
-            <span className="font-semibold text-foreground">
-              {format(match.totalPot, currencyName)}
-            </span>
+          <span className="kicker">
+            Pot{" "}
+            <span className="tabular text-ink">{format(match.totalPot, currencyName)}</span>
           </span>
-          <span>
-            {match.betCount} {match.betCount === 1 ? "bet" : "bets"}
+          <span className="kicker">
+            <span className="tabular text-ink">{match.betCount}</span>{" "}
+            {match.betCount === 1 ? "Wager" : "Wagers"}
           </span>
         </div>
 
-        {match.myBet ? (
-          <div className="flex items-center justify-between rounded-md bg-muted px-3 py-2 text-sm">
+        {match.myBet && myBetStatus ? (
+          <div className="flex items-center justify-between border-l-2 border-ink bg-muted px-3 py-2 text-sm">
             <span>
-              Your bet:{" "}
+              <span className="kicker">Your call · </span>
               <span className="font-semibold">{match.myBet.outcomeLabel}</span>{" "}
-              <span className="text-muted-foreground">
+              <span className="tabular text-ink-soft">
                 ({format(match.myBet.stake, currencyName)})
               </span>
             </span>
-            <Badge variant={BET_STATUS_META[match.myBet.status].variant}>
-              {BET_STATUS_META[match.myBet.status].label}
-            </Badge>
+            <span className={`stamp text-xs ${myBetStatus.color}`}>
+              {myBetStatus.label}
+            </span>
           </div>
         ) : null}
 
@@ -101,7 +94,9 @@ export function MatchCard({
               variant={match.status === "open" && !match.myBet ? "primary" : "outline"}
               className="w-full"
             >
-              {match.status === "open" && !match.myBet ? "Place bet" : "View"}
+              {match.status === "open" && !match.myBet
+                ? "Place a Wager"
+                : "Read the Report"}
             </Button>
           </Link>
         </div>

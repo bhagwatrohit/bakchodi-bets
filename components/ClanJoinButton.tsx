@@ -14,10 +14,13 @@ export function ClanJoinButton({ inviteCode }: { inviteCode: string }) {
     <form action={formAction} className="flex flex-col gap-3">
       <input type="hidden" name="inviteCode" value={inviteCode} />
       {state.error ? (
-        <p className="rounded-md bg-danger/15 px-3 py-2 text-sm text-danger">{state.error}</p>
+        <p className="border-2 border-danger bg-danger/10 px-3 py-2 text-sm font-semibold text-danger">
+          <span className="stamp text-danger mr-2">Stop Press</span>
+          {state.error}
+        </p>
       ) : null}
       <Button type="submit" size="lg" disabled={pending}>
-        {pending ? "Joining…" : "Join clan"}
+        {pending ? "Signing the Rolls…" : "Join the Newsroom"}
       </Button>
     </form>
   );

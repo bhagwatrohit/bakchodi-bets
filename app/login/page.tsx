@@ -24,18 +24,28 @@ export default async function LoginPage({
   const signupHref = next ? `/signup?next=${encodeURIComponent(next)}` : "/signup";
 
   return (
-    <div className="mx-auto flex w-full max-w-md flex-1 items-center px-4 py-10">
+    <div className="mx-auto w-full max-w-md flex-1 px-4 py-10">
+      <div className="mb-5 border-b-2 border-ink pb-3 text-center">
+        <p className="dateline">Subscriber Entrance · Members Only</p>
+        <p className="kicker mt-2 text-accent">Press Pass</p>
+        <h1 className="headline mt-1 text-4xl">Welcome back, degen.</h1>
+        <p className="mt-2 text-sm italic text-ink-soft">
+          Flash your credentials and get back on the beat.
+        </p>
+      </div>
+
       <Card className="w-full">
         <CardHeader>
-          <CardTitle className="text-2xl">Welcome back</CardTitle>
+          <CardTitle className="text-xl">Subscriber Login</CardTitle>
           <CardDescription>Log in to get back to your clans.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-5">
           <AuthForm mode="login" action={signInAction} next={next} />
-          <p className="text-center text-sm text-muted-foreground">
-            New here?{" "}
-            <Link href={signupHref} className="font-semibold text-primary hover:underline">
-              Create an account
+          <hr className="rule-hair" />
+          <p className="text-center font-condensed uppercase tracking-wide text-sm text-ink-soft">
+            Not a subscriber?{" "}
+            <Link href={signupHref} className="text-accent underline underline-offset-4 decoration-2 hover:text-ink">
+              Start here.
             </Link>
           </p>
         </CardContent>

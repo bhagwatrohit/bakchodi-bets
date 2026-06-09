@@ -22,16 +22,16 @@ function Toggle({
   defaultChecked?: boolean;
 }) {
   return (
-    <label className="flex cursor-pointer items-start gap-3 rounded-md border border-border p-3 transition-colors hover:bg-muted">
+    <label className="flex cursor-pointer items-start gap-3 border border-ink p-3 transition-colors hover:bg-muted">
       <input
         type="checkbox"
         name={name}
         defaultChecked={defaultChecked}
-        className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+        className="mt-0.5 h-4 w-4 shrink-0 accent-accent"
       />
       <span className="flex flex-col gap-0.5">
-        <span className="text-sm font-semibold">{label}</span>
-        <span className="text-xs text-muted-foreground">{hint}</span>
+        <span className="font-condensed text-sm font-semibold uppercase tracking-wide">{label}</span>
+        <span className="text-xs italic text-ink-soft">{hint}</span>
       </span>
     </label>
   );
@@ -64,7 +64,7 @@ export function ClanSettingsForm({ clan }: { clan: Clan }) {
             defaultValue={clan.currencyName}
             placeholder="credits"
           />
-          <p className="text-xs text-muted-foreground">Fictional credits only — no cash value.</p>
+          <p className="text-xs italic text-ink-soft">Fictional credits only — no cash value.</p>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="settings-maxbet">Default max bet</Label>
@@ -76,13 +76,14 @@ export function ClanSettingsForm({ clan }: { clan: Clan }) {
             step="any"
             defaultValue={clan.defaultMaxBet}
             required
+            className="tabular"
           />
-          <p className="text-xs text-muted-foreground">Per-match cap unless a match overrides it.</p>
+          <p className="text-xs italic text-ink-soft">Per-match cap unless a match overrides it.</p>
         </div>
       </div>
 
       <fieldset className="flex flex-col gap-2">
-        <legend className="mb-1 text-sm font-semibold">Visibility &amp; locks</legend>
+        <legend className="kicker mb-1">Visibility &amp; Locks</legend>
         <Toggle
           name="lockBetsAtMatchStart"
           label="Lock bets at kickoff"
@@ -104,11 +105,11 @@ export function ClanSettingsForm({ clan }: { clan: Clan }) {
       </fieldset>
 
       {state.error ? (
-        <p className="rounded-md bg-danger/15 px-3 py-2 text-sm text-danger">{state.error}</p>
+        <p className="stamp w-fit text-danger">{state.error}</p>
       ) : null}
 
       <Button type="submit" disabled={pending}>
-        {pending ? "Saving…" : "Save house rules"}
+        {pending ? "Updating…" : "Update the Masthead"}
       </Button>
     </form>
   );

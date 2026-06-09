@@ -32,21 +32,22 @@ export function InviteCopy({
   }
 
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-3 border-2 border-dashed border-ink bg-paper-2 p-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-center gap-2">
-        <Link2 className="h-4 w-4 text-muted-foreground" />
-        <code className="rounded-md bg-muted px-2.5 py-1 text-sm font-bold tracking-widest">
-          {inviteCode}
-        </code>
+        <Link2 className="h-4 w-4 text-ink-soft" />
+        <div className="flex flex-col">
+          <span className="kicker">Wire Code</span>
+          <code className="tabular text-base font-bold tracking-[0.3em]">{inviteCode}</code>
+        </div>
       </div>
       <Button type="button" variant="outline" size="sm" onClick={copyLink} aria-label={currencyLabel}>
         {copied ? (
           <>
-            <Check className="h-4 w-4" /> Copied
+            <Check className="h-4 w-4" /> Wired
           </>
         ) : (
           <>
-            <Copy className="h-4 w-4" /> Copy invite link
+            <Copy className="h-4 w-4" /> Copy the Wire
           </>
         )}
       </Button>

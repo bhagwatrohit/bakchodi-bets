@@ -56,19 +56,20 @@ export function CreateMatchForm({ clanId }: { clanId: string }) {
             min="1"
             step="any"
             placeholder="Clan default"
+            className="tabular"
           />
         </div>
       </div>
 
-      <label className="flex cursor-pointer items-start gap-3 rounded-md border border-border p-3 transition-colors hover:bg-muted">
+      <label className="flex cursor-pointer items-start gap-3 border border-ink p-3 transition-colors hover:bg-muted">
         <input
           type="checkbox"
           name="includeDraw"
-          className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
+          className="mt-0.5 h-4 w-4 shrink-0 accent-accent"
         />
         <span className="flex flex-col gap-0.5">
-          <span className="text-sm font-semibold">Allow a draw</span>
-          <span className="text-xs text-muted-foreground">Adds a third “Draw” outcome.</span>
+          <span className="font-condensed text-sm font-semibold uppercase tracking-wide">Allow a draw</span>
+          <span className="text-xs italic text-ink-soft">Adds a third “Draw” outcome.</span>
         </span>
       </label>
 
@@ -84,11 +85,11 @@ export function CreateMatchForm({ clanId }: { clanId: string }) {
       </div>
 
       {state.error ? (
-        <p className="rounded-md bg-danger/15 px-3 py-2 text-sm text-danger">{state.error}</p>
+        <p className="stamp w-fit text-danger">{state.error}</p>
       ) : null}
 
       <Button type="submit" disabled={pending}>
-        {pending ? "Creating…" : "Add match"}
+        {pending ? "Filing…" : "File the Fixture"}
       </Button>
     </form>
   );

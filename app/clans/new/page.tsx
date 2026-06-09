@@ -13,14 +13,17 @@ export default async function NewClanPage() {
     <AppShell profile={profile}>
       <div className="mx-auto max-w-xl">
         <div className="mb-6">
-          <h1 className="text-2xl font-extrabold tracking-tight">Start a new clan</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Set the table, then invite your crew. You&apos;ll be the admin.
+          <p className="kicker text-accent">Found a New Paper</p>
+          <h1 className="headline mt-1 text-3xl sm:text-4xl">Establish Your Clan</h1>
+          <hr className="rule mt-3" />
+          <p className="mt-3 text-sm italic text-ink-soft">
+            Set the table, then invite your crew. You&apos;ll be named editor-in-chief
+            — the admin of record.
           </p>
         </div>
         <Card>
           <CardHeader>
-            <CardTitle>Clan setup</CardTitle>
+            <CardTitle>Clan Setup</CardTitle>
             <CardDescription>You can tweak most of this later in clan settings.</CardDescription>
           </CardHeader>
           <CardContent>

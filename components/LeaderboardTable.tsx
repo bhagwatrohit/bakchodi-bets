@@ -16,9 +16,13 @@ export function LeaderboardTable({
 }) {
   if (rows.length === 0) {
     return (
-      <p className="rounded-md border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-        No standings yet. Place a bet to get on the board.
-      </p>
+      <div className="border-2 border-ink bg-paper-2 p-8 text-center">
+        <p className="kicker">Stop Press</p>
+        <p className="headline mt-1 text-xl">No standings to report</p>
+        <p className="mt-2 text-sm italic text-ink-soft">
+          The table is bare. Place a bet to get your name on the board.
+        </p>
+      </div>
     );
   }
 
@@ -42,22 +46,28 @@ export function LeaderboardTable({
           const netUp = net >= 0;
           const netLabel = `${net > 0 ? "+" : ""}${format(row.netChange, currencyName)}`;
           return (
-            <TableRow key={row.userId} className={row.isMe ? "bg-primary/10" : undefined}>
-              <TableCell className="font-semibold text-muted-foreground">#{row.rank}</TableCell>
+            <TableRow key={row.userId} className={row.isMe ? "bg-muted" : undefined}>
+              <TableCell className="tabular font-semibold text-muted-foreground">
+                {row.rank === 1 ? (
+                  <span className="stamp stamp-rotated text-accent">Leader</span>
+                ) : (
+                  `#${row.rank}`
+                )}
+              </TableCell>
               <TableCell className={row.isMe ? "font-bold" : undefined}>
                 {row.displayName}
-                {row.isMe ? " (you)" : ""}
+                {row.isMe ? <span className="italic text-ink-soft"> — you</span> : ""}
               </TableCell>
-              <TableCell className="text-right font-semibold">
+              <TableCell className="tabular text-right font-semibold">
                 {format(row.balance, currencyName)}
               </TableCell>
-              <TableCell className="text-right">{row.betsPlaced}</TableCell>
-              <TableCell className="text-right">{row.wins}</TableCell>
-              <TableCell className="text-right">{row.losses}</TableCell>
-              <TableCell className={`text-right font-medium ${netUp ? "text-success" : "text-danger"}`}>
+              <TableCell className="tabular text-right">{row.betsPlaced}</TableCell>
+              <TableCell className="tabular text-right">{row.wins}</TableCell>
+              <TableCell className="tabular text-right">{row.losses}</TableCell>
+              <TableCell className={`tabular text-right font-medium ${netUp ? "text-gain" : "text-loss"}`}>
                 {netLabel}
               </TableCell>
-              <TableCell className="text-right">{format(row.biggestWin, currencyName)}</TableCell>
+              <TableCell className="tabular text-right">{format(row.biggestWin, currencyName)}</TableCell>
             </TableRow>
           );
         })}

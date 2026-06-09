@@ -10,7 +10,6 @@ import {
   type AdminActionState,
 } from "@/app/actions/admin";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import type { MatchListItem } from "@/lib/types";
 
 const initial: AdminActionState = {};
@@ -18,13 +17,13 @@ const initial: AdminActionState = {};
 function statusBadge(status: MatchListItem["status"]) {
   switch (status) {
     case "open":
-      return <Badge variant="primary">Open</Badge>;
+      return <span className="stamp text-ink">Open</span>;
     case "locked":
-      return <Badge variant="outline">Locked</Badge>;
+      return <span className="stamp text-ink-soft">Locked</span>;
     case "final":
-      return <Badge variant="accent">Final</Badge>;
+      return <span className="stamp text-accent">Final</span>;
     case "settled":
-      return <Badge variant="success">Settled</Badge>;
+      return <span className="stamp text-success">Settled</span>;
   }
 }
 
@@ -76,11 +75,11 @@ export function SettleMatchForm({
   const winningOutcome = match.outcomes.find((o) => o.id === match.winningOutcomeId);
 
   return (
-    <div className="flex flex-col gap-3 rounded-md border border-border p-4">
+    <div className="flex flex-col gap-3 border-2 border-ink p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold">{match.title}</p>
-          <p className="mt-0.5 text-xs text-muted-foreground">
+          <p className="truncate font-semibold">{match.title}</p>
+          <p className="dateline mt-0.5">
             {match.betCount} bet{match.betCount === 1 ? "" : "s"}
             {settled && winningOutcome ? ` · won by ${winningOutcome.label}` : null}
           </p>
@@ -89,8 +88,8 @@ export function SettleMatchForm({
       </div>
 
       {settled ? (
-        <p className="text-sm text-muted-foreground">
-          This match is settled — nothing more to do here.
+        <p className="text-sm italic text-ink-soft">
+          Story&apos;s gone to press — nothing more to do here.
         </p>
       ) : (
         <>
@@ -104,7 +103,7 @@ export function SettleMatchForm({
                 okMessage="Betting locked."
               >
                 <Button type="submit" variant="outline" size="sm">
-                  Lock betting
+                  Lock the Lines
                 </Button>
               </ActionForm>
             ) : (
@@ -115,7 +114,7 @@ export function SettleMatchForm({
                 okMessage="Betting re-opened."
               >
                 <Button type="submit" variant="outline" size="sm">
-                  Re-open betting
+                  Re-open the Lines
                 </Button>
               </ActionForm>
             )}
@@ -127,40 +126,38 @@ export function SettleMatchForm({
               okMessage="Match voided — everyone got their stake back."
             >
               <Button type="submit" variant="danger" size="sm">
-                Void &amp; refund
+                Spike the Story
               </Button>
             </ActionForm>
           </div>
 
           {/* Settle */}
-          <form action={settleAction} className="flex flex-col gap-2 border-t border-border pt-3">
+          <form action={settleAction} className="flex flex-col gap-2 border-t-2 border-ink pt-3">
             <input type="hidden" name="clanId" value={clanId} />
             <input type="hidden" name="matchId" value={match.id} />
-            <p className="text-sm font-semibold">Settle this chaos</p>
+            <p className="kicker">Call the Result</p>
             <div className="flex flex-col gap-1.5">
               {match.outcomes.map((o) => (
                 <label
                   key={o.id}
-                  className="flex cursor-pointer items-center gap-2 rounded-md border border-border px-3 py-2 text-sm transition-colors hover:bg-muted"
+                  className="flex cursor-pointer items-center gap-2 border border-ink px-3 py-2 text-sm transition-colors hover:bg-muted"
                 >
                   <input
                     type="radio"
                     name="winningOutcomeId"
                     value={o.id}
                     required
-                    className="h-4 w-4 accent-primary"
+                    className="h-4 w-4 accent-accent"
                   />
                   {o.label} won
                 </label>
               ))}
             </div>
             {settleState.error ? (
-              <p className="rounded-md bg-danger/15 px-3 py-2 text-sm text-danger">
-                {settleState.error}
-              </p>
+              <p className="stamp w-fit text-danger">{settleState.error}</p>
             ) : null}
             <Button type="submit" variant="success" size="sm" disabled={settlePending}>
-              {settlePending ? "Settling…" : "Settle & pay out"}
+              {settlePending ? "Calling It…" : "Call It & Pay Out"}
             </Button>
           </form>
         </>

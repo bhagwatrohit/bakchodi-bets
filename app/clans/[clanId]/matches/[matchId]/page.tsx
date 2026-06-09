@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { BetForm } from "@/components/BetForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -20,24 +19,18 @@ import { listAllBets } from "@/lib/services/bets";
 import { format } from "@/lib/money";
 import type { BetHistoryRow, MatchDetail, MatchStatus } from "@/lib/types";
 
-const STATUS_META: Record<
-  MatchStatus,
-  { label: string; variant: "success" | "default" | "accent" | "outline" }
-> = {
-  open: { label: "Open", variant: "success" },
-  locked: { label: "Locked", variant: "default" },
-  final: { label: "Final", variant: "accent" },
-  settled: { label: "Settled", variant: "outline" },
+const STATUS_META: Record<MatchStatus, { label: string; color: string }> = {
+  open: { label: "Open", color: "text-accent" },
+  locked: { label: "Locked", color: "text-ink" },
+  final: { label: "Final", color: "text-ink" },
+  settled: { label: "Settled", color: "text-ink-soft" },
 };
 
-const BET_STATUS_META: Record<
-  string,
-  { label: string; variant: "default" | "success" | "danger" | "outline" }
-> = {
-  pending: { label: "Pending", variant: "default" },
-  won: { label: "Won", variant: "success" },
-  lost: { label: "Lost", variant: "danger" },
-  void: { label: "Void", variant: "outline" },
+const BET_STATUS_META: Record<string, { label: string; color: string }> = {
+  pending: { label: "Pending", color: "text-ink-soft" },
+  won: { label: "Won", color: "text-success" },
+  lost: { label: "Lost", color: "text-danger" },
+  void: { label: "Void", color: "text-ink-soft" },
 };
 
 function formatTime(date: Date): string {
@@ -89,119 +82,111 @@ export default async function MatchDetailPage({
   return (
     <AppShell profile={profile}>
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
           <Link
             href={`/clans/${clanId}/matches`}
-            className="text-sm text-muted-foreground hover:text-foreground"
+            className="dateline hover:text-accent"
           >
-            ← Back to matches
+            ← Back to the Card
           </Link>
-          <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="flex flex-wrap items-start justify-between gap-3 border-b-2 border-ink pb-3">
             <div className="flex flex-col gap-1">
-              <h1 className="text-2xl font-extrabold tracking-tight">
-                {match.teamA} <span className="text-muted-foreground">vs</span>{" "}
+              <p className="kicker text-accent">Match Report</p>
+              <h1 className="headline text-3xl sm:text-5xl leading-tight">
+                {match.teamA} <span className="text-ink-soft font-normal">v</span>{" "}
                 {match.teamB}
               </h1>
               {match.title !== `${match.teamA} vs ${match.teamB}` ? (
-                <p className="text-sm text-muted-foreground">{match.title}</p>
+                <p className="text-sm italic text-ink-soft">{match.title}</p>
               ) : null}
-              <p className="text-sm text-muted-foreground">
-                {formatTime(match.startsAt)}
-              </p>
+              <p className="dateline mt-1">{formatTime(match.startsAt)}</p>
             </div>
-            <Badge variant={status.variant}>{status.label}</Badge>
+            <span className={`stamp stamp-rotated ${status.color}`}>
+              {status.label}
+            </span>
           </div>
         </div>
 
         <Card>
-          <CardContent className="flex flex-wrap gap-x-8 gap-y-2 py-5 text-sm">
-            <div>
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                Max bet
+          <CardContent className="grid grid-cols-2 gap-y-3 py-5 sm:grid-cols-4 sm:divide-x sm:divide-hairline">
+            <div className="sm:px-4 sm:first:pl-0">
+              <p className="kicker">Max Bet</p>
+              <p className="tabular text-lg font-semibold">
+                {format(match.maxBet, match.currencyName)}
               </p>
-              <p className="font-semibold">{format(match.maxBet, match.currencyName)}</p>
             </div>
-            <div>
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                Your balance
-              </p>
-              <p className="font-semibold">
+            <div className="sm:px-4">
+              <p className="kicker">Your Balance</p>
+              <p className="tabular text-lg font-semibold">
                 {format(match.availableBalance, match.currencyName)}
               </p>
             </div>
-            <div>
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                Pot
+            <div className="sm:px-4">
+              <p className="kicker">Pot</p>
+              <p className="tabular text-lg font-semibold">
+                {format(match.totalPot, match.currencyName)}
               </p>
-              <p className="font-semibold">{format(match.totalPot, match.currencyName)}</p>
             </div>
-            <div>
-              <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                Bets
-              </p>
-              <p className="font-semibold">{match.betCount}</p>
+            <div className="sm:px-4">
+              <p className="kicker">Wagers</p>
+              <p className="tabular text-lg font-semibold">{match.betCount}</p>
             </div>
           </CardContent>
         </Card>
 
         {match.status === "settled" && winningOutcome ? (
-          <Card>
+          <Card className="border-2 border-ink">
             <CardHeader>
-              <CardTitle>Result</CardTitle>
+              <p className="kicker text-accent">Final Whistle</p>
+              <CardTitle className="headline text-2xl">The Result Is In</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
-              <p className="text-sm text-muted-foreground">Winning outcome</p>
-              <Badge variant="success" className="w-fit text-sm">
+              <p className="kicker">Winning Outcome</p>
+              <span className="stamp stamp-rotated w-fit text-success text-base">
                 {winningOutcome.label}
-              </Badge>
+              </span>
             </CardContent>
           </Card>
         ) : null}
 
         {match.myBet ? (
-          <Card>
+          <Card className="border-2 border-dashed border-ink bg-paper-2">
             <CardHeader>
-              <CardTitle>Your bet</CardTitle>
+              <p className="kicker text-accent">Coupon Stub · Retained</p>
+              <CardTitle className="headline text-2xl">Your Bet</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-3 text-sm">
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+              <hr className="rule-hair" />
+              <div className="flex flex-wrap items-end gap-x-8 gap-y-3">
                 <div>
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                    Pick
-                  </p>
+                  <p className="kicker">Pick</p>
                   <p className="font-semibold">{match.myBet.outcomeLabel}</p>
                 </div>
                 <div>
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                    Stake
-                  </p>
-                  <p className="font-semibold">
+                  <p className="kicker">Stake</p>
+                  <p className="tabular font-semibold">
                     {format(match.myBet.stake, match.currencyName)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                    Status
-                  </p>
-                  <Badge variant={BET_STATUS_META[match.myBet.status].variant}>
+                  <p className="kicker">Status</p>
+                  <span
+                    className={`stamp text-xs ${BET_STATUS_META[match.myBet.status].color}`}
+                  >
                     {BET_STATUS_META[match.myBet.status].label}
-                  </Badge>
+                  </span>
                 </div>
                 {match.myBet.status !== "pending" ? (
                   <>
                     <div>
-                      <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                        Payout
-                      </p>
-                      <p className="font-semibold">
+                      <p className="kicker">Payout</p>
+                      <p className="tabular font-semibold">
                         {format(match.myBet.payout, match.currencyName)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                        Profit
-                      </p>
-                      <p className="font-semibold">
+                      <p className="kicker">Profit</p>
+                      <p className="tabular font-semibold">
                         {format(match.myBet.profit, match.currencyName)}
                       </p>
                     </div>
@@ -215,7 +200,8 @@ export default async function MatchDetailPage({
         {showBetForm ? (
           <Card>
             <CardHeader>
-              <CardTitle>Place your fake-money bet</CardTitle>
+              <p className="kicker text-accent">Wager Coupon</p>
+              <CardTitle className="headline text-2xl">Place Your Wager</CardTitle>
             </CardHeader>
             <CardContent>
               <BetForm
@@ -230,8 +216,11 @@ export default async function MatchDetailPage({
           </Card>
         ) : !match.myBet && match.status === "open" ? (
           <Card>
-            <CardContent className="py-6 text-center text-sm text-muted-foreground">
-              Betting has closed for this match.
+            <CardContent className="py-6 text-center">
+              <p className="kicker">Lines Closed</p>
+              <p className="mt-1 font-serif italic text-ink-soft">
+                The book is shut on this fixture.
+              </p>
             </CardContent>
           </Card>
         ) : null}
@@ -239,7 +228,8 @@ export default async function MatchDetailPage({
         {allBets && allBets.length > 0 ? (
           <Card>
             <CardHeader>
-              <CardTitle>All bets</CardTitle>
+              <p className="kicker text-accent">On The Record</p>
+              <CardTitle className="headline text-2xl">The Wagers</CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
               <Table>
@@ -256,11 +246,15 @@ export default async function MatchDetailPage({
                     <TableRow key={b.id}>
                       <TableCell className="font-medium">{b.displayName}</TableCell>
                       <TableCell>{b.pick}</TableCell>
-                      <TableCell>{format(b.stake, match.currencyName)}</TableCell>
+                      <TableCell className="tabular">
+                        {format(b.stake, match.currencyName)}
+                      </TableCell>
                       <TableCell>
-                        <Badge variant={BET_STATUS_META[b.status].variant}>
+                        <span
+                          className={`stamp text-xs ${BET_STATUS_META[b.status].color}`}
+                        >
                           {BET_STATUS_META[b.status].label}
-                        </Badge>
+                        </span>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -273,7 +267,7 @@ export default async function MatchDetailPage({
         {match.myBet ? (
           <div>
             <Link href={`/clans/${clanId}/matches`}>
-              <Button variant="outline">Back to matches</Button>
+              <Button variant="outline">Back to the Card</Button>
             </Link>
           </div>
         ) : null}

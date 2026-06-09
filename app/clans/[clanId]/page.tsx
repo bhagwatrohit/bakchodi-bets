@@ -1,13 +1,10 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowRight, CalendarClock, ListChecks, Settings, Swords, Trophy } from "lucide-react";
 import { getSessionProfile } from "@/lib/services/auth";
 import { getClanContext } from "@/lib/services/clans";
 import { listMatches } from "@/lib/services/matches";
 import { getLeaderboard } from "@/lib/services/bets";
 import { AppShell } from "@/components/AppShell";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InviteCopy } from "@/components/InviteCopy";
 import { format } from "@/lib/money";
@@ -35,31 +32,26 @@ function MatchRow({
   return (
     <Link
       href={`/clans/${clanId}/matches/${match.id}`}
-      className="flex items-center justify-between gap-3 rounded-md border border-border p-3 transition-colors hover:bg-muted"
+      className="flex items-start justify-between gap-3 border-b border-hairline pb-3 transition-colors last:border-b-0 last:pb-0 hover:text-accent"
     >
       <div className="min-w-0">
-        <p className="truncate text-sm font-semibold">{match.title}</p>
-        <p className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
-          <CalendarClock className="h-3.5 w-3.5 shrink-0" />
-          {formatKickoff(match.startsAt)}
-        </p>
-      </div>
-      <div className="flex shrink-0 flex-col items-end gap-1">
-        {match.status === "locked" ? (
-          <Badge variant="outline">Locked</Badge>
-        ) : (
-          <Badge variant="primary">Open</Badge>
-        )}
+        <p className="dateline">{formatKickoff(match.startsAt)}</p>
+        <p className="headline mt-0.5 truncate text-lg">{match.title}</p>
         {match.myBet ? (
-          <span className="text-xs text-muted-foreground">
-            You: {match.myBet.outcomeLabel}
-          </span>
+          <p className="mt-0.5 text-xs italic text-ink-soft">
+            Your call: {match.myBet.outcomeLabel}
+          </p>
         ) : (
-          <span className="text-xs text-muted-foreground">
-            {format(match.totalPot, currencyName)} pot
-          </span>
+          <p className="tabular mt-0.5 text-xs text-ink-soft">
+            {format(match.totalPot, currencyName)} in the pot
+          </p>
         )}
       </div>
+      <span
+        className={`stamp shrink-0 ${match.status === "locked" ? "text-ink" : "text-accent"}`}
+      >
+        {match.status === "locked" ? "Locked" : "Open"}
+      </span>
     </Link>
   );
 }
@@ -96,171 +88,162 @@ export default async function ClanHomePage({
 
   return (
     <AppShell profile={profile}>
-      <div className="flex flex-col gap-6">
-        {/* Header */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-extrabold tracking-tight">{clan.name}</h1>
-              <Badge variant={isAdmin ? "accent" : "default"}>
-                {isAdmin ? "Admin" : "Member"}
-              </Badge>
-            </div>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {myRow ? `Rank #${myRow.rank}` : "Unranked"} of {leaderboard.length} ·{" "}
-              {clan.currencyName}
-            </p>
+      <div className="flex flex-col gap-7">
+        {/* Masthead band */}
+        <div>
+          <p className="kicker text-center text-accent">The Official Gazette of</p>
+          <h1 className="headline mt-1 text-center text-4xl sm:text-6xl">{clan.name}</h1>
+          <hr className="rule-double mt-3" />
+          <div className="flex flex-col gap-1 py-2 dateline sm:flex-row sm:items-center sm:justify-between">
+            <span>
+              {isAdmin ? "Editor-in-Chief" : "Subscriber"} · {profile.displayName}
+            </span>
+            <span>
+              On Account: <span className="tabular text-ink">{format(membership.balance, clan.currencyName)}</span>
+            </span>
+            <span>
+              {myRow ? `Standing No. ${myRow.rank}` : "Unranked"} of {leaderboard.length}
+            </span>
           </div>
-          <div className="rounded-lg bg-primary/10 px-4 py-3 text-right">
-            <p className="text-xs font-medium text-muted-foreground">Your balance</p>
-            <p className="text-2xl font-extrabold text-primary">
-              {format(membership.balance, clan.currencyName)}
-            </p>
-          </div>
+          <hr className="rule" />
         </div>
 
-        {/* Nav links */}
-        <div className="flex flex-wrap gap-2">
-          <Link href={`/clans/${clanId}/matches`}>
-            <Button variant="outline" size="sm">
-              <Swords className="h-4 w-4" /> Matches
-            </Button>
+        {/* Section nav rail */}
+        <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-y border-hairline py-2 font-condensed uppercase tracking-widest text-xs">
+          <Link href={`/clans/${clanId}/matches`} className="hover:text-accent">
+            Fixtures
           </Link>
-          <Link href={`/clans/${clanId}/leaderboard`}>
-            <Button variant="outline" size="sm">
-              <Trophy className="h-4 w-4" /> Leaderboard
-            </Button>
+          <span className="text-hairline">·</span>
+          <Link href={`/clans/${clanId}/leaderboard`} className="hover:text-accent">
+            Standings
           </Link>
-          <Link href={`/clans/${clanId}/bets`}>
-            <Button variant="outline" size="sm">
-              <ListChecks className="h-4 w-4" /> My bets
-            </Button>
+          <span className="text-hairline">·</span>
+          <Link href={`/clans/${clanId}/bets`} className="hover:text-accent">
+            The Ledger
           </Link>
           {isAdmin ? (
-            <Link href={`/clans/${clanId}/admin`}>
-              <Button variant="outline" size="sm">
-                <Settings className="h-4 w-4" /> Admin
-              </Button>
-            </Link>
+            <>
+              <span className="text-hairline">·</span>
+              <Link href={`/clans/${clanId}/admin`} className="text-accent hover:underline">
+                Editor&apos;s Desk
+              </Link>
+            </>
           ) : null}
+        </nav>
+
+        {/* Wire code column */}
+        <div className="mx-auto w-full max-w-md">
+          <p className="kicker mb-2 text-center">Pass the Wire — Recruit Your Crew</p>
+          <InviteCopy inviteCode={clan.inviteCode} />
         </div>
 
-        {/* Invite */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Invite your crew</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <InviteCopy inviteCode={clan.inviteCode} />
-          </CardContent>
-        </Card>
-
         <div className="grid gap-6 lg:grid-cols-2">
-          {/* Upcoming matches */}
+          {/* Today's Card */}
           <Card>
             <CardHeader className="flex-row items-center justify-between">
-              <CardTitle className="text-base">Upcoming matches</CardTitle>
+              <CardTitle>Today&apos;s Card</CardTitle>
               <Link
                 href={`/clans/${clanId}/matches`}
-                className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+                className="font-condensed uppercase tracking-widest text-xs text-accent hover:underline"
               >
-                See all <ArrowRight className="h-3.5 w-3.5" />
+                Full Fixtures →
               </Link>
             </CardHeader>
-            <CardContent className="flex flex-col gap-2">
+            <CardContent className="flex flex-col gap-3">
               {upcoming.length ? (
                 upcoming.map((m) => (
                   <MatchRow key={m.id} clanId={clanId} match={m} currencyName={clan.currencyName} />
                 ))
               ) : (
-                <p className="text-sm text-muted-foreground">
-                  No matches lined up yet.{" "}
-                  {isAdmin ? "Head to Admin to add one." : "Check back soon."}
+                <p className="text-sm italic text-ink-soft">
+                  No fixtures on the wire yet.{" "}
+                  {isAdmin ? "Head to the Editor's Desk to file one." : "Check back soon."}
                 </p>
               )}
             </CardContent>
           </Card>
 
-          {/* Leaderboard preview */}
+          {/* League Standings preview */}
           <Card>
             <CardHeader className="flex-row items-center justify-between">
-              <CardTitle className="text-base">Leaderboard</CardTitle>
+              <CardTitle>League Standings</CardTitle>
               <Link
                 href={`/clans/${clanId}/leaderboard`}
-                className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+                className="font-condensed uppercase tracking-widest text-xs text-accent hover:underline"
               >
-                Full leaderboard <ArrowRight className="h-3.5 w-3.5" />
+                Full Table →
               </Link>
             </CardHeader>
             <CardContent>
               {topFive.length ? (
-                <ol className="flex flex-col gap-1.5">
+                <ol className="flex flex-col">
                   {topFive.map((row) => (
                     <li
                       key={row.userId}
-                      className={`flex items-center justify-between gap-3 rounded-md px-3 py-2 text-sm ${
-                        row.isMe ? "bg-primary/10 font-semibold" : ""
+                      className={`flex items-center justify-between gap-3 border-b border-hairline py-2 text-sm last:border-b-0 ${
+                        row.isMe ? "font-semibold text-accent" : ""
                       }`}
                     >
-                      <span className="flex min-w-0 items-center gap-2">
-                        <span className="w-6 shrink-0 text-muted-foreground">#{row.rank}</span>
-                        <span className="truncate">
+                      <span className="flex min-w-0 items-center gap-3">
+                        <span className="tabular w-6 shrink-0 text-ink-soft">{row.rank}</span>
+                        <span className="truncate font-condensed uppercase tracking-wide">
                           {row.displayName}
                           {row.isMe ? " (you)" : ""}
                         </span>
                       </span>
-                      <span className="shrink-0">{format(row.balance, clan.currencyName)}</span>
+                      <span className="tabular shrink-0">{format(row.balance, clan.currencyName)}</span>
                     </li>
                   ))}
                 </ol>
               ) : (
-                <p className="text-sm text-muted-foreground">No members yet.</p>
+                <p className="text-sm italic text-ink-soft">No names on the rolls yet.</p>
               )}
             </CardContent>
           </Card>
         </div>
 
-        {/* Recent results */}
+        {/* Latest Results */}
         {recent.length ? (
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Recent results</CardTitle>
+              <CardTitle>Latest Results</CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col gap-2">
+            <CardContent className="flex flex-col gap-3">
               {recent.map((m) => {
                 const winner = m.outcomes.find((o) => o.id === m.winningOutcomeId);
                 return (
                   <Link
                     key={m.id}
                     href={`/clans/${clanId}/matches/${m.id}`}
-                    className="flex items-center justify-between gap-3 rounded-md border border-border p-3 transition-colors hover:bg-muted"
+                    className="flex items-start justify-between gap-3 border-b border-hairline pb-3 transition-colors last:border-b-0 last:pb-0 hover:text-accent"
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold">{m.title}</p>
-                      <p className="mt-0.5 text-xs text-muted-foreground">
-                        {formatKickoff(m.startsAt)}
-                      </p>
-                    </div>
-                    <div className="flex shrink-0 flex-col items-end gap-1">
+                      <p className="dateline">{formatKickoff(m.startsAt)}</p>
+                      <p className="headline mt-0.5 truncate text-lg">{m.title}</p>
                       {winner ? (
-                        <Badge variant="success">{winner.label}</Badge>
-                      ) : (
-                        <Badge variant="default">Settled</Badge>
-                      )}
+                        <p className="mt-0.5 text-xs italic text-ink-soft">
+                          Final call: {winner.label}
+                        </p>
+                      ) : null}
                       {m.myBet ? (
-                        <span
-                          className={`text-xs ${
+                        <p
+                          className={`mt-0.5 text-xs italic ${
                             m.myBet.status === "won"
                               ? "text-success"
                               : m.myBet.status === "lost"
                                 ? "text-danger"
-                                : "text-muted-foreground"
+                                : "text-ink-soft"
                           }`}
                         >
-                          You: {m.myBet.outcomeLabel}
-                        </span>
+                          Your call: {m.myBet.outcomeLabel}
+                        </p>
                       ) : null}
                     </div>
+                    <span
+                      className={`stamp shrink-0 ${winner ? "text-success" : "text-ink"}`}
+                    >
+                      {winner ? "Result" : "Settled"}
+                    </span>
                   </Link>
                 );
               })}

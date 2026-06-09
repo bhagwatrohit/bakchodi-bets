@@ -55,13 +55,17 @@ export function BetForm({
   }
 
   return (
-    <form ref={formRef} action={formAction} className="flex flex-col gap-5">
+    <form
+      ref={formRef}
+      action={formAction}
+      className="flex flex-col gap-5 border-2 border-dashed border-ink bg-paper-2 p-4"
+    >
       <input type="hidden" name="clanId" value={clanId} />
       <input type="hidden" name="matchId" value={matchId} />
       <input type="hidden" name="outcomeId" value={outcomeId} />
 
       <div className="flex flex-col gap-2">
-        <Label>Your pick</Label>
+        <Label className="kicker">Your Pick</Label>
         <div className="flex flex-wrap gap-2">
           {outcomes.map((o) => {
             const active = o.id === outcomeId;
@@ -72,10 +76,10 @@ export function BetForm({
                 onClick={() => setOutcomeId(o.id)}
                 aria-pressed={active}
                 className={cn(
-                  "rounded-full border px-4 py-2 text-sm font-semibold transition-colors",
+                  "border-2 px-4 py-2 font-condensed uppercase tracking-widest text-xs font-semibold transition-colors",
                   active
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-input bg-card hover:bg-muted",
+                    ? "border-ink bg-ink text-paper"
+                    : "border-ink bg-paper hover:bg-muted",
                 )}
               >
                 {o.label}
@@ -86,7 +90,9 @@ export function BetForm({
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="stake">Stake</Label>
+        <Label htmlFor="stake" className="kicker">
+          Stake
+        </Label>
         <Input
           id="stake"
           name="stake"
@@ -98,21 +104,24 @@ export function BetForm({
           value={stake}
           onChange={(e) => setStake(e.target.value)}
           required
+          className="tabular"
         />
-        <p className="text-xs text-muted-foreground">
-          Max {format(maxBet, currencyName)} · You have{" "}
-          {format(availableBalance, currencyName)}
+        <p className="dateline">
+          Max <span className="tabular">{format(maxBet, currencyName)}</span> · You
+          have <span className="tabular">{format(availableBalance, currencyName)}</span>
         </p>
       </div>
 
       {hint ? (
-        <p className="text-xs font-medium text-danger">{hint}</p>
+        <p className="border-l-2 border-danger px-2 py-1 text-xs font-medium text-danger">
+          {hint}
+        </p>
       ) : null}
 
       {state.error ? (
         <p
           role="alert"
-          className="rounded-md bg-danger/15 px-3 py-2 text-sm font-medium text-danger"
+          className="border-2 border-danger bg-danger/10 px-3 py-2 text-sm font-medium text-danger"
         >
           {state.error}
         </p>
@@ -124,7 +133,7 @@ export function BetForm({
         disabled={pending || !outcomeId}
         className="w-full"
       >
-        {pending ? "Locking it in…" : "Lock it in"}
+        {pending ? "Locking It In…" : "Lock It In"}
       </Button>
     </form>
   );

@@ -6,9 +6,10 @@ import type { MatchListItem } from "@/lib/types";
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <p className="rounded-lg border border-dashed border-border px-4 py-10 text-center text-sm text-muted-foreground">
-      {message}
-    </p>
+    <div className="border-2 border-dashed border-hairline px-4 py-12 text-center">
+      <p className="kicker">Stop The Presses</p>
+      <p className="mt-2 font-serif italic text-ink-soft">{message}</p>
+    </div>
   );
 }
 
@@ -49,9 +50,15 @@ export function MatchesTabs({
   return (
     <Tabs defaultValue="open">
       <TabsList>
-        <TabsTrigger value="open">Open ({open.length})</TabsTrigger>
-        <TabsTrigger value="locked">Locked ({locked.length})</TabsTrigger>
-        <TabsTrigger value="settled">Settled ({settled.length})</TabsTrigger>
+        <TabsTrigger value="open">
+          Open Lines <span className="tabular">({open.length})</span>
+        </TabsTrigger>
+        <TabsTrigger value="locked">
+          Locked <span className="tabular">({locked.length})</span>
+        </TabsTrigger>
+        <TabsTrigger value="settled">
+          Final &amp; Settled <span className="tabular">({settled.length})</span>
+        </TabsTrigger>
       </TabsList>
 
       <TabsContent value="open">
@@ -59,7 +66,7 @@ export function MatchesTabs({
           matches={open}
           clanId={clanId}
           currencyName={currencyName}
-          empty="No open matches right now. Check back soon."
+          empty="No matches on the wire. Check back for the next edition."
         />
       </TabsContent>
       <TabsContent value="locked">
@@ -67,7 +74,7 @@ export function MatchesTabs({
           matches={locked}
           clanId={clanId}
           currencyName={currencyName}
-          empty="Nothing locked yet."
+          empty="Nothing locked up just yet. The lines are still open."
         />
       </TabsContent>
       <TabsContent value="settled">
@@ -75,7 +82,7 @@ export function MatchesTabs({
           matches={settled}
           clanId={clanId}
           currencyName={currencyName}
-          empty="No settled matches yet. The chaos is still unfolding."
+          empty="No final whistles printed yet. The chaos is still unfolding."
         />
       </TabsContent>
     </Tabs>

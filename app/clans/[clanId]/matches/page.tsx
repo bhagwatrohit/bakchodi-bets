@@ -21,10 +21,13 @@ export default async function MatchesPage({
 
   const matches = await listMatches(clanId);
 
+  // The Grand Gala lives on its own page (/gala) — keep it out of the list.
+  const regular = matches.filter((m) => m.marketType === "match");
+
   const open: MatchListItem[] = [];
   const locked: MatchListItem[] = [];
   const settled: MatchListItem[] = [];
-  for (const m of matches) {
+  for (const m of regular) {
     if (m.displayStatus === "open") open.push(m);
     else if (m.displayStatus === "locked" || m.displayStatus === "final") locked.push(m);
     else if (m.displayStatus === "settled") settled.push(m);

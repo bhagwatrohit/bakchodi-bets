@@ -91,6 +91,7 @@ export default async function ClanHomePage({
   const topFive = leaderboard.slice(0, 5);
   const myRow = leaderboard.find((r) => r.isMe);
   const isAdmin = membership.role === "admin";
+  const gala = matches.find((m) => m.marketType === "tournament_winner");
 
   return (
     <AppShell profile={profile}>
@@ -122,6 +123,10 @@ export default async function ClanHomePage({
             Matches
           </Link>
           <span className="text-grid">·</span>
+          <Link href={`/clans/${clanId}/gala`} className="text-neon-amber hover:glow-amber">
+            🏆 Grand Gala
+          </Link>
+          <span className="text-grid">·</span>
           <Link href={`/clans/${clanId}/leaderboard`} className="text-neon-cyan hover:glow-cyan">
             High Scores
           </Link>
@@ -144,6 +149,28 @@ export default async function ClanHomePage({
           <p className="kicker mb-2 text-center">Clan Code — Recruit Your Crew</p>
           <InviteCopy inviteCode={clan.inviteCode} />
         </div>
+
+        {/* Grand Gala banner */}
+        {gala && gala.status !== "settled" ? (
+          <Link
+            href={`/clans/${clanId}/gala`}
+            className="flex items-center justify-between gap-3 border-2 border-neon-amber bg-card p-4 transition-colors hover:bg-muted"
+          >
+            <span className="flex items-center gap-3">
+              <span className="text-3xl">🏆</span>
+              <span>
+                <span className="kicker text-neon-amber">Grand Gala</span>
+                <span className="block matchup text-lg">Pick the World Cup Winner</span>
+              </span>
+            </span>
+            <span className="text-right">
+              <span className="block dateline">Pot</span>
+              <span className="tabular text-neon-amber">
+                {format(gala.totalPot, clan.currencyName)}
+              </span>
+            </span>
+          </Link>
+        ) : null}
 
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Now Playing */}

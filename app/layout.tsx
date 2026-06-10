@@ -31,7 +31,7 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "try{if(localStorage.getItem('bb-theme')==='light')document.documentElement.classList.add('light')}catch(e){}",
+              "try{var m=localStorage.getItem('bb-theme')||'dark';var l=m==='light'||(m==='system'&&matchMedia('(prefers-color-scheme: light)').matches);if(l)document.documentElement.classList.add('light')}catch(e){}",
           }}
         />
       </head>

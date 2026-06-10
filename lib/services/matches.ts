@@ -257,3 +257,16 @@ export async function getMatchDetail(clanId: string, matchId: string): Promise<M
     clanLockAtStart: clan.lockBetsAtMatchStart,
   };
 }
+
+/** The clan's Grand Gala (tournament-winner) market, or null if none. */
+export async function getGrandGala(clanId: string): Promise<MatchDetail | null> {
+  await requireMember(clanId);
+  const gala = await db.query.matches.findFirst({
+    where: and(
+      eq(schema.matches.clanId, clanId),
+      eq(schema.matches.marketType, "tournament_winner"),
+    ),
+  });
+  if (!gala) return null;
+  return getMatchDetail(clanId, gala.id);
+}

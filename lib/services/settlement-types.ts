@@ -11,10 +11,11 @@ export interface SettlementInputBet {
 export interface SettlementBetResult {
   betId: string;
   userId: string;
-  status: Extract<BetStatus, "won" | "lost">;
+  // "void" = push/refund when nobody picked the winning outcome.
+  status: Extract<BetStatus, "won" | "lost" | "void">;
   stake: Money;
-  profit: Money; // positive for winners, negative (= -stake) for losers
-  payout: Money; // stake + profit for winners, 0 for losers
+  profit: Money; // positive for winners, negative (= -stake) for losers, 0 for a push
+  payout: Money; // stake + profit for winners, 0 for losers, full stake for a push
 }
 
 export interface SettlementResult {

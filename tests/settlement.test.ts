@@ -69,19 +69,23 @@ describe("computeSettlement — zero-sum pot split", () => {
     expect(round2(ankit.payout)).toBe("100");
   });
 
-  it("Case 3: no one wins (Rohit A, Ankit B; Draw wins) — both lose, no payout", () => {
+  it("Case 3: nobody picks the winner (Rohit A, Ankit B; Draw wins) — PUSH, all refunded", () => {
     const bets = [bet("b1", "rohit", OUT_A, "100"), bet("b2", "ankit", OUT_B, "100")];
     const res = computeSettlement(bets, OUT_DRAW);
 
     expect(round2(res.winningStake)).toBe("0");
-    expect(round2(res.losingPool)).toBe("200");
     const rohit = byUser(res, "rohit");
     const ankit = byUser(res, "ankit");
-    expect(rohit.status).toBe("lost");
-    expect(round2(rohit.payout)).toBe("0");
-    expect(round2(rohit.profit)).toBe("-100");
-    expect(ankit.status).toBe("lost");
-    expect(round2(ankit.payout)).toBe("0");
+    // No winner => push: everyone refunded their stake, nothing burned.
+    expect(rohit.status).toBe("void");
+    expect(round2(rohit.payout)).toBe("100");
+    expect(round2(rohit.profit)).toBe("0");
+    expect(ankit.status).toBe("void");
+    expect(round2(ankit.payout)).toBe("100");
+    expect(round2(ankit.profit)).toBe("0");
+    // total credits conserved (sum of payouts == sum of stakes)
+    const paid = res.results.reduce((a, r) => a + Number(r.payout), 0);
+    expect(paid).toBe(200);
   });
 
   it("uneven split rounds correctly (Rohit 100/A, Ankit 50/A, Sumit 90/B)", () => {

@@ -16,8 +16,10 @@ import type {
       payout = stake + profit
     - each loser: profit = -stake, payout = 0
   Edge cases:
-    - no winner (winningStake == 0): everyone loses, pot is burned, no payout
-    - no loser  (losingPool == 0): winners get their stake back, profit = 0
+    - no winner (winningStake == 0): NOBODY picked the winning outcome, so it's a
+      PUSH — every stake is refunded (status "void", payout = stake, profit 0).
+      Credits are never burned/lost.
+    - no loser  (losingPool == 0): winners get their stake back, profit = 0.
 
   IMPORTANT: keep this module free of top-level `server-only` / DB imports so it
   stays importable from tests and so settleMatch/voidMatch below can lazy-import
@@ -35,9 +37,25 @@ export function computeSettlement(
     else losingPool = add(losingPool, b.stake);
   }
 
+  // No winner → push: refund every stake (don't burn the pot).
+  if (isZero(winningStake)) {
+    return {
+      results: bets.map((b) => ({
+        betId: b.betId,
+        userId: b.userId,
+        status: "void",
+        stake: b.stake,
+        profit: "0",
+        payout: b.stake,
+      })),
+      losingPool,
+      winningStake,
+    };
+  }
+
   const results: SettlementBetResult[] = bets.map((b) => {
     const isWinner = b.outcomeId === winningOutcomeId;
-    if (isWinner && isPositive(winningStake)) {
+    if (isWinner) {
       const share = div(b.stake, winningStake); // fraction of winning pool
       const profit = isZero(losingPool) ? "0" : mul(losingPool, share);
       return {
@@ -49,7 +67,6 @@ export function computeSettlement(
         payout: add(b.stake, profit),
       };
     }
-    // loser (or "winner" with zero winning stake — impossible, defensive)
     return {
       betId: b.betId,
       userId: b.userId,
@@ -120,7 +137,8 @@ export async function settleMatch(input: {
         .set({ status: r.status, payout, profit, settledAt: new Date() })
         .where(eq(schema.bets.id, r.betId));
 
-      if (r.status === "won") {
+      // Credit winners (payout) and pushes (stake refunded). Losers get nothing.
+      if (r.status === "won" || r.status === "void") {
         const member = await tx.query.clanMembers.findFirst({
           where: and(
             eq(schema.clanMembers.clanId, match.clanId),
@@ -137,10 +155,10 @@ export async function settleMatch(input: {
           clanId: match.clanId,
           userId: r.userId,
           betId: r.betId,
-          transactionType: "bet_won_payout",
+          transactionType: r.status === "won" ? "bet_won_payout" : "bet_void_refund",
           amount: payout,
           balanceAfter: newBalance,
-          reason: "Won bet",
+          reason: r.status === "won" ? "Won bet" : "No winner — stake refunded",
           createdBy: member.userId,
         });
       }

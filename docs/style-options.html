@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bakchodi Bets — Style Options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Source+Serif+4:wght@400;600&family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Inter, system-ui, sans-serif;
+    background: #0e0f13;
+    color: #e7e9ee;
+    line-height: 1.5;
+  }
+  .page { max-width: 1100px; margin: 0 auto; padding: 32px 20px 80px; }
+  .intro h1 { font-size: 1.7rem; margin: 0 0 6px; }
+  .intro p { color: #a8aebc; margin: 0 0 4px; max-width: 760px; }
+  .intro .hint { color: #7e8696; font-size: 0.9rem; }
+  .nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 8px; }
+  .nav a {
+    font-size: 0.8rem; text-decoration: none; color: #cdd2dd;
+    border: 1px solid #2a2d36; border-radius: 999px; padding: 6px 12px;
+  }
+  .nav a:hover { background: #1b1d24; }
+
+  .option { margin-top: 36px; }
+  .option-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; margin-bottom: 12px; }
+  .option-head .num {
+    font-size: 0.75rem; font-weight: 700; color: #0e0f13; background: #cdd2dd;
+    border-radius: 6px; padding: 2px 8px;
+  }
+  .option-head h2 { margin: 0; font-size: 1.25rem; }
+  .option-head .vibe { color: #9aa1b1; font-size: 0.92rem; }
+  .verdict { font-size: 0.82rem; color: #7e8696; margin: 0 0 14px; }
+
+  /* ====================== shared mockup skeleton ====================== */
+  .theme { border-radius: 14px; overflow: hidden; border: 1px solid #23262f; }
+  .mock { padding: 22px; }
+  .mock-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+  .mock-logo { display: flex; align-items: center; gap: 10px; }
+  .trophy { font-size: 1.4rem; }
+  .mock-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
+  @media (min-width: 720px) { .mock-grid { grid-template-columns: 1.3fr 1fr; } }
+  .card { padding: 16px; }
+  .teams { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .flag { font-size: 1.4rem; }
+  .vs { opacity: 0.7; font-size: 0.85em; }
+  .meta { display: flex; gap: 14px; flex-wrap: wrap; margin: 12px 0; font-size: 0.85rem; opacity: 0.85; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .chip { padding: 7px 12px; font-size: 0.85rem; cursor: pointer; }
+  .btn { display: inline-block; padding: 11px 18px; font-size: 0.9rem; cursor: pointer; border: none; width: 100%; text-align: center; }
+  .board { padding: 16px; }
+  .board-title { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; opacity: 0.7; }
+  .row { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; }
+  .row .who { display: flex; align-items: center; gap: 9px; }
+  .row .rk { width: 22px; text-align: center; opacity: 0.7; font-size: 0.85rem; }
+  .bal { font-variant-numeric: tabular-nums; }
+  .fine { margin-top: 16px; font-size: 0.72rem; opacity: 0.6; }
+  .status { font-size: 0.7rem; padding: 3px 8px; }
+
+  /* ============================================================= */
+  /* THEME 1 — ARCADE (current)                                    */
+  /* ============================================================= */
+  .arcade { background: #0a0e1a; position: relative;
+    background-image: radial-gradient(circle at 50% 0%, rgba(33,230,255,0.06), transparent 60%),
+      linear-gradient(#161f3c 1px, transparent 1px), linear-gradient(90deg,#161f3c 1px, transparent 1px);
+    background-size: 100% 100%, 54px 54px, 54px 54px; }
+  .arcade::after { content:''; position:absolute; inset:0; pointer-events:none;
+    background: repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0 2px, rgba(0,0,0,0.18) 3px, rgba(0,0,0,0) 4px); }
+  .arcade .mock { position: relative; z-index: 1; color: #d8ffe9; }
+  .arcade .mock-logo b { font-family: 'Press Start 2P'; font-size: 0.95rem; color: #39ff14; text-shadow: 0 0 6px rgba(57,255,20,.5); }
+  .arcade .mock-logo b i { color: #ff2bd6; font-style: normal; text-shadow: 0 0 6px rgba(255,43,214,.5); }
+  .arcade .mock-credits { font-family: VT323; font-size: 1.2rem; color: #21e6ff; border: 2px solid #21e6ff; padding: 2px 10px; }
+  .arcade .card, .arcade .board { background: #121a35; border: 2px solid #2a3a66; }
+  .arcade .teams { font-family: VT323; font-size: 1.9rem; text-transform: uppercase; }
+  .arcade .vs { font-family:'Press Start 2P'; font-size: 0.6rem; color:#ff2bd6; }
+  .arcade .status { font-family:'Press Start 2P'; font-size:0.5rem; border:2px solid #39ff14; color:#39ff14; box-shadow:0 0 8px #39ff14; }
+  .arcade .meta { font-family: VT323; font-size: 1.05rem; }
+  .arcade .chip { font-family: VT323; font-size: 1.05rem; background: transparent; border: 2px solid #2a3a66; color:#d8ffe9; }
+  .arcade .chip.sel { background:#39ff14; color:#04210a; border-color:#39ff14; }
+  .arcade .btn { font-family:'Press Start 2P'; font-size:0.72rem; background:#39ff14; color:#04210a; border:2px solid #39ff14; box-shadow:0 0 14px rgba(57,255,20,.5); text-transform:uppercase; letter-spacing:0.08em; }
+  .arcade .board-title { font-family:'Press Start 2P'; font-size:0.55rem; color:#21e6ff; }
+  .arcade .row { font-family: VT323; font-size: 1.2rem; border-bottom:1px solid #2a3a66; }
+  .arcade .row.me { color:#39ff14; }
+  .arcade .fine { font-family: VT323; font-size:0.95rem; }
+
+  /* ============================================================= */
+  /* THEME 2 — NEON LITE (dark, one accent, calm)                  */
+  /* ============================================================= */
+  .neonlite { background: #11131a; font-family:'Space Grotesk', sans-serif; }
+  .neonlite .mock { color:#e8eaf0; }
+  .neonlite .mock-logo b { font-weight:700; font-size:1.15rem; letter-spacing:-0.01em; }
+  .neonlite .mock-logo b i { color:#8b7bff; font-style:normal; }
+  .neonlite .mock-credits { font-size:0.9rem; color:#8b7bff; background:rgba(139,123,255,0.12); border-radius:8px; padding:5px 12px; }
+  .neonlite .card, .neonlite .board { background:#171a23; border:1px solid #262a36; border-radius:12px; }
+  .neonlite .teams { font-size:1.45rem; font-weight:600; }
+  .neonlite .status { border-radius:6px; background:rgba(124,255,180,0.14); color:#54e09a; font-weight:600; }
+  .neonlite .chip { border-radius:8px; background:#1e2230; border:1px solid #2c3140; color:#cfd3df; }
+  .neonlite .chip.sel { background:#8b7bff; color:#0c0d12; border-color:#8b7bff; }
+  .neonlite .btn { border-radius:10px; background:#8b7bff; color:#0c0d12; font-weight:700; }
+  .neonlite .row { border-bottom:1px solid #20242f; }
+  .neonlite .row.me { color:#8b7bff; font-weight:600; }
+
+  /* ============================================================= */
+  /* THEME 3 — CLEAN MODERN (light, friendly, safe)                */
+  /* ============================================================= */
+  .modern { background:#f6f7f9; font-family:Inter, sans-serif; }
+  .modern .mock { color:#1b2330; }
+  .modern .mock-logo b { font-weight:800; font-size:1.15rem; color:#0f1729; }
+  .modern .mock-logo b i { color:#16a34a; font-style:normal; }
+  .modern .mock-credits { font-size:0.9rem; font-weight:600; color:#0f766e; background:#d1fae5; border-radius:999px; padding:5px 14px; }
+  .modern .card, .modern .board { background:#fff; border:1px solid #e6e8ec; border-radius:16px; box-shadow:0 1px 3px rgba(16,24,40,0.06); }
+  .modern .teams { font-size:1.3rem; font-weight:700; color:#0f1729; }
+  .modern .status { border-radius:999px; background:#dcfce7; color:#15803d; font-weight:600; }
+  .modern .chip { border-radius:999px; background:#f1f5f9; border:1px solid #e2e8f0; color:#334155; }
+  .modern .chip.sel { background:#0f1729; color:#fff; border-color:#0f1729; }
+  .modern .btn { border-radius:12px; background:#16a34a; color:#fff; font-weight:600; }
+  .modern .board-title { color:#64748b; }
+  .modern .row { border-bottom:1px solid #eef1f4; }
+  .modern .row.me { color:#16a34a; font-weight:600; }
+  .modern .fine { color:#94a3b8; }
+
+  /* ============================================================= */
+  /* THEME 4 — BROADSHEET (editorial newspaper)                    */
+  /* ============================================================= */
+  .broadsheet { background:#f4efe1; font-family:'Source Serif 4', Georgia, serif; }
+  .broadsheet .mock { color:#14110c; }
+  .broadsheet .mock-logo b { font-family:'Playfair Display'; font-weight:800; font-size:1.5rem; }
+  .broadsheet .mock-logo b i { font-style:italic; }
+  .broadsheet .trophy { display:none; }
+  .broadsheet .mock-credits { font-size:0.8rem; text-transform:uppercase; letter-spacing:0.1em; border:1px solid #14110c; padding:3px 10px; }
+  .broadsheet .card, .broadsheet .board { background:#faf6ea; border:1px solid #14110c; }
+  .broadsheet .teams { font-family:'Playfair Display'; font-weight:800; font-size:1.7rem; }
+  .broadsheet .vs { font-style:italic; color:#8a8268; }
+  .broadsheet .status { border:1px solid #b1281b; color:#b1281b; text-transform:uppercase; letter-spacing:0.08em; font-weight:700; }
+  .broadsheet .meta { border-top:1px solid #c9bfa2; border-bottom:1px solid #c9bfa2; padding:8px 0; }
+  .broadsheet .chip { border:1px solid #14110c; background:transparent; color:#14110c; text-transform:uppercase; letter-spacing:0.04em; font-family:Inter; font-size:0.72rem; }
+  .broadsheet .chip.sel { background:#14110c; color:#faf6ea; }
+  .broadsheet .btn { background:#14110c; color:#faf6ea; text-transform:uppercase; letter-spacing:0.12em; font-family:Inter; font-weight:700; font-size:0.8rem; }
+  .broadsheet .board-title { font-family:Inter; font-weight:700; }
+  .broadsheet .row { border-bottom:1px solid #d8cdb0; }
+  .broadsheet .row.me { font-weight:700; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="intro">
+    <h1>🏆 Bakchodi Bets — pick a vibe</h1>
+    <p>Same screen, four different looks. They run from the loudest (full retro arcade — what's live now) to the most restrained. The content is identical so you're only judging the <em>style</em>.</p>
+    <p class="hint">Scroll through and reply with the number you like — or mix-and-match (e.g. "the arcade colors but calmer like #2"). Flags show as emoji here; the real app uses crisp flag images.</p>
+    <div class="nav">
+      <a href="#opt1">1 · Arcade (current)</a>
+      <a href="#opt2">2 · Neon Lite</a>
+      <a href="#opt3">3 · Clean Modern</a>
+      <a href="#opt4">4 · Broadsheet</a>
+    </div>
+  </div>
+
+  <!-- ============ OPTION 1 — ARCADE ============ -->
+  <section class="option" id="opt1">
+    <div class="option-head">
+      <span class="num">1</span><h2>Arcade / CRT</h2>
+      <span class="vibe">— what's live now. Neon, pixel font, scanlines, glow.</span>
+    </div>
+    <p class="verdict">Most playful and distinctive. The "is it too much?" candidate.</p>
+    <div class="theme arcade">
+      <div class="mock">
+        <div class="mock-top">
+          <span class="mock-logo"><span class="trophy">🏆</span><b>BAKCHODI<i> BETS</i></b></span>
+          <span class="mock-credits">1,000 ฿</span>
+        </div>
+        <div class="mock-grid">
+          <div class="card">
+            <div class="teams"><span class="flag">🇲🇽</span> Mexico <span class="vs">vs</span> South Africa <span class="flag">🇿🇦</span> <span class="status">OPEN</span></div>
+            <div class="meta"><span>Jun 11 · 3:00 PM</span><span>Pot 300</span><span>3 bets</span></div>
+            <div class="chips"><span class="chip sel">🇲🇽 Mexico</span><span class="chip">Draw</span><span class="chip">🇿🇦 S. Africa</span></div>
+            <button class="btn">Lock it in</button>
+          </div>
+          <div class="board">
+            <div class="board-title">High Scores</div>
+            <div class="row"><span class="who"><span class="rk">1</span>Ankit</span><span class="bal">1,100</span></div>
+            <div class="row"><span class="who"><span class="rk">2</span>Ritika</span><span class="bal">1,050</span></div>
+            <div class="row me"><span class="who"><span class="rk">3</span>You</span><span class="bal">1,000</span></div>
+          </div>
+        </div>
+        <div class="fine">Fictional credits only · no cash value</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ OPTION 2 — NEON LITE ============ -->
+  <section class="option" id="opt2">
+    <div class="option-head">
+      <span class="num">2</span><h2>Neon Lite</h2>
+      <span class="vibe">— dark and modern, one accent color, no scanlines/glow.</span>
+    </div>
+    <p class="verdict">Keeps a gamer/night vibe but reads like a polished app. The middle ground.</p>
+    <div class="theme neonlite">
+      <div class="mock">
+        <div class="mock-top">
+          <span class="mock-logo"><span class="trophy">🏆</span><b>Bakchodi<i> Bets</i></b></span>
+          <span class="mock-credits">1,000 credits</span>
+        </div>
+        <div class="mock-grid">
+          <div class="card">
+            <div class="teams"><span class="flag">🇲🇽</span> Mexico <span class="vs">vs</span> South Africa <span class="flag">🇿🇦</span> <span class="status">OPEN</span></div>
+            <div class="meta"><span>Jun 11 · 3:00 PM</span><span>Pot 300</span><span>3 bets</span></div>
+            <div class="chips"><span class="chip sel">🇲🇽 Mexico</span><span class="chip">Draw</span><span class="chip">🇿🇦 S. Africa</span></div>
+            <button class="btn">Place bet</button>
+          </div>
+          <div class="board">
+            <div class="board-title">Leaderboard</div>
+            <div class="row"><span class="who"><span class="rk">1</span>Ankit</span><span class="bal">1,100</span></div>
+            <div class="row"><span class="who"><span class="rk">2</span>Ritika</span><span class="bal">1,050</span></div>
+            <div class="row me"><span class="who"><span class="rk">3</span>You</span><span class="bal">1,000</span></div>
+          </div>
+        </div>
+        <div class="fine">Fictional credits only · no cash value</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ OPTION 3 — CLEAN MODERN ============ -->
+  <section class="option" id="opt3">
+    <div class="option-head">
+      <span class="num">3</span><h2>Clean Modern</h2>
+      <span class="vibe">— light, friendly, rounded. Like a mainstream sports/fintech app.</span>
+    </div>
+    <p class="verdict">Safest and most universal. The "definitely not too much" end.</p>
+    <div class="theme modern">
+      <div class="mock">
+        <div class="mock-top">
+          <span class="mock-logo"><span class="trophy">🏆</span><b>Bakchodi<i> Bets</i></b></span>
+          <span class="mock-credits">1,000 credits</span>
+        </div>
+        <div class="mock-grid">
+          <div class="card">
+            <div class="teams"><span class="flag">🇲🇽</span> Mexico <span class="vs">vs</span> South Africa <span class="flag">🇿🇦</span> <span class="status">OPEN</span></div>
+            <div class="meta"><span>Jun 11 · 3:00 PM</span><span>Pot 300</span><span>3 bets</span></div>
+            <div class="chips"><span class="chip sel">🇲🇽 Mexico</span><span class="chip">Draw</span><span class="chip">🇿🇦 S. Africa</span></div>
+            <button class="btn">Place bet</button>
+          </div>
+          <div class="board">
+            <div class="board-title">Leaderboard</div>
+            <div class="row"><span class="who"><span class="rk">1</span>Ankit</span><span class="bal">1,100</span></div>
+            <div class="row"><span class="who"><span class="rk">2</span>Ritika</span><span class="bal">1,050</span></div>
+            <div class="row me"><span class="who"><span class="rk">3</span>You</span><span class="bal">1,000</span></div>
+          </div>
+        </div>
+        <div class="fine">Fictional credits only · no cash value</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ OPTION 4 — BROADSHEET ============ -->
+  <section class="option" id="opt4">
+    <div class="option-head">
+      <span class="num">4</span><h2>Broadsheet</h2>
+      <span class="vibe">— old-school sports-page newspaper. Serif headlines, ink rules.</span>
+    </div>
+    <p class="verdict">Characterful and fun without being a video game. A different flavor entirely.</p>
+    <div class="theme broadsheet">
+      <div class="mock">
+        <div class="mock-top">
+          <span class="mock-logo"><b>The Daily Degen</b></span>
+          <span class="mock-credits">1,000 credits</span>
+        </div>
+        <div class="mock-grid">
+          <div class="card">
+            <div class="teams"><span class="flag">🇲🇽</span> Mexico <span class="vs">v</span> South Africa <span class="flag">🇿🇦</span> <span class="status">Open</span></div>
+            <div class="meta"><span>Jun 11 · 3:00 PM</span><span>Pot 300</span><span>3 bets</span></div>
+            <div class="chips"><span class="chip sel">🇲🇽 Mexico</span><span class="chip">Draw</span><span class="chip">🇿🇦 S. Africa</span></div>
+            <button class="btn">Place your wager</button>
+          </div>
+          <div class="board">
+            <div class="board-title">League Standings</div>
+            <div class="row"><span class="who"><span class="rk">1</span>Ankit</span><span class="bal">1,100</span></div>
+            <div class="row"><span class="who"><span class="rk">2</span>Ritika</span><span class="bal">1,050</span></div>
+            <div class="row me"><span class="who"><span class="rk">3</span>You</span><span class="bal">1,000</span></div>
+          </div>
+        </div>
+        <div class="fine">Fictional credits only · no cash value</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

@@ -98,6 +98,12 @@ export function ClanCreateForm() {
       <fieldset className="flex flex-col gap-2">
         <legend className="kicker mb-1">Game Settings</legend>
         <Toggle
+          name="seedWorldCup"
+          label="Load the 2026 World Cup fixtures"
+          hint="Pre-fill all 72 group-stage matches so you can bet right away."
+          defaultChecked
+        />
+        <Toggle
           name="lockBetsAtMatchStart"
           label="Lock bets at kickoff"
           hint="No sneaky bets once the match starts."

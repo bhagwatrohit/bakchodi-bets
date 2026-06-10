@@ -21,6 +21,7 @@ export async function createClanAction(
       lockBetsAtMatchStart: fd.get("lockBetsAtMatchStart") === "on",
       showBetsBeforeLock: fd.get("showBetsBeforeLock") === "on",
       showBetsAfterLock: fd.get("showBetsAfterLock") === "on",
+      seedWorldCup: fd.get("seedWorldCup") === "on",
     }));
   } catch (e) {
     return { error: e instanceof ServiceError ? e.message : "Something went wrong." };

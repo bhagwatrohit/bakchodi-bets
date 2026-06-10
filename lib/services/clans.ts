@@ -7,6 +7,7 @@ import { conflict, forbidden, notFound, validation } from "@/lib/errors";
 import { parseMoney, isPositive, gte, add } from "@/lib/money";
 import type { Clan, ClanCardData, ClanMember, ClanRole, ClanSettings } from "@/lib/types";
 import type { ClanRow, ClanMemberRow } from "@/lib/db/schema";
+import { WORLD_CUP_FIXTURES, fixtureStartsAt } from "@/lib/worldCupFixtures";
 
 // Readable invite codes (no ambiguous chars).
 const makeInviteCode = customAlphabet("ABCDEFGHJKLMNPQRSTUVWXYZ23456789", 8);
@@ -58,6 +59,7 @@ export async function createClan(input: {
   lockBetsAtMatchStart?: boolean;
   showBetsBeforeLock?: boolean;
   showBetsAfterLock?: boolean;
+  seedWorldCup?: boolean; // pre-load the 2026 World Cup fixtures (default true)
 }): Promise<{ clanId: string }> {
   const me = await requireSessionProfile();
 
@@ -104,6 +106,35 @@ export async function createClan(input: {
       reason: "Clan created",
       createdBy: me.id,
     });
+
+    // Pre-load the 2026 World Cup fixtures so the clan isn't empty.
+    if (input.seedWorldCup ?? true) {
+      const matchRows = await tx
+        .insert(schema.matches)
+        .values(
+          WORLD_CUP_FIXTURES.map((f) => ({
+            clanId: clan.id,
+            title: `${f.team_a} vs ${f.team_b}`,
+            teamA: f.team_a,
+            teamB: f.team_b,
+            startsAt: fixtureStartsAt(f),
+            status: "open" as const,
+            createdBy: me.id,
+          })),
+        )
+        .returning({ id: schema.matches.id });
+
+      // Postgres preserves VALUES order in RETURNING, so rows align with fixtures.
+      const outcomeValues = matchRows.flatMap((row, i) => {
+        const f = WORLD_CUP_FIXTURES[i];
+        return [
+          { matchId: row.id, label: f.team_a, sortOrder: 0 },
+          { matchId: row.id, label: "Draw", sortOrder: 1 },
+          { matchId: row.id, label: f.team_b, sortOrder: 2 },
+        ];
+      });
+      await tx.insert(schema.matchOutcomes).values(outcomeValues);
+    }
 
     return clan.id;
   });

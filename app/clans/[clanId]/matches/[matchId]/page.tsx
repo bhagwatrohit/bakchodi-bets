@@ -41,9 +41,9 @@ function formatTime(date: Date): string {
   }).format(new Date(date));
 }
 
-function canBet(match: MatchDetail): boolean {
+/** Betting/editing window: open, and not past lock. Existing pick can still be changed. */
+function bettable(match: MatchDetail): boolean {
   if (match.status !== "open") return false;
-  if (match.myBet) return false;
   if (match.clanLockAtStart && new Date(match.startsAt).getTime() <= Date.now())
     return false;
   return true;
@@ -67,7 +67,7 @@ export default async function MatchDetailPage({
 
   const match = await getMatchDetail(clanId, matchId);
   const status = STATUS_META[match.displayStatus];
-  const showBetForm = canBet(match);
+  const showBetForm = bettable(match);
   const isGala = match.marketType === "tournament_winner";
   const winningOutcome = match.winningOutcomeId
     ? match.outcomes.find((o) => o.id === match.winningOutcomeId)
@@ -170,7 +170,7 @@ export default async function MatchDetailPage({
           </Card>
         ) : null}
 
-        {match.myBet ? (
+        {match.myBet && !showBetForm ? (
           <Card className="border-2 border-dashed border-neon-cyan bg-card">
             <CardHeader>
               <p className="kicker">SAVED</p>
@@ -226,9 +226,11 @@ export default async function MatchDetailPage({
         {showBetForm ? (
           <Card>
             <CardHeader>
-              <p className="kicker">{isGala ? "ENTER THE POOL" : "MAKE YOUR PICK"}</p>
+              <p className="kicker">
+                {match.myBet ? "CHANGE IT UP" : isGala ? "ENTER THE POOL" : "MAKE YOUR PICK"}
+              </p>
               <CardTitle className="headline text-2xl">
-                {isGala ? "GRAND GALA" : "PLACE YOUR BET"}
+                {match.myBet ? "EDIT YOUR PICK" : isGala ? "GRAND GALA" : "PLACE YOUR BET"}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -241,6 +243,11 @@ export default async function MatchDetailPage({
                 currencyName={match.currencyName}
                 marketType={match.marketType}
                 fixedStake={match.fixedStake}
+                existingBet={
+                  match.myBet
+                    ? { outcomeId: match.myBet.outcomeId, stake: match.myBet.stake }
+                    : null
+                }
               />
             </CardContent>
           </Card>

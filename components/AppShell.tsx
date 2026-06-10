@@ -20,8 +20,13 @@ export function AppShell({
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
           <Link href={profile ? "/dashboard" : "/"} className="flex items-center gap-3">
             <Trophy className="h-9 w-9" />
-            <span className="font-pixel text-sm sm:text-lg text-neon-green glow-green leading-none">
-              BAKCHODI<span className="text-neon-magenta glow-magenta"> BETS</span>
+            <span className="flex flex-col leading-none">
+              <span className="font-pixel text-sm sm:text-lg text-neon-green glow-green">
+                BAKCHODI<span className="text-neon-magenta glow-magenta"> BETS</span>
+              </span>
+              <span className="mt-1 hidden font-condensed uppercase tracking-[0.25em] text-xs text-neon-amber sm:block">
+                Khoob Khelo, Khoob Jeeto
+              </span>
             </span>
           </Link>
 

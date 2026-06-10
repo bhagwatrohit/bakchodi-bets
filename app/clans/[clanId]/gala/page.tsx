@@ -4,6 +4,7 @@ import { AppShell } from "@/components/AppShell";
 import { BetForm } from "@/components/BetForm";
 import { Flag } from "@/components/Flag";
 import { Trophy } from "@/components/Trophy";
+import { GalaEntryForm } from "@/components/admin/GalaEntryForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -48,10 +49,10 @@ export default async function GrandGalaPage({
     : null;
 
   const now = Date.now();
+  // Open window: can enter OR change an existing pick any number of times.
   const canEnter =
     gala != null &&
     gala.status === "open" &&
-    !gala.myBet &&
     !(gala.clanLockAtStart && new Date(gala.startsAt).getTime() <= now);
 
   // Who's in the pool (visibility enforced by the service).
@@ -121,6 +122,15 @@ export default async function GrandGalaPage({
               </CardContent>
             </Card>
 
+            {/* Admin: edit the fixed entry stake */}
+            {ctx.membership.role === "admin" && gala.status !== "settled" ? (
+              <GalaEntryForm
+                clanId={clanId}
+                matchId={gala.id}
+                currentStake={gala.fixedStake ?? "0"}
+              />
+            ) : null}
+
             {/* Champion result */}
             {gala.status === "settled" && winningOutcome ? (
               <Card className="border-2 border-neon-green">
@@ -135,8 +145,8 @@ export default async function GrandGalaPage({
               </Card>
             ) : null}
 
-            {/* Your entry */}
-            {gala.myBet ? (
+            {/* Your entry (read-only once entries are closed) */}
+            {gala.myBet && !canEnter ? (
               <Card>
                 <CardHeader>
                   <p className="kicker">YOUR PICK</p>
@@ -158,12 +168,14 @@ export default async function GrandGalaPage({
               </Card>
             ) : null}
 
-            {/* Enter */}
+            {/* Enter / edit */}
             {canEnter ? (
               <Card>
                 <CardHeader>
-                  <p className="kicker">ENTER THE POOL</p>
-                  <CardTitle className="headline text-2xl">PICK THE CHAMPION</CardTitle>
+                  <p className="kicker">{gala.myBet ? "CHANGE YOUR CALL" : "ENTER THE POOL"}</p>
+                  <CardTitle className="headline text-2xl">
+                    {gala.myBet ? "EDIT YOUR PICK" : "PICK THE CHAMPION"}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <BetForm
@@ -175,6 +187,11 @@ export default async function GrandGalaPage({
                     currencyName={gala.currencyName}
                     marketType={gala.marketType}
                     fixedStake={gala.fixedStake}
+                    existingBet={
+                      gala.myBet
+                        ? { outcomeId: gala.myBet.outcomeId, stake: gala.myBet.stake }
+                        : null
+                    }
                   />
                 </CardContent>
               </Card>

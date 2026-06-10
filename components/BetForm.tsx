@@ -20,6 +20,7 @@ export function BetForm({
   currencyName,
   marketType = "match",
   fixedStake = null,
+  existingBet = null,
 }: {
   clanId: string;
   matchId: string;
@@ -29,13 +30,17 @@ export function BetForm({
   currencyName: string;
   marketType?: MarketType;
   fixedStake?: string | null;
+  existingBet?: { outcomeId: string; stake: string } | null;
 }) {
   const [state, formAction, pending] = useActionState<BetState, FormData>(
     placeBetAction,
     {},
   );
-  const [outcomeId, setOutcomeId] = useState<string>(outcomes[0]?.id ?? "");
-  const [stake, setStake] = useState<string>("");
+  const editing = existingBet != null;
+  const [outcomeId, setOutcomeId] = useState<string>(
+    existingBet?.outcomeId ?? outcomes[0]?.id ?? "",
+  );
+  const [stake, setStake] = useState<string>(existingBet?.stake ?? "");
   const [filter, setFilter] = useState<string>("");
   const wasOk = useRef(false);
 
@@ -44,9 +49,15 @@ export function BetForm({
   useEffect(() => {
     if (state.ok && !wasOk.current) {
       wasOk.current = true;
-      toast.success(isGala ? "You're in the Grand Gala!" : "Bet placed!");
+      toast.success(
+        editing
+          ? "Pick updated!"
+          : isGala
+            ? "You're in the Grand Gala!"
+            : "Bet placed!",
+      );
     }
-  }, [state.ok, isGala]);
+  }, [state.ok, isGala, editing]);
 
   // Client-side hint only (normal markets); server is the source of truth.
   const stakeNum = Number(stake);
@@ -180,13 +191,20 @@ export function BetForm({
 
       <Button type="submit" size="lg" disabled={pending || !outcomeId} className="w-full">
         {pending
-          ? isGala
-            ? "Entering…"
-            : "Locking It In…"
-          : isGala
-            ? "Enter the Grand Gala"
-            : "Lock It In"}
+          ? "Saving…"
+          : editing
+            ? isGala
+              ? "Update Entry"
+              : "Update Pick"
+            : isGala
+              ? "Enter the Grand Gala"
+              : "Lock It In"}
       </Button>
+      {editing ? (
+        <p className="dateline text-center">
+          You can change your pick any time before kickoff.
+        </p>
+      ) : null}
     </form>
   );
 }

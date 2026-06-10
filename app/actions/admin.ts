@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { updateClanSettings, adjustBalance } from "@/lib/services/clans";
+import { updateClanSettings, adjustBalance, removeMember } from "@/lib/services/clans";
 import { createMatch, updateMatch, setMatchStatus } from "@/lib/services/matches";
 import { settleMatch, voidMatch } from "@/lib/services/settlement";
 import { ServiceError } from "@/lib/errors";
@@ -15,6 +15,7 @@ const fail = (e: unknown): AdminActionState => ({
 function revalidateClan(clanId: string) {
   revalidatePath(`/clans/${clanId}/admin`);
   revalidatePath(`/clans/${clanId}`);
+  revalidatePath(`/clans/${clanId}/gala`);
 }
 
 /** Update clan-level settings (name, currency, max bet, visibility toggles). */
@@ -145,6 +146,37 @@ export async function voidMatchAction(
   const matchId = String(fd.get("matchId") ?? "");
   try {
     await voidMatch({ matchId });
+  } catch (e) {
+    return fail(e);
+  }
+  revalidateClan(clanId);
+  return { ok: true };
+}
+
+/** Remove a member from the clan (admin only). */
+export async function removeMemberAction(
+  _prev: AdminActionState,
+  fd: FormData,
+): Promise<AdminActionState> {
+  const clanId = String(fd.get("clanId") ?? "");
+  try {
+    await removeMember(clanId, String(fd.get("targetUserId") ?? ""));
+  } catch (e) {
+    return fail(e);
+  }
+  revalidateClan(clanId);
+  return { ok: true };
+}
+
+/** Change the Grand Gala's fixed entry stake. */
+export async function setGalaEntryAction(
+  _prev: AdminActionState,
+  fd: FormData,
+): Promise<AdminActionState> {
+  const clanId = String(fd.get("clanId") ?? "");
+  const matchId = String(fd.get("matchId") ?? "");
+  try {
+    await updateMatch(matchId, { fixedStake: String(fd.get("fixedStake") ?? "") });
   } catch (e) {
     return fail(e);
   }

@@ -34,7 +34,10 @@ export default async function LandingPage() {
         <div className="flex flex-col items-center pt-4 text-center sm:pt-10">
           <Trophy className="h-20 w-20" />
           <h1 className="headline mt-5 text-2xl sm:text-4xl">BAKCHODI BETS</h1>
-          <p className="kicker mt-4">World Cup &apos;26 · Prediction Arcade</p>
+          <p className="mt-4 font-condensed uppercase tracking-[0.3em] text-lg text-neon-amber glow-amber">
+            Khoob Khelo, Khoob Jeeto
+          </p>
+          <p className="kicker mt-2">World Cup &apos;26 · Prediction Arcade</p>
         </div>
 
         {/* flag ticker */}

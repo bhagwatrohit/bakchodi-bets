@@ -3,10 +3,9 @@ import { and, eq, desc, sql } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
 import { requireMember } from "@/lib/services/clans";
 import { conflict, forbidden, notFound, validation } from "@/lib/errors";
-import { parseMoney, sub, cmp, type Money } from "@/lib/money";
+import { parseMoney, sub, add, cmp, type Money } from "@/lib/money";
 import {
   assertMatchOpenAndUnlocked,
-  assertNoExistingBet,
   assertPositiveStake,
   assertSufficientBalance,
   assertWithinMaxBet,
@@ -51,9 +50,14 @@ export async function placeBet(input: {
   const existing = await db.query.bets.findFirst({
     where: and(eq(schema.bets.matchId, input.matchId), eq(schema.bets.userId, membership.userId)),
   });
+  // Editing is allowed any number of times while the bet is still pending. A
+  // settled/void bet can't be changed.
+  if (existing && existing.status !== "pending") {
+    throw conflict("This match is already settled — your pick is locked.");
+  }
+  const oldStake: Money = existing ? existing.stake : "0";
 
   // --- validation guards (pure, unit-tested) ---
-  assertNoExistingBet(existing);
   assertMatchOpenAndUnlocked({
     status: match.status as MatchStatus,
     startsAt: match.startsAt,
@@ -65,11 +69,12 @@ export async function placeBet(input: {
     const effectiveMaxBet: Money = match.maxBet ?? clan.defaultMaxBet;
     assertWithinMaxBet(stake, effectiveMaxBet);
   }
-  assertSufficientBalance(stake, membership.balance);
+  // Editing refunds the old stake first, so the new stake is checked against
+  // balance + whatever the existing pick already tied up.
+  assertSufficientBalance(stake, add(membership.balance, oldStake));
 
-  // --- atomic: insert bet, deduct balance, ledger entry ---
+  // --- atomic: place a new bet, or edit the existing pending one ---
   const betId = await db.transaction(async (tx) => {
-    // Re-read balance inside the txn to avoid a race with concurrent bets.
     const member = await tx.query.clanMembers.findFirst({
       where: and(
         eq(schema.clanMembers.clanId, input.clanId),
@@ -77,8 +82,35 @@ export async function placeBet(input: {
       ),
     });
     if (!member) throw forbidden("You're not a member of this clan.");
-    if (cmp(stake, member.balance) > 0)
+
+    // Available = current balance + refund of any existing pick.
+    const available = add(member.balance, oldStake);
+    if (cmp(stake, available) > 0)
       throw validation("You don't have enough credits for that bet.");
+    const newBalance = sub(available, stake);
+
+    await tx
+      .update(schema.clanMembers)
+      .set({ balance: newBalance })
+      .where(eq(schema.clanMembers.id, member.id));
+
+    if (existing) {
+      await tx
+        .update(schema.bets)
+        .set({ outcomeId: input.outcomeId, stake, status: "pending" })
+        .where(eq(schema.bets.id, existing.id));
+      await tx.insert(schema.ledgerEntries).values({
+        clanId: input.clanId,
+        userId: membership.userId,
+        betId: existing.id,
+        transactionType: "bet_placed",
+        amount: sub(oldStake, stake), // net change to balance
+        balanceAfter: newBalance,
+        reason: `Pick updated to ${outcome.label}`,
+        createdBy: membership.userId,
+      });
+      return existing.id;
+    }
 
     let bet;
     try {
@@ -94,27 +126,18 @@ export async function placeBet(input: {
         })
         .returning({ id: schema.bets.id });
     } catch {
-      // unique(match_id,user_id) violation under race
       throw conflict("You already have a bet on this match.");
     }
-
-    const newBalance = sub(member.balance, stake);
-    await tx
-      .update(schema.clanMembers)
-      .set({ balance: newBalance })
-      .where(eq(schema.clanMembers.id, member.id));
-
     await tx.insert(schema.ledgerEntries).values({
       clanId: input.clanId,
       userId: membership.userId,
       betId: bet.id,
       transactionType: "bet_placed",
-      amount: sub("0", stake), // negative
+      amount: sub("0", stake),
       balanceAfter: newBalance,
       reason: `Bet on ${outcome.label}`,
       createdBy: membership.userId,
     });
-
     return bet.id;
   });
 

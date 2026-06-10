@@ -294,6 +294,56 @@ export async function requireAdmin(clanId: string): Promise<ClanMember> {
   return membership;
 }
 
+/** Members of a clan (for admin management): id, name, role, balance, isMe. */
+export async function listMembers(clanId: string): Promise<
+  { userId: string; displayName: string; role: ClanRole; balance: string; isMe: boolean }[]
+> {
+  const me = await requireMember(clanId);
+  const rows = await db
+    .select({ member: schema.clanMembers, profile: schema.profiles })
+    .from(schema.clanMembers)
+    .innerJoin(schema.profiles, eq(schema.clanMembers.userId, schema.profiles.id))
+    .where(eq(schema.clanMembers.clanId, clanId))
+    .orderBy(desc(schema.clanMembers.role), schema.profiles.displayName);
+  return rows.map(({ member, profile }) => ({
+    userId: member.userId,
+    displayName: profile.displayName,
+    role: member.role as ClanRole,
+    balance: member.balance,
+    isMe: member.userId === me.userId,
+  }));
+}
+
+/** Admin removes a member from the clan, deleting their bets + ledger for it. */
+export async function removeMember(clanId: string, targetUserId: string): Promise<void> {
+  const admin = await requireAdmin(clanId);
+  if (targetUserId === admin.userId) throw validation("You can't remove yourself.");
+
+  const target = await db.query.clanMembers.findFirst({
+    where: and(
+      eq(schema.clanMembers.clanId, clanId),
+      eq(schema.clanMembers.userId, targetUserId),
+    ),
+  });
+  if (!target) throw notFound("That member isn't in this clan.");
+  if (target.role === "admin") throw forbidden("You can't remove another admin.");
+
+  await db.transaction(async (tx) => {
+    await tx
+      .delete(schema.bets)
+      .where(and(eq(schema.bets.clanId, clanId), eq(schema.bets.userId, targetUserId)));
+    await tx
+      .delete(schema.ledgerEntries)
+      .where(
+        and(
+          eq(schema.ledgerEntries.clanId, clanId),
+          eq(schema.ledgerEntries.userId, targetUserId),
+        ),
+      );
+    await tx.delete(schema.clanMembers).where(eq(schema.clanMembers.id, target.id));
+  });
+}
+
 export async function updateClanSettings(
   clanId: string,
   patch: Partial<ClanSettings>,

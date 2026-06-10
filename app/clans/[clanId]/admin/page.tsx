@@ -2,9 +2,10 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getSessionProfile } from "@/lib/services/auth";
-import { getClanContext } from "@/lib/services/clans";
+import { getClanContext, listMembers } from "@/lib/services/clans";
 import { listMatches } from "@/lib/services/matches";
 import { listAllBets, getLeaderboard } from "@/lib/services/bets";
+import { RemoveMemberButton } from "@/components/admin/RemoveMemberButton";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -51,10 +52,11 @@ export default async function ClanAdminPage({
   if (!ctx || ctx.membership.role !== "admin") redirect(`/clans/${clanId}`);
   const { clan } = ctx;
 
-  const [matches, bets, leaderboard] = await Promise.all([
+  const [matches, bets, leaderboard, crew] = await Promise.all([
     listMatches(clanId),
     listAllBets(clanId),
     getLeaderboard(clanId),
+    listMembers(clanId),
   ]);
 
   const members = leaderboard.map((r) => ({
@@ -194,6 +196,45 @@ export default async function ClanAdminPage({
             ) : (
               <p className="text-sm italic text-ink-soft">No bets placed yet.</p>
             )}
+          </CardContent>
+        </Card>
+
+        {/* Manage crew */}
+        <Card>
+          <CardHeader>
+            <p className="kicker text-neon-cyan">Menu</p>
+            <CardTitle className="headline text-2xl">MANAGE CREW</CardTitle>
+            <hr className="rule mt-1" />
+            <CardDescription>
+              Remove a player from the clan. This also deletes their bets and
+              ledger here — it can&apos;t be undone.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-2">
+            {crew.map((m) => (
+              <div
+                key={m.userId}
+                className="flex items-center justify-between gap-3 border-b border-grid pb-2 last:border-0"
+              >
+                <span className="flex items-center gap-2">
+                  <span className="font-semibold text-phosphor">{m.displayName}</span>
+                  {m.role === "admin" ? (
+                    <span className="stamp text-[0.5rem] text-neon-amber">Admin</span>
+                  ) : null}
+                  {m.isMe ? <span className="dateline">· you</span> : null}
+                  <span className="tabular text-muted-foreground">
+                    {format(m.balance, clan.currencyName)}
+                  </span>
+                </span>
+                {m.role !== "admin" && !m.isMe ? (
+                  <RemoveMemberButton
+                    clanId={clanId}
+                    userId={m.userId}
+                    displayName={m.displayName}
+                  />
+                ) : null}
+              </div>
+            ))}
           </CardContent>
         </Card>
 

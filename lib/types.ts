@@ -2,6 +2,7 @@ import type { Money } from "@/lib/money";
 
 export type ClanRole = "admin" | "member";
 export type MatchStatus = "open" | "locked" | "final" | "settled";
+export type MarketType = "match" | "tournament_winner";
 export type BetStatus = "pending" | "won" | "lost" | "void";
 export type LedgerType =
   | "initial_balance"
@@ -91,6 +92,9 @@ export interface MatchListItem {
    * without a background job). Use this for badges, CTAs, and bucketing.
    */
   displayStatus: MatchStatus;
+  marketType: MarketType;
+  /** Grand Gala only: the fixed entry stake everyone antes (else null). */
+  fixedStake: Money | null;
   maxBet: Money; // effective: match override or clan default
   outcomes: MatchOutcome[];
   winningOutcomeId: string | null;

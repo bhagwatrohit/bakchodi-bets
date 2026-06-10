@@ -21,9 +21,6 @@ export async function placeBet(input: {
 }): Promise<{ betId: string }> {
   const membership = await requireMember(input.clanId);
 
-  const stake = parseMoney(input.stake);
-  if (!stake) throw validation("Enter a valid bet amount.");
-
   const clan = await db.query.clans.findFirst({ where: eq(schema.clans.id, input.clanId) });
   if (!clan) throw notFound("Clan not found.");
 
@@ -40,6 +37,17 @@ export async function placeBet(input: {
   });
   if (!outcome) throw validation("Pick a valid outcome.");
 
+  // Grand Gala markets use a fixed entry stake set by the admin — the client's
+  // stake value is ignored. Normal matches use the submitted stake (capped).
+  let stake: Money;
+  if (match.fixedStake != null) {
+    stake = match.fixedStake;
+  } else {
+    const parsed = parseMoney(input.stake);
+    if (!parsed) throw validation("Enter a valid bet amount.");
+    stake = parsed;
+  }
+
   const existing = await db.query.bets.findFirst({
     where: and(eq(schema.bets.matchId, input.matchId), eq(schema.bets.userId, membership.userId)),
   });
@@ -53,8 +61,10 @@ export async function placeBet(input: {
     now: new Date(),
   });
   assertPositiveStake(stake);
-  const effectiveMaxBet: Money = match.maxBet ?? clan.defaultMaxBet;
-  assertWithinMaxBet(stake, effectiveMaxBet);
+  if (match.fixedStake == null) {
+    const effectiveMaxBet: Money = match.maxBet ?? clan.defaultMaxBet;
+    assertWithinMaxBet(stake, effectiveMaxBet);
+  }
   assertSufficientBalance(stake, membership.balance);
 
   // --- atomic: insert bet, deduct balance, ledger entry ---

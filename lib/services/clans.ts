@@ -7,7 +7,13 @@ import { conflict, forbidden, notFound, validation } from "@/lib/errors";
 import { parseMoney, isPositive, gte, add } from "@/lib/money";
 import type { Clan, ClanCardData, ClanMember, ClanRole, ClanSettings } from "@/lib/types";
 import type { ClanRow, ClanMemberRow } from "@/lib/db/schema";
-import { WORLD_CUP_FIXTURES, fixtureStartsAt } from "@/lib/worldCupFixtures";
+import {
+  WORLD_CUP_FIXTURES,
+  fixtureStartsAt,
+  WORLD_CUP_TEAMS,
+  GRAND_GALA_TITLE,
+  grandGalaLockAt,
+} from "@/lib/worldCupFixtures";
 
 // Readable invite codes (no ambiguous chars).
 const makeInviteCode = customAlphabet("ABCDEFGHJKLMNPQRSTUVWXYZ23456789", 8);
@@ -134,6 +140,30 @@ export async function createClan(input: {
         ];
       });
       await tx.insert(schema.matchOutcomes).values(outcomeValues);
+
+      // Grand Gala: pick the World Cup champion. Fixed entry stake (default =
+      // clan max bet, admin-editable), open until the knockouts begin.
+      const [gala] = await tx
+        .insert(schema.matches)
+        .values({
+          clanId: clan.id,
+          title: GRAND_GALA_TITLE,
+          teamA: "World Cup",
+          teamB: "Champion",
+          startsAt: grandGalaLockAt(),
+          status: "open" as const,
+          marketType: "tournament_winner" as const,
+          fixedStake: defaultMaxBet,
+          createdBy: me.id,
+        })
+        .returning({ id: schema.matches.id });
+      await tx.insert(schema.matchOutcomes).values(
+        WORLD_CUP_TEAMS.map((team, i) => ({
+          matchId: gala.id,
+          label: team,
+          sortOrder: i,
+        })),
+      );
     }
 
     return clan.id;

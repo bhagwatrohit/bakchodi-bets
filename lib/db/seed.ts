@@ -153,6 +153,26 @@ async function main() {
         { matchId: match.id, label: m.team_b, sortOrder: 2 },
       ]);
     }
+
+    // Grand Gala: pick the World Cup champion (fixed entry stake, open until knockouts).
+    const teams = [...new Set(SEED_MATCHES.flatMap((m) => [m.team_a, m.team_b]))].sort();
+    const [gala] = await db
+      .insert(schema.matches)
+      .values({
+        clanId: clan.id,
+        title: "World Cup Winner",
+        teamA: "World Cup",
+        teamB: "Champion",
+        startsAt: new Date("2026-06-28T12:00:00-04:00"),
+        status: "open",
+        marketType: "tournament_winner",
+        fixedStake: "100",
+        createdBy: adminId,
+      })
+      .returning({ id: schema.matches.id });
+    await db
+      .insert(schema.matchOutcomes)
+      .values(teams.map((t, i) => ({ matchId: gala.id, label: t, sortOrder: i })));
   }
 
   // ---- Demo match: ready to settle, with bets already placed ----

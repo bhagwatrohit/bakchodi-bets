@@ -88,6 +88,11 @@ export const matches = pgTable(
     startsAt: timestamp("starts_at", { withTimezone: true }).notNull(),
     status: text("status").notNull().default("open"),
     maxBet: numeric("max_bet", { mode: "string" }),
+    // 'match' = normal team-vs-team. 'tournament_winner' = the Grand Gala pot
+    // (pick the champion from all teams; one fixed entry stake set by the admin).
+    marketType: text("market_type").notNull().default("match"),
+    // When set (Grand Gala), every entry stakes exactly this much.
+    fixedStake: numeric("fixed_stake", { mode: "string" }),
     winningOutcomeId: uuid("winning_outcome_id"),
     createdBy: uuid("created_by").references(() => profiles.id),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
@@ -96,6 +101,7 @@ export const matches = pgTable(
   (t) => [
     index("matches_clan_idx").on(t.clanId),
     check("matches_status_chk", sql`${t.status} in ('open','locked','final','settled')`),
+    check("matches_market_chk", sql`${t.marketType} in ('match','tournament_winner')`),
   ],
 );
 

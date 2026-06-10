@@ -74,6 +74,26 @@ if (existing[0].n === 0) {
   console.log(`  (clan already has ${existing[0].n} matches — skipped fixtures)`);
 }
 
+// --- Grand Gala: pick the World Cup champion (fixed entry, open until knockouts) ---
+const galaExists = (
+  await sql`select id from matches where clan_id = ${clan.id} and market_type = 'tournament_winner'`
+)[0];
+if (!galaExists) {
+  const teams = [...new Set(fixtures.flatMap((f) => [f.team_a, f.team_b]))].sort((a, b) =>
+    a.localeCompare(b),
+  );
+  const [gala] = await sql`
+    insert into matches (clan_id, title, team_a, team_b, starts_at, status, market_type, fixed_stake, created_by)
+    values (${clan.id}, 'World Cup Winner', 'World Cup', 'Champion', ${new Date("2026-06-28T12:00:00-04:00")}, 'open', 'tournament_winner', ${clan.default_max_bet}, ${admin})
+    returning id`;
+  for (let i = 0; i < teams.length; i++) {
+    await sql`insert into match_outcomes (match_id, label, sort_order) values (${gala.id}, ${teams[i]}, ${i})`;
+  }
+  console.log(`  + Grand Gala (World Cup winner) with ${teams.length} teams`);
+} else {
+  console.log(`  (Grand Gala already present — skipped)`);
+}
+
 // --- demo settle-test match with bets ---
 const DEMO = "Bakchodi XI vs Internet FC";
 const demoExists = (await sql`select id from matches where clan_id = ${clan.id} and title = ${DEMO}`)[0];

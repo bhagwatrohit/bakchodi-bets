@@ -68,6 +68,7 @@ export default async function MatchDetailPage({
   const match = await getMatchDetail(clanId, matchId);
   const status = STATUS_META[match.displayStatus];
   const showBetForm = canBet(match);
+  const isGala = match.marketType === "tournament_winner";
   const winningOutcome = match.winningOutcomeId
     ? match.outcomes.find((o) => o.id === match.winningOutcomeId)
     : null;
@@ -92,22 +93,34 @@ export default async function MatchDetailPage({
           </Link>
           <div className="flex flex-wrap items-start justify-between gap-3 border-b-2 border-grid pb-3">
             <div className="flex flex-col gap-1">
-              <p className="kicker">MATCH</p>
-              <h1 className="matchup flex flex-col gap-2 text-3xl sm:text-5xl">
-                <span className="flex items-center gap-3">
-                  <Flag team={match.teamA} size="lg" />
-                  <span className="min-w-0">{match.teamA}</span>
-                </span>
-                <span className="flex items-center gap-3">
-                  <span className="font-pixel text-xs text-neon-magenta glow-magenta">vs</span>
-                  <Flag team={match.teamB} size="lg" />
-                  <span className="min-w-0">{match.teamB}</span>
-                </span>
-              </h1>
-              {match.title !== `${match.teamA} vs ${match.teamB}` ? (
-                <p className="dateline">{match.title}</p>
-              ) : null}
-              <p className="dateline mt-1">{formatTime(match.startsAt)}</p>
+              {isGala ? (
+                <>
+                  <p className="kicker text-neon-amber">🏆 Grand Gala</p>
+                  <h1 className="headline text-2xl sm:text-4xl">World Cup Winner</h1>
+                  <p className="dateline mt-1">
+                    Pick the champion · entry closes when the knockouts begin
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="kicker">MATCH</p>
+                  <h1 className="matchup flex flex-col gap-2 text-3xl sm:text-5xl">
+                    <span className="flex items-center gap-3">
+                      <Flag team={match.teamA} size="lg" />
+                      <span className="min-w-0">{match.teamA}</span>
+                    </span>
+                    <span className="flex items-center gap-3">
+                      <span className="font-pixel text-xs text-neon-magenta glow-magenta">vs</span>
+                      <Flag team={match.teamB} size="lg" />
+                      <span className="min-w-0">{match.teamB}</span>
+                    </span>
+                  </h1>
+                  {match.title !== `${match.teamA} vs ${match.teamB}` ? (
+                    <p className="dateline">{match.title}</p>
+                  ) : null}
+                  <p className="dateline mt-1">{formatTime(match.startsAt)}</p>
+                </>
+              )}
             </div>
             <span className={`stamp ${status.color}`}>
               {status.label}
@@ -118,9 +131,9 @@ export default async function MatchDetailPage({
         <Card>
           <CardContent className="grid grid-cols-2 gap-y-3 py-5 sm:grid-cols-4 sm:divide-x sm:divide-grid">
             <div className="sm:px-4 sm:first:pl-0">
-              <p className="kicker">Max Bet</p>
+              <p className="kicker">{isGala ? "Entry" : "Max Bet"}</p>
               <p className="tabular text-lg font-semibold">
-                {format(match.maxBet, match.currencyName)}
+                {format(isGala ? (match.fixedStake ?? "0") : match.maxBet, match.currencyName)}
               </p>
             </div>
             <div className="sm:px-4">
@@ -213,8 +226,10 @@ export default async function MatchDetailPage({
         {showBetForm ? (
           <Card>
             <CardHeader>
-              <p className="kicker">MAKE YOUR PICK</p>
-              <CardTitle className="headline text-2xl">PLACE YOUR BET</CardTitle>
+              <p className="kicker">{isGala ? "ENTER THE POOL" : "MAKE YOUR PICK"}</p>
+              <CardTitle className="headline text-2xl">
+                {isGala ? "GRAND GALA" : "PLACE YOUR BET"}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <BetForm
@@ -224,6 +239,8 @@ export default async function MatchDetailPage({
                 maxBet={match.maxBet}
                 availableBalance={match.availableBalance}
                 currencyName={match.currencyName}
+                marketType={match.marketType}
+                fixedStake={match.fixedStake}
               />
             </CardContent>
           </Card>

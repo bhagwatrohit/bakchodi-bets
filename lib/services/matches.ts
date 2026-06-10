@@ -103,7 +103,14 @@ export async function createMatch(input: {
 
 export async function updateMatch(
   matchId: string,
-  patch: { title?: string; teamA?: string; teamB?: string; startsAt?: string; maxBet?: string | null },
+  patch: {
+    title?: string;
+    teamA?: string;
+    teamB?: string;
+    startsAt?: string;
+    maxBet?: string | null;
+    fixedStake?: string | null;
+  },
 ): Promise<void> {
   const match = await db.query.matches.findFirst({ where: eq(schema.matches.id, matchId) });
   if (!match) throw notFound("Match not found.");
@@ -125,6 +132,14 @@ export async function updateMatch(
       const m = parseMoney(patch.maxBet);
       if (!m || !isPositive(m)) throw validation("Max bet must be greater than zero.");
       values.maxBet = m;
+    }
+  }
+  if (patch.fixedStake !== undefined) {
+    if (patch.fixedStake === null || patch.fixedStake === "") values.fixedStake = null;
+    else {
+      const m = parseMoney(patch.fixedStake);
+      if (!m || !isPositive(m)) throw validation("Entry stake must be greater than zero.");
+      values.fixedStake = m;
     }
   }
   await db.update(schema.matches).set(values).where(eq(schema.matches.id, matchId));
@@ -192,6 +207,8 @@ async function buildListItem(
       clanLockAtStart,
       new Date(),
     ),
+    marketType: match.marketType as MatchListItem["marketType"],
+    fixedStake: match.fixedStake,
     maxBet: effectiveMaxBet(match.maxBet, clanDefaultMaxBet),
     outcomes,
     winningOutcomeId: match.winningOutcomeId,

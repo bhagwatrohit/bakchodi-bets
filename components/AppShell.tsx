@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { signOutAction } from "@/app/actions/session";
 import { Trophy } from "@/components/Trophy";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import type { SessionProfile } from "@/lib/types";
 
 /**
@@ -27,6 +28,7 @@ export function AppShell({
           {profile ? (
             <div className="flex items-center gap-3 font-pixel text-[0.6rem] uppercase">
               <span className="hidden text-neon-cyan sm:inline">1P · {profile.displayName}</span>
+              <ThemeToggle />
               <form action={signOutAction}>
                 <button type="submit" className="cursor-pointer text-muted-foreground hover:text-neon-pink">
                   Quit
@@ -35,6 +37,7 @@ export function AppShell({
             </div>
           ) : (
             <div className="flex items-center gap-3 font-pixel text-[0.6rem] uppercase">
+              <ThemeToggle />
               <Link href="/login" className="text-neon-cyan hover:glow-cyan">
                 Log in
               </Link>

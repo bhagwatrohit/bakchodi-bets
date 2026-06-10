@@ -60,6 +60,28 @@
   --loss: var(--neon-pink);
 }
 
+/*
+  LIGHT variant of the arcade theme. Same retro shapes/fonts, but on a light
+  "daylight cabinet" ground with colors darkened for contrast. Toggled by adding
+  `light` to <html>. Overriding the raw palette vars cascades to every token.
+*/
+html.light {
+  --bg: #eef1f8;            /* daylight ground */
+  --bg-2: #ffffff;          /* panels */
+  --phosphor: #161922;      /* ink text */
+  --dim: #5a6376;           /* muted */
+  --grid: #cdd5e6;          /* borders */
+  --grid-line: #e4e8f2;     /* faint background grid */
+  --muted: #e7ebf4;
+
+  /* neon → readable-on-light (still punchy) */
+  --neon-green: #14a33b;
+  --neon-cyan: #0e7aa0;
+  --neon-magenta: #c026a8;
+  --neon-pink: #d81e54;
+  --neon-amber: #b3700a;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -248,3 +270,20 @@ body::before {
 /* blink for "insert coin" style prompts */
 @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0.25; } }
 .blink { animation: blink 1.1s steps(1) infinite; }
+
+/* Light-mode: calm the neon glow + scanlines so it reads crisp on daylight. */
+html.light body::before {
+  background: repeating-linear-gradient(
+    to bottom, rgba(0,0,0,0) 0 2px, rgba(0,0,0,0.05) 3px, rgba(0,0,0,0) 4px
+  );
+}
+html.light .headline,
+html.light .kicker,
+html.light .matchup,
+html.light .glow-green,
+html.light .glow-cyan,
+html.light .glow-magenta,
+html.light .glow-amber { text-shadow: none; }
+html.light .stamp,
+html.light .rule-thick,
+html.light .box-glow { box-shadow: none; }

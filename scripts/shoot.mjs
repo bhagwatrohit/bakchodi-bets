@@ -28,6 +28,11 @@ mkdirSync(OUTDIR, { recursive: true });
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 2 });
 await ctx.addCookies([{ name: "bb_session", value: token, domain: "localhost", path: "/", httpOnly: true, sameSite: "Lax" }]);
+if (process.env.SHOT_THEME === "light") {
+  await ctx.addInitScript(() => {
+    try { localStorage.setItem("bb-theme", "light"); } catch {}
+  });
+}
 const page = await ctx.newPage();
 
 const shots = [

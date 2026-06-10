@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Disclaimer } from "@/components/Disclaimer";
 import { Trophy } from "@/components/Trophy";
 import { Flag } from "@/components/Flag";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { getSessionProfile } from "@/lib/services/auth";
 
 const TICKER = [
@@ -26,8 +27,11 @@ export default async function LandingPage() {
   return (
     <div className="flex-1">
       <div className="mx-auto max-w-4xl px-4">
+        <div className="flex justify-end pt-3">
+          <ThemeToggle />
+        </div>
         {/* Marquee */}
-        <div className="flex flex-col items-center pt-10 text-center sm:pt-16">
+        <div className="flex flex-col items-center pt-4 text-center sm:pt-10">
           <Trophy className="h-20 w-20" />
           <h1 className="headline mt-5 text-2xl sm:text-4xl">BAKCHODI BETS</h1>
           <p className="kicker mt-4">World Cup &apos;26 · Prediction Arcade</p>

@@ -2,7 +2,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MatchCard } from "@/components/MatchCard";
-import type { MatchListItem } from "@/lib/types";
+import type { MatchListItem, MatchOddsView } from "@/lib/types";
 
 function EmptyState({ message }: { message: string }) {
   return (
@@ -18,17 +18,25 @@ function MatchGrid({
   clanId,
   currencyName,
   empty,
+  odds,
 }: {
   matches: MatchListItem[];
   clanId: string;
   currencyName: string;
   empty: string;
+  odds?: Record<string, MatchOddsView>;
 }) {
   if (matches.length === 0) return <EmptyState message={empty} />;
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {matches.map((m) => (
-        <MatchCard key={m.id} match={m} clanId={clanId} currencyName={currencyName} />
+        <MatchCard
+          key={m.id}
+          match={m}
+          clanId={clanId}
+          currencyName={currencyName}
+          odds={odds?.[m.id]}
+        />
       ))}
     </div>
   );
@@ -40,12 +48,15 @@ export function MatchesTabs({
   settled,
   clanId,
   currencyName,
+  odds,
 }: {
   open: MatchListItem[];
   locked: MatchListItem[];
   settled: MatchListItem[];
   clanId: string;
   currencyName: string;
+  /** Bookmaker lines keyed by match id (open/upcoming matches only). */
+  odds?: Record<string, MatchOddsView>;
 }) {
   return (
     <Tabs defaultValue="open">
@@ -66,6 +77,7 @@ export function MatchesTabs({
           matches={open}
           clanId={clanId}
           currencyName={currencyName}
+          odds={odds}
           empty="No matches on the board. Check back for the next round."
         />
       </TabsContent>

@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import { PlusCircle, Ticket } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { ClanCard } from "@/components/ClanCard";
+import { DashboardWire, WireSkeleton } from "@/components/WorldCupWire";
 import { JoinByCodeBox } from "@/components/JoinByCodeBox";
 import { Trophy } from "@/components/Trophy";
 import { Button } from "@/components/ui/button";
@@ -46,6 +48,12 @@ export default async function DashboardPage() {
               <ClanCard key={clan.clanId} clan={clan} />
             ))}
           </div>
+
+          <Suspense fallback={<WireSkeleton />}>
+            <DashboardWire
+              clans={clans.map((c) => ({ clanId: c.clanId, name: c.name }))}
+            />
+          </Suspense>
 
           <Card>
             <CardHeader>

@@ -4,6 +4,11 @@ import { MatchesTabs } from "@/components/MatchesTabs";
 import { getSessionProfile } from "@/lib/services/auth";
 import { getClanContext } from "@/lib/services/clans";
 import { listMatches } from "@/lib/services/matches";
+import {
+  getWorldCupOdds,
+  oddsViewFor,
+  type MatchOddsView,
+} from "@/lib/services/worldcup-feed";
 import type { MatchListItem } from "@/lib/types";
 
 export default async function MatchesPage({
@@ -33,6 +38,16 @@ export default async function MatchesPage({
     else if (m.displayStatus === "settled") settled.push(m);
   }
 
+  // Bookmaker lines for the open card (best-effort; absent when feed is down).
+  const oddsEntries = await getWorldCupOdds();
+  const odds: Record<string, MatchOddsView> = {};
+  if (oddsEntries) {
+    for (const m of open) {
+      const view = oddsViewFor(oddsEntries, m.teamA, m.teamB);
+      if (view) odds[m.id] = view;
+    }
+  }
+
   return (
     <AppShell profile={profile}>
       <div className="flex flex-col gap-6">
@@ -52,6 +67,7 @@ export default async function MatchesPage({
           settled={settled}
           clanId={clanId}
           currencyName={ctx.clan.currencyName}
+          odds={odds}
         />
       </div>
     </AppShell>

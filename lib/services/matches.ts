@@ -1,6 +1,7 @@
 import "server-only";
-import { and, eq, asc, sql } from "drizzle-orm";
+import { and, eq, gt, asc, sql } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
+import { requireSessionProfile } from "@/lib/services/auth";
 import { requireAdmin, requireMember } from "@/lib/services/clans";
 import { notFound, validation } from "@/lib/errors";
 import { parseMoney, isPositive } from "@/lib/money";
@@ -256,6 +257,58 @@ export async function getMatchDetail(clanId: string, matchId: string): Promise<M
     currencyName: clan.currencyName,
     clanLockAtStart: clan.lockBetsAtMatchStart,
   };
+}
+
+export interface ClanUpcomingMatch {
+  clanId: string;
+  matchId: string;
+  teamA: string;
+  teamB: string;
+  startsAt: Date;
+}
+
+/**
+ * Next kickoff-ordered open team-vs-team matches in every clan the caller
+ * belongs to, capped per clan. Powers the dashboard World Cup wire.
+ */
+export async function upcomingOpenMatchesByClan(
+  perClan = 3,
+): Promise<Map<string, ClanUpcomingMatch[]>> {
+  const me = await requireSessionProfile();
+  const rows = await db
+    .select({
+      clanId: schema.matches.clanId,
+      matchId: schema.matches.id,
+      teamA: schema.matches.teamA,
+      teamB: schema.matches.teamB,
+      startsAt: schema.matches.startsAt,
+    })
+    .from(schema.matches)
+    .innerJoin(
+      schema.clanMembers,
+      and(
+        eq(schema.clanMembers.clanId, schema.matches.clanId),
+        eq(schema.clanMembers.userId, me.id),
+      ),
+    )
+    .where(
+      and(
+        eq(schema.matches.status, "open"),
+        eq(schema.matches.marketType, "match"),
+        gt(schema.matches.startsAt, new Date()),
+      ),
+    )
+    .orderBy(asc(schema.matches.startsAt));
+
+  const grouped = new Map<string, ClanUpcomingMatch[]>();
+  for (const row of rows) {
+    const list = grouped.get(row.clanId) ?? [];
+    if (list.length < perClan) {
+      list.push(row);
+      grouped.set(row.clanId, list);
+    }
+  }
+  return grouped;
 }
 
 /** The clan's Grand Gala (tournament-winner) market, or null if none. */

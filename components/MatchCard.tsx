@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Flag } from "@/components/Flag";
 import { format } from "@/lib/money";
 import { cn } from "@/lib/utils";
-import type { MatchListItem, MatchStatus } from "@/lib/types";
+import type { MatchListItem, MatchOddsView, MatchStatus } from "@/lib/types";
 
 // Status as a neon stamp; color via text-*.
 const STATUS_META: Record<MatchStatus, { label: string; color: string }> = {
@@ -32,10 +32,13 @@ export function MatchCard({
   match,
   clanId,
   currencyName,
+  odds,
 }: {
   match: MatchListItem;
   clanId: string;
   currencyName: string;
+  /** Bookmaker lines for this fixture (informational), when available. */
+  odds?: MatchOddsView | null;
 }) {
   const status = STATUS_META[match.displayStatus];
   const href = `/clans/${clanId}/matches/${match.id}`;
@@ -99,6 +102,23 @@ export function MatchCard({
             {isGala ? (match.betCount === 1 ? "Entry" : "Entries") : match.betCount === 1 ? "Bet" : "Bets"}
           </span>
         </div>
+
+        {odds && !isGala ? (
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-l-2 border-neon-amber bg-muted px-3 py-2 text-xs">
+            <span className="kicker text-neon-amber">Vegas says</span>
+            {odds.a && odds.b ? (
+              <span className="tabular text-phosphor">
+                {match.teamA} {odds.a}
+                {odds.draw ? ` · Draw ${odds.draw}` : ""} · {match.teamB} {odds.b}
+              </span>
+            ) : (
+              <span className="tabular text-phosphor">{odds.summary}</span>
+            )}
+            {odds.provider ? (
+              <span className="dateline">via {odds.provider}</span>
+            ) : null}
+          </div>
+        ) : null}
 
         {match.myBet && myBetStatus ? (
           <div className="flex items-center justify-between border-l-2 border-neon-cyan bg-muted px-3 py-2 text-sm">

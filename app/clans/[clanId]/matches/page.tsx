@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { MatchesTabs } from "@/components/MatchesTabs";
+import { OddsExplainer } from "@/components/OddsStrip";
 import { getSessionProfile } from "@/lib/services/auth";
 import { getClanContext } from "@/lib/services/clans";
 import { listMatches } from "@/lib/services/matches";
@@ -58,6 +59,7 @@ export default async function MatchesPage({
             Drop your fake-credit picks and climb the high-score board — every
             call goes on the record.
           </p>
+          {Object.keys(odds).length > 0 ? <OddsExplainer /> : null}
           <hr className="rule-thick mt-1" />
         </header>
 

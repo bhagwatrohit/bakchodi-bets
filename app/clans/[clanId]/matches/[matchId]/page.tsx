@@ -13,9 +13,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { OddsExplainer, OddsStrip } from "@/components/OddsStrip";
 import { getSessionProfile } from "@/lib/services/auth";
 import { getClanContext } from "@/lib/services/clans";
 import { getMatchDetail } from "@/lib/services/matches";
+import { getWorldCupOdds, oddsViewFor } from "@/lib/services/worldcup-feed";
 import { listAllBets } from "@/lib/services/bets";
 import { format } from "@/lib/money";
 import type { BetHistoryRow, MatchDetail, MatchStatus } from "@/lib/types";
@@ -72,6 +74,13 @@ export default async function MatchDetailPage({
   const winningOutcome = match.winningOutcomeId
     ? match.outcomes.find((o) => o.id === match.winningOutcomeId)
     : null;
+
+  // Bookmaker lines for this fixture (best-effort; absent when feed is down).
+  let odds = null;
+  if (!isGala && match.status !== "settled") {
+    const oddsEntries = await getWorldCupOdds();
+    odds = oddsEntries ? oddsViewFor(oddsEntries, match.teamA, match.teamB) : null;
+  }
 
   // Optional all-bets table; the service enforces visibility. Skip silently if forbidden.
   let allBets: BetHistoryRow[] | null = null;
@@ -154,6 +163,13 @@ export default async function MatchDetailPage({
             </div>
           </CardContent>
         </Card>
+
+        {odds ? (
+          <div className="flex flex-col gap-2">
+            <OddsStrip teamA={match.teamA} teamB={match.teamB} odds={odds} />
+            <OddsExplainer full className="px-3" />
+          </div>
+        ) : null}
 
         {match.status === "settled" && winningOutcome ? (
           <Card className="border-2 border-neon-green">

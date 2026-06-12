@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Flag } from "@/components/Flag";
+import { OddsExplainer } from "@/components/OddsStrip";
 import {
   getWorldCupNews,
   getWorldCupOdds,
@@ -125,6 +126,10 @@ export async function ClanWire({
 
   const teams = Array.from(new Set(matches.flatMap((m) => [m.teamA, m.teamB])));
   const headlines = news ? newsForTeams(news, teams, headlineCount) : [];
+  const lines = matches.map((m) => ({
+    matchup: m,
+    view: odds ? oddsViewFor(odds, m.teamA, m.teamB) : null,
+  }));
 
   return (
     <Card>
@@ -145,14 +150,11 @@ export async function ClanWire({
           <div>
             <p className="kicker mb-2 text-neon-amber">The Lines</p>
             <ul className="flex flex-col gap-2">
-              {matches.map((m) => (
-                <OddsLine
-                  key={m.matchId}
-                  matchup={m}
-                  odds={odds ? oddsViewFor(odds, m.teamA, m.teamB) : null}
-                />
+              {lines.map(({ matchup, view }) => (
+                <OddsLine key={matchup.matchId} matchup={matchup} odds={view} />
               ))}
             </ul>
+            {lines.some((l) => l.view) ? <OddsExplainer className="mt-2" /> : null}
           </div>
         ) : null}
 

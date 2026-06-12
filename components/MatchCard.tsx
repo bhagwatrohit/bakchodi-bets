@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Flag } from "@/components/Flag";
+import { OddsStrip } from "@/components/OddsStrip";
 import { format } from "@/lib/money";
 import { cn } from "@/lib/utils";
 import type { MatchListItem, MatchOddsView, MatchStatus } from "@/lib/types";
@@ -104,20 +105,7 @@ export function MatchCard({
         </div>
 
         {odds && !isGala ? (
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-l-2 border-neon-amber bg-muted px-3 py-2 text-xs">
-            <span className="kicker text-neon-amber">Vegas says</span>
-            {odds.a && odds.b ? (
-              <span className="tabular text-phosphor">
-                {match.teamA} {odds.a}
-                {odds.draw ? ` · Draw ${odds.draw}` : ""} · {match.teamB} {odds.b}
-              </span>
-            ) : (
-              <span className="tabular text-phosphor">{odds.summary}</span>
-            )}
-            {odds.provider ? (
-              <span className="dateline">via {odds.provider}</span>
-            ) : null}
-          </div>
+          <OddsStrip teamA={match.teamA} teamB={match.teamB} odds={odds} />
         ) : null}
 
         {match.myBet && myBetStatus ? (

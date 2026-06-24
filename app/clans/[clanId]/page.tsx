@@ -6,6 +6,7 @@ import { getClanContext } from "@/lib/services/clans";
 import { listMatches } from "@/lib/services/matches";
 import { getLeaderboard } from "@/lib/services/bets";
 import { AppShell } from "@/components/AppShell";
+import { ClanNav } from "@/components/ClanNav";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InviteCopy } from "@/components/InviteCopy";
 import { ClanWire, WireSkeleton } from "@/components/WorldCupWire";
@@ -98,54 +99,25 @@ export default async function ClanHomePage({
 
   return (
     <AppShell profile={profile}>
-      <div className="flex flex-col gap-7">
-        {/* Title band */}
-        <div>
-          <div className="flex flex-col items-center gap-3">
-            <Trophy className="h-12 w-12" />
-            <h1 className="headline text-center text-2xl sm:text-5xl">{clan.name}</h1>
-          </div>
-          <hr className="rule-thick mt-3" />
-          <div className="flex flex-col gap-1 py-2 dateline sm:flex-row sm:items-center sm:justify-between">
+      <ClanNav clanId={clanId} clanName={clan.name} isAdmin={isAdmin} />
+      <div className="flex flex-col gap-6">
+        {/* Compact title band */}
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <h1 className="headline flex items-center gap-2 text-2xl sm:text-3xl">
+            <Trophy className="h-7 w-7 shrink-0" /> {clan.name}
+          </h1>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-0.5 dateline">
             <span>
-              {isAdmin ? "Player 1 · Admin" : "Player"} · {profile.displayName}
-            </span>
-            <span>
-              Credits: <span className="tabular text-primary">{format(membership.balance, clan.currencyName)}</span>
+              Credits:{" "}
+              <span className="tabular text-primary">
+                {format(membership.balance, clan.currencyName)}
+              </span>
             </span>
             <span>
               {myRow ? `Rank ${myRow.rank}` : "Unranked"} of {leaderboard.length}
             </span>
           </div>
-          <hr className="rule" />
         </div>
-
-        {/* Section nav rail */}
-        <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-y border-border py-2 text-sm">
-          <Link href={`/clans/${clanId}/matches`} className="text-muted-foreground hover:text-foreground">
-            Matches
-          </Link>
-          <span className="text-border">·</span>
-          <Link href={`/clans/${clanId}/gala`} className="text-[var(--accent-amber)] hover:text-foreground">
-            🏆 Grand Gala
-          </Link>
-          <span className="text-border">·</span>
-          <Link href={`/clans/${clanId}/leaderboard`} className="text-muted-foreground hover:text-foreground">
-            Leaderboard
-          </Link>
-          <span className="text-border">·</span>
-          <Link href={`/clans/${clanId}/bets`} className="text-muted-foreground hover:text-foreground">
-            My bets
-          </Link>
-          {isAdmin ? (
-            <>
-              <span className="text-border">·</span>
-              <Link href={`/clans/${clanId}/admin`} className="text-danger hover:text-foreground">
-                Admin
-              </Link>
-            </>
-          ) : null}
-        </nav>
 
         {/* Clan code column */}
         <div className="mx-auto w-full max-w-md">

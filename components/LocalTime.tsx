@@ -10,8 +10,8 @@ import { useEffect, useState } from "react";
  */
 export function LocalTime({
   value,
-  dateStyle = "medium",
-  timeStyle = "short",
+  dateStyle,
+  timeStyle,
   className,
 }: {
   value: Date | string;
@@ -20,16 +20,20 @@ export function LocalTime({
   className?: string;
 }) {
   const iso = typeof value === "string" ? value : value.toISOString();
+  // Default to date + time only when the caller specifies neither, so passing
+  // just `timeStyle` (or just `dateStyle`) renders that part alone.
+  const ds = dateStyle === undefined && timeStyle === undefined ? "medium" : dateStyle;
+  const ts = dateStyle === undefined && timeStyle === undefined ? "short" : timeStyle;
   const [text, setText] = useState(
     () =>
-      new Intl.DateTimeFormat("en-US", { dateStyle, timeStyle, timeZone: "UTC" }).format(
+      new Intl.DateTimeFormat("en-US", { dateStyle: ds, timeStyle: ts, timeZone: "UTC" }).format(
         new Date(iso),
       ) + " UTC",
   );
 
   useEffect(() => {
-    setText(new Intl.DateTimeFormat(undefined, { dateStyle, timeStyle }).format(new Date(iso)));
-  }, [iso, dateStyle, timeStyle]);
+    setText(new Intl.DateTimeFormat(undefined, { dateStyle: ds, timeStyle: ts }).format(new Date(iso)));
+  }, [iso, ds, ts]);
 
   return (
     <time dateTime={iso} className={className} suppressHydrationWarning>

@@ -104,7 +104,8 @@ async function main() {
         createdBy: adminId,
         currencyName: "Bakchodi Bucks",
         startingBalance: "1000",
-        defaultMaxBet: "100",
+        defaultMinBet: "100",
+        defaultMaxBet: "500",
         inviteCode: SEED_INVITE,
       })
       .returning();

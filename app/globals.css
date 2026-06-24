@@ -2,84 +2,92 @@
 
 /*
   ============================================================
-  BAKCHODI BETS — "ARCADE" CRT / retro video-game design system
+  BAKCHODI BETS — clean fintech design system
   ============================================================
-  Dark CRT cabinet: deep space-navy ground, neon phosphor type,
-  pixel + terminal fonts, scanlines, glow. Square pixels (radius 0).
+  Modelled on Robinhood (dark) / Kalshi (light): near-black or near-white
+  ground, a single green accent, one type family (Inter), generous whitespace,
+  tabular numerals, soft rounded corners, hairline borders. No neon, no
+  scanlines, no pixel fonts.
 
-  Token names are KEPT and remapped so components re-skin:
-    primary = neon green (dark text), accent = neon magenta
-    ink ≈ light phosphor (foreground), paper ≈ dark ground
+  Token names are KEPT (and the legacy `neon-*` / `ink`/`paper` aliases remapped)
+  so existing components re-skin centrally with minimal markup churn.
 */
 
 :root {
-  /* Raw arcade palette */
-  --bg: #0a0e1a;          /* CRT ground */
-  --bg-2: #121a35;        /* panel / cabinet */
-  --phosphor: #d8ffe9;    /* phosphor text */
-  --neon-green: #39ff14;
-  --neon-cyan: #21e6ff;
-  --neon-magenta: #ff2bd6;
-  --neon-pink: #ff3b6b;
-  --neon-amber: #ffd23f;
-  --dim: #93a6cf;         /* muted (lightened for readability) */
-  --grid: #2a3a66;        /* borders */
-  --grid-line: #161f3c;   /* faint background grid */
+  /* Robinhood-style dark palette */
+  --bg: #0a0a0b;          /* app ground */
+  --bg-2: #151518;        /* cards / panels */
+  --phosphor: #f5f5f7;    /* primary text */
+  --dim: #9a9aa3;         /* muted text */
+  --grid: #242428;        /* hairline borders */
+  --grid-line: #1a1a1d;   /* faint surface lines */
+
+  --accent-green: #00c805;
+  --accent-amber: #ffb340;
+  --accent-red: #ff5247;
 
   /* Remapped semantic tokens (consumed by every component) */
   --background: var(--bg);
   --foreground: var(--phosphor);
   --card: var(--bg-2);
   --card-foreground: var(--phosphor);
-  --muted: #182246;
+  --muted: #1d1d21;
   --muted-foreground: var(--dim);
   --border: var(--grid);
-  --input: var(--neon-cyan);
-  --ring: var(--neon-cyan);
+  --input: var(--grid);
+  --ring: var(--accent-green);
 
-  --primary: var(--neon-green);
+  --primary: var(--accent-green);
   --primary-foreground: #04210a;
-  --accent: var(--neon-magenta);
-  --accent-foreground: #1b0017;
+  --accent: var(--accent-green);
+  --accent-foreground: #04210a;
 
-  --success: var(--neon-green);
+  --success: var(--accent-green);
   --success-foreground: #04210a;
-  --danger: var(--neon-pink);
+  --danger: var(--accent-red);
   --danger-foreground: #2a0410;
 
-  --radius: 0px;
+  --radius: 10px;
 
-  /* Legacy token aliases (so existing .text-ink/.bg-paper utilities resolve
-     correctly on the dark theme): ink = foreground, paper = ground. */
+  /* Legacy neon aliases → clean palette (so old utilities resolve sanely) */
+  --neon-green: var(--accent-green);
+  --neon-cyan: var(--dim);
+  --neon-magenta: var(--accent-green);
+  --neon-pink: var(--accent-red);
+  --neon-amber: var(--accent-amber);
+
+  /* Legacy ink/paper aliases */
   --ink: var(--phosphor);
   --paper: var(--bg);
   --paper-2: var(--bg-2);
   --ink-soft: var(--dim);
   --hairline: var(--grid);
-  --gain: var(--neon-green);
-  --loss: var(--neon-pink);
+  --gain: var(--accent-green);
+  --loss: var(--accent-red);
 }
 
 /*
-  LIGHT variant of the arcade theme. Same retro shapes/fonts, but on a light
-  "daylight cabinet" ground with colors darkened for contrast. Toggled by adding
-  `light` to <html>. Overriding the raw palette vars cascades to every token.
+  Kalshi-style LIGHT variant. Same shapes/type, near-white ground, emerald
+  accent, soft borders. Toggled by adding `light` to <html>.
 */
 html.light {
-  --bg: #eef1f8;            /* daylight ground */
-  --bg-2: #ffffff;          /* panels */
-  --phosphor: #161922;      /* ink text */
-  --dim: #5a6376;           /* muted */
-  --grid: #cdd5e6;          /* borders */
-  --grid-line: #e4e8f2;     /* faint background grid */
-  --muted: #e7ebf4;
+  --bg: #f7f8f9;
+  --bg-2: #ffffff;
+  --phosphor: #11161c;
+  --dim: #6b7480;
+  --grid: #e6e8ec;
+  --grid-line: #eef1f4;
+  --muted: #eef1f4;
 
-  /* neon → readable-on-light (still punchy) */
-  --neon-green: #14a33b;
-  --neon-cyan: #0e7aa0;
-  --neon-magenta: #c026a8;
-  --neon-pink: #d81e54;
-  --neon-amber: #b3700a;
+  --accent-green: #00a866;
+  --accent-amber: #9a6b0a;
+  --accent-red: #d81e54;
+
+  --primary-foreground: #ffffff;
+  --accent-foreground: #ffffff;
+  --success-foreground: #ffffff;
+  --danger-foreground: #ffffff;
+  --ring: var(--accent-green);
 }
 
 @theme inline {
@@ -101,7 +109,7 @@ html.light {
   --color-danger: var(--danger);
   --color-danger-foreground: var(--danger-foreground);
 
-  /* arcade raw tokens (use bg-neon-green, text-neon-cyan, border-grid, …) */
+  /* legacy raw token classes (bg-neon-green, text-neon-amber, border-grid, …) */
   --color-neon-green: var(--neon-green);
   --color-neon-cyan: var(--neon-cyan);
   --color-neon-magenta: var(--neon-magenta);
@@ -111,7 +119,6 @@ html.light {
   --color-grid: var(--grid);
   --color-bg-2: var(--bg-2);
 
-  /* legacy aliases */
   --color-ink: var(--ink);
   --color-paper: var(--paper);
   --color-paper-2: var(--paper-2);
@@ -120,17 +127,18 @@ html.light {
   --color-gain: var(--gain);
   --color-loss: var(--loss);
 
-  --radius-lg: var(--radius);
-  --radius-md: var(--radius);
-  --radius-sm: var(--radius);
+  --radius-lg: 14px;
+  --radius-md: 10px;
+  --radius-sm: 8px;
 
-  --font-pixel: var(--font-press-start);
-  --font-terminal: var(--font-vt323);
-  --font-display: var(--font-press-start);
-  --font-condensed: var(--font-vt323);
-  --font-serif: var(--font-vt323);
-  --font-sans: var(--font-vt323);
-  --font-mono: var(--font-vt323);
+  /* one type family everywhere */
+  --font-pixel: var(--font-inter);
+  --font-terminal: var(--font-inter);
+  --font-display: var(--font-inter);
+  --font-condensed: var(--font-inter);
+  --font-serif: var(--font-inter);
+  --font-sans: var(--font-inter);
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
 }
 
 * {
@@ -138,152 +146,101 @@ html.light {
 }
 
 html {
-  font-size: 18px; /* VT323 renders small; bump base */
+  font-size: 16px;
 }
 
 body {
   background-color: var(--bg);
   color: var(--phosphor);
-  font-family: var(--font-vt323), ui-monospace, monospace;
-  background-image:
-    radial-gradient(circle at 50% 0%, rgba(33, 230, 255, 0.06), transparent 62%),
-    linear-gradient(var(--grid-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-  background-size: 100% 100%, 54px 54px, 54px 54px;
-  background-position: 0 0, 0 0, 0 0;
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* CRT scanlines overlay */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  pointer-events: none;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0) 0,
-    rgba(0, 0, 0, 0) 2px,
-    rgba(0, 0, 0, 0.18) 3px,
-    rgba(0, 0, 0, 0) 4px
-  );
-  mix-blend-mode: multiply;
-}
+/* ---------- Typography helpers (same class names, clean modern look) ---------- */
 
-/* ---------- Arcade typography helpers (same names, new look) ---------- */
-
-.font-pixel { font-family: var(--font-press-start), monospace; }
-.font-display { font-family: var(--font-press-start), monospace; }
-.font-condensed { font-family: var(--font-vt323), monospace; }
+.font-pixel,
+.font-display { font-family: var(--font-inter), system-ui, sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+.font-condensed { font-family: var(--font-inter), system-ui, sans-serif; }
 
 .headline {
-  font-family: var(--font-press-start), monospace;
-  font-weight: 400;
-  line-height: 1.25;
-  letter-spacing: 0.01em;
-  color: var(--neon-green);
-  text-shadow: 0 0 5px rgba(57, 255, 20, 0.45), 0 0 14px rgba(57, 255, 20, 0.22);
-  overflow-wrap: anywhere; /* never overflow the viewport on mobile */
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  color: var(--foreground);
+  overflow-wrap: anywhere;
 }
 
-/* Team matchups & other long readable text: terminal font (compact + legible),
-   NOT the wide pixel font. Pairs with responsive Tailwind text sizes. */
+/* Team matchups & other prominent readable text. */
 .matchup {
-  font-family: var(--font-vt323), ui-monospace, monospace;
-  text-transform: uppercase;
-  letter-spacing: 0.01em;
-  line-height: 1.05;
-  color: var(--phosphor);
-  text-shadow: 0 0 7px rgba(216, 255, 233, 0.25);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  color: var(--foreground);
 }
 
+/* Small all-caps label / section eyebrow. */
 .kicker {
-  font-family: var(--font-press-start), monospace;
+  font-family: var(--font-inter), system-ui, sans-serif;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-size: 0.6rem;
-  color: var(--neon-cyan);
-  text-shadow: 0 0 8px rgba(33, 230, 255, 0.5);
+  letter-spacing: 0.06em;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
 }
 
+/* Secondary meta line (times, venue, etc.) */
 .dateline {
-  font-family: var(--font-vt323), monospace;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: 0.95rem;
-  color: var(--dim);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: 0.82rem;
+  color: var(--muted-foreground);
 }
 
 .tabular {
-  font-family: var(--font-vt323), ui-monospace, monospace;
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
 }
 
-/* drop cap doesn't fit arcade — just neon-emphasize the first letter */
+/* drop cap → plain accented initial */
 .dropcap::first-letter {
-  font-family: var(--font-press-start), monospace;
-  color: var(--neon-magenta);
-  font-size: 1.4em;
-  padding-right: 0.08em;
+  font-weight: 800;
+  color: var(--accent);
+  font-size: 1.3em;
+  padding-right: 0.06em;
 }
 
-/* glow helpers */
-.glow-green { text-shadow: 0 0 6px rgba(57, 255, 20, 0.7), 0 0 16px rgba(57, 255, 20, 0.4); }
-.glow-cyan { text-shadow: 0 0 6px rgba(33, 230, 255, 0.7), 0 0 16px rgba(33, 230, 255, 0.4); }
-.glow-magenta { text-shadow: 0 0 6px rgba(255, 43, 214, 0.7), 0 0 16px rgba(255, 43, 214, 0.4); }
-.glow-amber { text-shadow: 0 0 6px rgba(255, 210, 63, 0.7), 0 0 16px rgba(255, 210, 63, 0.4); }
-.box-glow { box-shadow: 0 0 0 1px rgba(33, 230, 255, 0.25), 0 0 14px rgba(33, 230, 255, 0.25); }
+/* glow helpers are now no-ops (kept so markup needn't change) */
+.glow-green, .glow-cyan, .glow-magenta, .glow-amber { text-shadow: none; }
+.box-glow { box-shadow: none; }
 
-/* ---------- Rules (neon dividers) ---------- */
-.rule { border: 0; border-top: 2px solid var(--grid); }
-.rule-thick { border: 0; border-top: 3px solid var(--neon-cyan); box-shadow: 0 1px 8px rgba(33,230,255,0.4); }
-.rule-double { border: 0; border-top: 3px double var(--neon-green); }
+/* ---------- Rules / dividers ---------- */
+.rule { border: 0; border-top: 1px solid var(--grid); }
+.rule-thick { border: 0; border-top: 1px solid var(--grid); }
+.rule-double { border: 0; border-top: 1px solid var(--grid); }
 .rule-hair { border: 0; border-top: 1px solid var(--grid); }
 
-/* ---------- Scanline / grid strip ---------- */
-.halftone {
-  background-image: repeating-linear-gradient(
-    to bottom, var(--neon-cyan) 0 1px, transparent 1px 4px
-  );
-  opacity: 0.25;
-}
+.halftone { display: none; }
 
-/* ---------- Status "stamp" → neon chip ---------- */
+/* ---------- Status "stamp" → clean chip ---------- */
 .stamp {
-  font-family: var(--font-press-start), monospace;
+  font-family: var(--font-inter), system-ui, sans-serif;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-size: 0.55rem;
-  border: 2px solid currentColor;
-  padding: 0.25rem 0.45rem;
+  letter-spacing: 0.04em;
+  font-size: 0.62rem;
+  font-weight: 700;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 0.15rem 0.5rem;
   display: inline-block;
-  box-shadow: 0 0 8px currentColor;
+  box-shadow: none;
 }
-.stamp-rotated { transform: none; } /* no rotation in arcade */
+.stamp-rotated { transform: none; }
 
-/* pixel-art image rendering for flags/sprites that want it */
-.pixelated { image-rendering: pixelated; }
+.pixelated { image-rendering: auto; }
 
-::selection { background: var(--neon-magenta); color: #fff; }
+::selection { background: color-mix(in srgb, var(--accent-green) 30%, transparent); color: var(--foreground); }
 
-/* blink for "insert coin" style prompts */
-@keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0.25; } }
-.blink { animation: blink 1.1s steps(1) infinite; }
-
-/* Light-mode: calm the neon glow + scanlines so it reads crisp on daylight. */
-html.light body::before {
-  background: repeating-linear-gradient(
-    to bottom, rgba(0,0,0,0) 0 2px, rgba(0,0,0,0.05) 3px, rgba(0,0,0,0) 4px
-  );
-}
-html.light .headline,
-html.light .kicker,
-html.light .matchup,
-html.light .glow-green,
-html.light .glow-cyan,
-html.light .glow-magenta,
-html.light .glow-amber { text-shadow: none; }
-html.light .stamp,
-html.light .rule-thick,
-html.light .box-glow { box-shadow: none; }
+/* blink → static (no animation in the clean theme) */
+.blink { animation: none; }

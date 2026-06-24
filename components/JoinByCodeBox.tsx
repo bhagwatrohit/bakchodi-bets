@@ -21,7 +21,7 @@ export function JoinByCodeBox() {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
       <Label htmlFor="join-code" className="kicker">
-        Enter Clan Code
+        Enter clan code
       </Label>
       <div className="flex flex-col gap-2 sm:flex-row">
         <Input

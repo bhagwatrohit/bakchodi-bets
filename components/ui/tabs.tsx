@@ -31,7 +31,7 @@ export function TabsList({ className, children }: { className?: string; children
   return (
     <div
       className={cn(
-        "flex items-stretch gap-0 border-2 border-grid divide-x-2 divide-grid",
+        "inline-flex items-stretch gap-1 rounded-lg border border-border bg-card p-1",
         className,
       )}
     >
@@ -49,10 +49,10 @@ export function TabsTrigger({ value, children }: { value: string; children: Reac
       type="button"
       onClick={() => ctx.setValue(value)}
       className={cn(
-        "flex-1 px-4 py-2 font-pixel uppercase tracking-wide text-[0.6rem] transition-all",
+        "flex-1 rounded-md px-4 py-1.5 text-sm font-semibold transition-colors",
         active
-          ? "bg-neon-cyan text-background shadow-[0_0_14px_rgba(33,230,255,0.6)]"
-          : "bg-transparent text-muted-foreground hover:text-neon-cyan",
+          ? "bg-primary text-primary-foreground"
+          : "bg-transparent text-muted-foreground hover:text-foreground",
       )}
     >
       {children}

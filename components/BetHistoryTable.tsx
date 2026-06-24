@@ -1,13 +1,14 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Flag } from "@/components/Flag";
+import { LocalTime } from "@/components/LocalTime";
 import { format } from "@/lib/money";
 import type { BetHistoryRow, BetStatus } from "@/lib/types";
 
-// Stamp colour per status, in the arcade neon palette.
+// Stamp colour per status, using semantic tokens.
 const STATUS_STAMP: Record<BetStatus, string> = {
-  pending: "text-neon-cyan",
-  won: "text-neon-green",
-  lost: "text-neon-pink",
+  pending: "text-muted-foreground",
+  won: "text-primary",
+  lost: "text-danger",
   void: "text-muted-foreground",
 };
 
@@ -17,11 +18,6 @@ const STATUS_LABEL: Record<BetStatus, string> = {
   lost: "Lost",
   void: "Void",
 };
-
-const dateFmt = new Intl.DateTimeFormat("en-US", {
-  dateStyle: "medium",
-  timeStyle: "short",
-});
 
 function matchLabel(row: BetHistoryRow): string {
   return row.matchTitle || `${row.teamA} vs ${row.teamB}`;
@@ -42,9 +38,9 @@ export function BetHistoryTable({
 }) {
   if (rows.length === 0) {
     return (
-      <div className="border-2 border-grid bg-card p-8 text-center">
-        <p className="kicker">No Plays Yet</p>
-        <p className="headline mt-1 text-xl">No bets on the board</p>
+      <div className="rounded-lg border border-border bg-card p-8 text-center">
+        <p className="kicker">No bets yet</p>
+        <p className="headline mt-1 text-xl">Nothing on the board</p>
         <p className="mt-2 text-sm text-muted-foreground">No bets yet — go place one.</p>
       </div>
     );
@@ -81,8 +77,8 @@ export function BetHistoryTable({
               </span>
             </TableCell>
             <TableCell className="tabular text-right">{format(row.payout, currencyName)}</TableCell>
-            <TableCell className="dateline whitespace-nowrap">
-              {dateFmt.format(row.createdAt)}
+            <TableCell className="whitespace-nowrap">
+              <LocalTime value={row.createdAt} className="dateline" />
             </TableCell>
           </TableRow>
         ))}

@@ -44,7 +44,8 @@ export const clans = pgTable("clans", {
   createdBy: uuid("created_by").references(() => profiles.id),
   currencyName: text("currency_name").notNull().default("credits"),
   startingBalance: numeric("starting_balance", { mode: "string" }).notNull().default("1000"),
-  defaultMaxBet: numeric("default_max_bet", { mode: "string" }).notNull().default("100"),
+  defaultMinBet: numeric("default_min_bet", { mode: "string" }).notNull().default("100"),
+  defaultMaxBet: numeric("default_max_bet", { mode: "string" }).notNull().default("500"),
   lockBetsAtMatchStart: boolean("lock_bets_at_match_start").notNull().default(true),
   showBetsBeforeLock: boolean("show_bets_before_lock").notNull().default(false),
   showBetsAfterLock: boolean("show_bets_after_lock").notNull().default(true),
@@ -87,7 +88,14 @@ export const matches = pgTable(
     teamB: text("team_b").notNull(),
     startsAt: timestamp("starts_at", { withTimezone: true }).notNull(),
     status: text("status").notNull().default("open"),
+    // 'group' = group-stage (allows a Draw outcome). 'knockout' = no Draw.
+    stage: text("stage").notNull().default("group"),
+    // Knockout round label, e.g. "Round of 32", "Final" (null for group games).
+    round: text("round"),
+    // Group label for group-stage games, e.g. "A" (null for knockouts).
+    groupLabel: text("group_label"),
     maxBet: numeric("max_bet", { mode: "string" }),
+    minBet: numeric("min_bet", { mode: "string" }),
     // 'match' = normal team-vs-team. 'tournament_winner' = the Grand Gala pot
     // (pick the champion from all teams; one fixed entry stake set by the admin).
     marketType: text("market_type").notNull().default("match"),
@@ -102,6 +110,7 @@ export const matches = pgTable(
     index("matches_clan_idx").on(t.clanId),
     check("matches_status_chk", sql`${t.status} in ('open','locked','final','settled')`),
     check("matches_market_chk", sql`${t.marketType} in ('match','tournament_winner')`),
+    check("matches_stage_chk", sql`${t.stage} in ('group','knockout')`),
   ],
 );
 

@@ -21,18 +21,18 @@ export function OddsStrip({
   return (
     <div
       className={cn(
-        "flex flex-wrap items-center gap-x-3 gap-y-1 border-l-2 border-neon-amber bg-muted px-3 py-2 text-xs",
+        "flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border-l-2 border-[var(--accent-amber)] bg-muted px-3 py-2 text-xs",
         className,
       )}
     >
-      <span className="kicker text-neon-amber">Vegas says</span>
+      <span className="kicker text-[var(--accent-amber)]">Vegas says</span>
       {odds.a && odds.b ? (
-        <span className="tabular text-phosphor">
+        <span className="tabular text-foreground">
           {teamA} {odds.a}
           {odds.draw ? ` · Draw ${odds.draw}` : ""} · {teamB} {odds.b}
         </span>
       ) : (
-        <span className="tabular text-phosphor">{odds.summary}</span>
+        <span className="tabular text-foreground">{odds.summary}</span>
       )}
       {odds.provider ? <span className="dateline">via {odds.provider}</span> : null}
     </div>

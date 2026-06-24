@@ -20,7 +20,7 @@ function Toggle({
   defaultChecked?: boolean;
 }) {
   return (
-    <label className="flex cursor-pointer items-start gap-3 border-2 border-grid bg-background p-3 transition-colors hover:bg-muted">
+    <label className="flex cursor-pointer items-start gap-3 rounded-md border border-border bg-background p-3 transition-colors hover:bg-muted">
       <input
         type="checkbox"
         name={name}
@@ -28,7 +28,7 @@ function Toggle({
         className="mt-0.5 h-4 w-4 shrink-0 accent-accent"
       />
       <span className="flex flex-col gap-0.5">
-        <span className="font-condensed uppercase tracking-wide text-sm font-semibold">{label}</span>
+        <span className="text-sm font-semibold">{label}</span>
         <span className="text-xs text-muted-foreground">{hint}</span>
       </span>
     </label>
@@ -79,6 +79,20 @@ export function ClanCreateForm() {
             <p className="text-xs text-muted-foreground">Everyone starts here.</p>
           </div>
           <div className="flex flex-col gap-1.5">
+            <Label htmlFor="defaultMinBet">Default min bet</Label>
+            <Input
+              id="defaultMinBet"
+              name="defaultMinBet"
+              type="number"
+              min="1"
+              step="any"
+              defaultValue="100"
+              required
+              className="tabular"
+            />
+            <p className="text-xs text-muted-foreground">Per-match floor (you can override later).</p>
+          </div>
+          <div className="flex flex-col gap-1.5">
             <Label htmlFor="defaultMaxBet">Default max bet</Label>
             <Input
               id="defaultMaxBet"
@@ -86,7 +100,7 @@ export function ClanCreateForm() {
               type="number"
               min="1"
               step="any"
-              defaultValue="100"
+              defaultValue="500"
               required
               className="tabular"
             />
@@ -123,14 +137,13 @@ export function ClanCreateForm() {
       </fieldset>
 
       {state.error ? (
-        <p className="border-2 border-danger bg-danger/10 px-3 py-2 text-sm font-semibold text-danger">
-          <span className="stamp text-neon-pink mr-2">Game Over</span>
+        <p className="rounded-md border border-danger bg-danger/10 px-3 py-2 text-sm font-semibold text-danger">
           {state.error}
         </p>
       ) : null}
 
       <Button type="submit" size="lg" disabled={pending}>
-        {pending ? "Loading…" : "Create Clan"}
+        {pending ? "Creating…" : "Create clan"}
       </Button>
     </form>
   );

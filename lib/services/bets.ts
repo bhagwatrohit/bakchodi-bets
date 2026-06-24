@@ -5,6 +5,7 @@ import { requireMember } from "@/lib/services/clans";
 import { conflict, forbidden, notFound, validation } from "@/lib/errors";
 import { parseMoney, sub, add, cmp, type Money } from "@/lib/money";
 import {
+  assertAtLeastMinBet,
   assertMatchOpenAndUnlocked,
   assertPositiveStake,
   assertSufficientBalance,
@@ -66,7 +67,9 @@ export async function placeBet(input: {
   });
   assertPositiveStake(stake);
   if (match.fixedStake == null) {
+    const effectiveMinBet: Money = match.minBet ?? clan.defaultMinBet;
     const effectiveMaxBet: Money = match.maxBet ?? clan.defaultMaxBet;
+    assertAtLeastMinBet(stake, effectiveMinBet);
     assertWithinMaxBet(stake, effectiveMaxBet);
   }
   // Editing refunds the old stake first, so the new stake is checked against
@@ -221,6 +224,23 @@ export async function listAllBets(clanId: string, matchId?: string): Promise<Bet
   return queryBets(clanId, { matchId });
 }
 
+/**
+ * Order members by performance on COMPLETED bets: net points desc, then wins
+ * desc, then fewer bets placed. Pure + unit-tested. Net points = won profit
+ * minus lost stakes across settled bets, so credit balance never decides rank.
+ */
+export function rankLeaderboard(
+  rows: Array<Omit<LeaderboardRow, "rank">>,
+): LeaderboardRow[] {
+  const sorted = [...rows].sort((a, b) => {
+    const byPoints = cmp(b.netPoints, a.netPoints);
+    if (byPoints !== 0) return byPoints;
+    if (b.wins !== a.wins) return b.wins - a.wins;
+    return a.betsPlaced - b.betsPlaced;
+  });
+  return sorted.map((r, i) => ({ ...r, rank: i + 1 }));
+}
+
 export async function getLeaderboard(clanId: string): Promise<LeaderboardRow[]> {
   const membership = await requireMember(clanId);
   const clan = await db.query.clans.findFirst({ where: eq(schema.clans.id, clanId) });
@@ -240,6 +260,8 @@ export async function getLeaderboard(clanId: string): Promise<LeaderboardRow[]> 
         wins: sql<number>`count(*) filter (where ${schema.bets.status} = 'won')::int`,
         losses: sql<number>`count(*) filter (where ${schema.bets.status} = 'lost')::int`,
         biggestWin: sql<string>`coalesce(max(${schema.bets.profit}) filter (where ${schema.bets.status} = 'won'), 0)::text`,
+        // Net result across SETTLED bets only — the leaderboard ranking key.
+        netPoints: sql<string>`coalesce(sum(${schema.bets.profit}) filter (where ${schema.bets.status} in ('won','lost','void')), 0)::text`,
       })
       .from(schema.bets)
       .where(and(eq(schema.bets.clanId, clanId), eq(schema.bets.userId, member.userId)));
@@ -251,12 +273,11 @@ export async function getLeaderboard(clanId: string): Promise<LeaderboardRow[]> 
       betsPlaced: s.betsPlaced,
       wins: s.wins,
       losses: s.losses,
-      netChange: sub(member.balance, clan.startingBalance),
+      netPoints: s.netPoints,
       biggestWin: s.biggestWin,
       isMe: member.userId === membership.userId,
     });
   }
 
-  rows.sort((a, b) => cmp(b.balance, a.balance));
-  return rows.map((r, i) => ({ ...r, rank: i + 1 }));
+  return rankLeaderboard(rows);
 }

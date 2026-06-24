@@ -29,11 +29,11 @@ export function GalaEntryForm({
   }, [state.ok]);
 
   return (
-    <form action={action} className="flex flex-col gap-2 border-2 border-neon-amber bg-card p-4">
-      <p className="kicker text-neon-amber">Admin · Entry Stake</p>
+    <form action={action} className="flex flex-col gap-2 rounded-lg border border-border bg-card p-4">
+      <p className="kicker text-[var(--accent-amber)]">Admin · Entry stake</p>
       <input type="hidden" name="clanId" value={clanId} />
       <input type="hidden" name="matchId" value={matchId} />
-      <Label htmlFor="fixedStake">Fixed entry everyone antes</Label>
+      <Label htmlFor="fixedStake">Fixed entry stake for every player</Label>
       <div className="flex gap-2">
         <Input
           id="fixedStake"

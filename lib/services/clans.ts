@@ -4,11 +4,12 @@ import { customAlphabet } from "nanoid";
 import { db, schema } from "@/lib/db";
 import { requireSessionProfile } from "@/lib/services/auth";
 import { conflict, forbidden, notFound, validation } from "@/lib/errors";
-import { parseMoney, isPositive, gte, add } from "@/lib/money";
+import { parseMoney, isPositive, gte, add, cmp } from "@/lib/money";
 import type { Clan, ClanCardData, ClanMember, ClanRole, ClanSettings } from "@/lib/types";
 import type { ClanRow, ClanMemberRow } from "@/lib/db/schema";
 import {
   WORLD_CUP_FIXTURES,
+  WORLD_CUP_KNOCKOUTS,
   fixtureStartsAt,
   WORLD_CUP_TEAMS,
   GRAND_GALA_TITLE,
@@ -25,6 +26,7 @@ function mapClan(row: ClanRow): Clan {
     createdBy: row.createdBy ?? "",
     currencyName: row.currencyName,
     startingBalance: row.startingBalance,
+    defaultMinBet: row.defaultMinBet,
     defaultMaxBet: row.defaultMaxBet,
     lockBetsAtMatchStart: row.lockBetsAtMatchStart,
     showBetsBeforeLock: row.showBetsBeforeLock,
@@ -61,6 +63,7 @@ export async function createClan(input: {
   name: string;
   currencyName: string;
   startingBalance: string;
+  defaultMinBet?: string;
   defaultMaxBet: string;
   lockBetsAtMatchStart?: boolean;
   showBetsBeforeLock?: boolean;
@@ -73,12 +76,17 @@ export async function createClan(input: {
   const currencyName = input.currencyName.trim() || "credits";
   const startingBalance = parseMoney(input.startingBalance);
   const defaultMaxBet = parseMoney(input.defaultMaxBet);
+  const defaultMinBet = parseMoney(input.defaultMinBet ?? "100");
 
   if (name.length < 2) throw validation("Clan name is too short.");
   if (!startingBalance || !isPositive(startingBalance))
     throw validation("Starting balance must be greater than zero.");
   if (!defaultMaxBet || !isPositive(defaultMaxBet))
     throw validation("Default max bet must be greater than zero.");
+  if (!defaultMinBet || !isPositive(defaultMinBet))
+    throw validation("Default min bet must be greater than zero.");
+  if (cmp(defaultMinBet, defaultMaxBet) > 0)
+    throw validation("Default min bet can't be greater than the max bet.");
 
   const clanId = await db.transaction(async (tx) => {
     const [clan] = await tx
@@ -88,6 +96,7 @@ export async function createClan(input: {
         createdBy: me.id,
         currencyName,
         startingBalance,
+        defaultMinBet,
         defaultMaxBet,
         lockBetsAtMatchStart: input.lockBetsAtMatchStart ?? true,
         showBetsBeforeLock: input.showBetsBeforeLock ?? false,
@@ -125,6 +134,8 @@ export async function createClan(input: {
             teamB: f.team_b,
             startsAt: fixtureStartsAt(f),
             status: "open" as const,
+            stage: "group" as const,
+            groupLabel: f.group,
             createdBy: me.id,
           })),
         )
@@ -140,6 +151,34 @@ export async function createClan(input: {
         ];
       });
       await tx.insert(schema.matchOutcomes).values(outcomeValues);
+
+      // Knockout bracket: 32 matches, matchups TBD until groups finish. No Draw
+      // (knockouts can't end level); admins set team names per match later.
+      const koRows = await tx
+        .insert(schema.matches)
+        .values(
+          WORLD_CUP_KNOCKOUTS.map((k) => ({
+            clanId: clan.id,
+            title: `${k.round} · Match ${k.match_no}`,
+            teamA: k.team_a,
+            teamB: k.team_b,
+            startsAt: fixtureStartsAt(k),
+            status: "open" as const,
+            stage: "knockout" as const,
+            round: k.round,
+            createdBy: me.id,
+          })),
+        )
+        .returning({ id: schema.matches.id });
+      const koOutcomes = koRows.flatMap((row, i) => {
+        const k = WORLD_CUP_KNOCKOUTS[i];
+        // Distinct placeholder labels so the two "TBD" sides aren't identical.
+        return [
+          { matchId: row.id, label: k.team_a === "TBD" ? "TBD (A)" : k.team_a, sortOrder: 0 },
+          { matchId: row.id, label: k.team_b === "TBD" ? "TBD (B)" : k.team_b, sortOrder: 1 },
+        ];
+      });
+      await tx.insert(schema.matchOutcomes).values(koOutcomes);
 
       // Grand Gala: pick the World Cup champion. Fixed entry stake (default =
       // clan max bet, admin-editable), open until the knockouts begin.
@@ -357,10 +396,23 @@ export async function updateClanSettings(
   }
   if (patch.currencyName !== undefined)
     values.currencyName = patch.currencyName.trim() || "credits";
+  if (patch.defaultMinBet !== undefined) {
+    const m = parseMoney(patch.defaultMinBet);
+    if (!m || !isPositive(m)) throw validation("Default min bet must be greater than zero.");
+    values.defaultMinBet = m;
+  }
   if (patch.defaultMaxBet !== undefined) {
     const m = parseMoney(patch.defaultMaxBet);
     if (!m || !isPositive(m)) throw validation("Default max bet must be greater than zero.");
     values.defaultMaxBet = m;
+  }
+  // Guard against min > max (whether either is being changed now or already set).
+  if (values.defaultMinBet != null || values.defaultMaxBet != null) {
+    const existing = await db.query.clans.findFirst({ where: eq(schema.clans.id, clanId) });
+    const min = (values.defaultMinBet as string) ?? existing?.defaultMinBet ?? "0";
+    const max = (values.defaultMaxBet as string) ?? existing?.defaultMaxBet ?? "0";
+    if (cmp(min, max) > 0)
+      throw validation("Default min bet can't be greater than the max bet.");
   }
   if (patch.lockBetsAtMatchStart !== undefined)
     values.lockBetsAtMatchStart = patch.lockBetsAtMatchStart;

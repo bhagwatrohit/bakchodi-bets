@@ -1,0 +1,293 @@
+{
+  "source_notes": "2026 FIFA World Cup knockout bracket. Matchups are TBD until the group stage finishes; admins set team names per match. Kickoffs in US Eastern (EDT, UTC-4).",
+  "matches": [
+    {
+      "round": "Round of 32",
+      "match_no": 1,
+      "date": "2026-06-28",
+      "kickoff_et": "15:00",
+      "venue": "East Rutherford",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Round of 32",
+      "match_no": 2,
+      "date": "2026-06-28",
+      "kickoff_et": "15:00",
+      "venue": "Dallas",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Round of 32",
+      "match_no": 3,
+      "date": "2026-06-29",
+      "kickoff_et": "12:00",
+      "venue": "Atlanta",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Round of 32",
+      "match_no": 4,
+      "date": "2026-06-29",
+      "kickoff_et": "12:00",
+      "venue": "Inglewood",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Round of 32",
+      "match_no": 5,
+      "date": "2026-06-29",
+      "kickoff_et": "12:00",
+      "venue": "Kansas City",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Round of 32",
+      "match_no": 6,
+      "date": "2026-06-30",
+      "kickoff_et": "12:00",
+      "venue": "Houston",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Round of 32",
+      "match_no": 7,
+      "date": "2026-06-30",
+      "kickoff_et": "12:00",
+      "venue": "Philadelphia",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Round of 32",
+      "match_no": 8,
+      "date": "2026-06-30",
+      "kickoff_et": "12:00",
+      "venue": "Seattle",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Round of 32",
+      "match_no": 9,
+      "date": "2026-07-01",
+      "kickoff_et": "12:00",
+      "venue": "Santa Clara",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Round of 32",
+      "match_no": 10,
+      "date": "2026-07-01",
+      "kickoff_et": "12:00",
+      "venue": "Miami",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Round of 32",
+      "match_no": 11,
+      "date": "2026-07-01",
+      "kickoff_et": "12:00",
+      "venue": "Foxborough",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Round of 32",
+      "match_no": 12,
+      "date": "2026-07-02",
+      "kickoff_et": "12:00",
+      "venue": "Vancouver",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Round of 32",
+      "match_no": 13,
+      "date": "2026-07-02",
+      "kickoff_et": "12:00",
+      "venue": "East Rutherford",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Round of 32",
+      "match_no": 14,
+      "date": "2026-07-02",
+      "kickoff_et": "12:00",
+      "venue": "Dallas",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Round of 32",
+      "match_no": 15,
+      "date": "2026-07-03",
+      "kickoff_et": "15:00",
+      "venue": "Atlanta",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Round of 32",
+      "match_no": 16,
+      "date": "2026-07-03",
+      "kickoff_et": "15:00",
+      "venue": "Inglewood",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Round of 16",
+      "match_no": 1,
+      "date": "2026-07-04",
+      "kickoff_et": "12:00",
+      "venue": "Kansas City",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Round of 16",
+      "match_no": 2,
+      "date": "2026-07-04",
+      "kickoff_et": "12:00",
+      "venue": "Houston",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Round of 16",
+      "match_no": 3,
+      "date": "2026-07-05",
+      "kickoff_et": "12:00",
+      "venue": "Philadelphia",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Round of 16",
+      "match_no": 4,
+      "date": "2026-07-05",
+      "kickoff_et": "12:00",
+      "venue": "Seattle",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Round of 16",
+      "match_no": 5,
+      "date": "2026-07-06",
+      "kickoff_et": "15:00",
+      "venue": "Santa Clara",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Round of 16",
+      "match_no": 6,
+      "date": "2026-07-06",
+      "kickoff_et": "15:00",
+      "venue": "Miami",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Round of 16",
+      "match_no": 7,
+      "date": "2026-07-07",
+      "kickoff_et": "15:00",
+      "venue": "Foxborough",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Round of 16",
+      "match_no": 8,
+      "date": "2026-07-07",
+      "kickoff_et": "15:00",
+      "venue": "Vancouver",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Quarter-final",
+      "match_no": 1,
+      "date": "2026-07-09",
+      "kickoff_et": "15:00",
+      "venue": "East Rutherford",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Quarter-final",
+      "match_no": 2,
+      "date": "2026-07-10",
+      "kickoff_et": "15:00",
+      "venue": "Dallas",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Quarter-final",
+      "match_no": 3,
+      "date": "2026-07-11",
+      "kickoff_et": "12:00",
+      "venue": "Atlanta",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Quarter-final",
+      "match_no": 4,
+      "date": "2026-07-11",
+      "kickoff_et": "12:00",
+      "venue": "Inglewood",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Semi-final",
+      "match_no": 1,
+      "date": "2026-07-14",
+      "kickoff_et": "15:00",
+      "venue": "Kansas City",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Semi-final",
+      "match_no": 2,
+      "date": "2026-07-15",
+      "kickoff_et": "15:00",
+      "venue": "Houston",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Third place",
+      "match_no": 1,
+      "date": "2026-07-18",
+      "kickoff_et": "15:00",
+      "venue": "Philadelphia",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    },
+    {
+      "round": "Final",
+      "match_no": 1,
+      "date": "2026-07-19",
+      "kickoff_et": "15:00",
+      "venue": "Seattle",
+      "team_a": "TBD",
+      "team_b": "TBD"
+    }
+  ]
+}

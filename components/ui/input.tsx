@@ -1,7 +1,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-// Arcade input: square, neon-cyan border, terminal type, glow on focus.
+// Clean input: rounded, hairline border, accent focus ring.
 export const Input = React.forwardRef<
   HTMLInputElement,
   React.InputHTMLAttributes<HTMLInputElement>
@@ -10,7 +10,7 @@ export const Input = React.forwardRef<
     type={type}
     ref={ref}
     className={cn(
-      "flex h-11 w-full border-2 border-grid bg-background px-3 py-2 text-lg font-condensed text-phosphor transition-all placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-neon-cyan focus-visible:shadow-[0_0_12px_rgba(33,230,255,0.4)] disabled:cursor-not-allowed disabled:opacity-50",
+      "flex h-11 w-full rounded-md border border-border bg-background px-3 py-2 text-base text-foreground transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-50",
       className,
     )}
     {...props}

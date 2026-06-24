@@ -1,12 +1,12 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-// Arcade "cabinet panel": square, neon-grid border, subtle inner glow.
+// Clean card: rounded, hairline border, soft surface.
 export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cn(
-        "border-2 border-grid bg-card text-card-foreground shadow-[0_0_0_1px_rgba(36,49,86,0.6),0_0_18px_rgba(33,230,255,0.08)]",
+        "rounded-lg border border-border bg-card text-card-foreground shadow-sm",
         className,
       )}
       {...props}
@@ -17,7 +17,7 @@ export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
 export function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("flex flex-col gap-1 border-b-2 border-grid px-5 py-3", className)}
+      className={cn("flex flex-col gap-1 border-b border-border px-5 py-4", className)}
       {...props}
     />
   );
@@ -26,10 +26,7 @@ export function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDiv
 export function CardTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h3
-      className={cn(
-        "font-pixel uppercase text-sm leading-snug text-neon-cyan glow-cyan",
-        className,
-      )}
+      className={cn("text-base font-bold leading-snug text-foreground", className)}
       {...props}
     />
   );

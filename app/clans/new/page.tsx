@@ -13,17 +13,17 @@ export default async function NewClanPage() {
     <AppShell profile={profile}>
       <div className="mx-auto max-w-xl">
         <div className="mb-6">
-          <p className="kicker text-neon-cyan">New Clan</p>
-          <h1 className="headline mt-1 text-3xl sm:text-4xl">Start a New Game</h1>
+          <p className="kicker text-primary">New clan</p>
+          <h1 className="headline mt-1 text-3xl sm:text-4xl">Start a new clan</h1>
           <hr className="rule-thick mt-3" />
           <p className="mt-3 text-sm text-muted-foreground">
-            Set the table, then invite your crew. You&apos;ll be Player 1 —
-            the admin of record.
+            Set the table, then invite your crew. You&apos;ll be the admin of
+            record.
           </p>
         </div>
         <Card>
           <CardHeader>
-            <CardTitle>Clan Setup</CardTitle>
+            <CardTitle>Clan setup</CardTitle>
             <CardDescription>You can tweak most of this later in clan settings.</CardDescription>
           </CardHeader>
           <CardContent>

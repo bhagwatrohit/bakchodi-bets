@@ -15,6 +15,7 @@ export function BetForm({
   clanId,
   matchId,
   outcomes,
+  minBet,
   maxBet,
   availableBalance,
   currencyName,
@@ -25,6 +26,7 @@ export function BetForm({
   clanId: string;
   matchId: string;
   outcomes: MatchOutcome[];
+  minBet: string;
   maxBet: string;
   availableBalance: string;
   currencyName: string;
@@ -65,6 +67,7 @@ export function BetForm({
   let hint: string | null = null;
   if (!isGala && stake !== "" && Number.isFinite(stakeNum)) {
     if (stakeNum <= 0) hint = "Bet must be greater than zero.";
+    else if (stakeNum < Number(minBet)) hint = `Min bet is ${format(minBet, currencyName)}.`;
     else if (stakeNum > Number(maxBet)) hint = `Max bet is ${format(maxBet, currencyName)}.`;
     else if (stakeNum > balNum) hint = `You only have ${format(availableBalance, currencyName)}.`;
   }
@@ -75,12 +78,10 @@ export function BetForm({
       ? outcomes.filter((o) => o.label.toLowerCase().includes(filter.toLowerCase()))
       : outcomes;
 
-  const accent = isGala ? "border-neon-amber" : "border-neon-cyan";
-
   return (
     <form
       action={formAction}
-      className={cn("flex flex-col gap-5 border-2 border-dashed bg-card p-4", accent)}
+      className="flex flex-col gap-5 rounded-lg border border-border bg-card p-4"
     >
       <input type="hidden" name="clanId" value={clanId} />
       <input type="hidden" name="matchId" value={matchId} />
@@ -116,10 +117,10 @@ export function BetForm({
                 onClick={() => setOutcomeId(o.id)}
                 aria-pressed={active}
                 className={cn(
-                  "flex items-center gap-2 border-2 px-3 py-2 font-condensed uppercase tracking-wide text-xs font-semibold transition-colors",
+                  "flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-semibold transition-colors",
                   active
-                    ? "border-neon-green bg-neon-green text-background"
-                    : "border-grid bg-background text-phosphor hover:bg-muted",
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-background text-foreground hover:bg-muted",
                 )}
               >
                 {o.label !== "Draw" ? <Flag team={o.label} size="sm" /> : null}
@@ -134,10 +135,10 @@ export function BetForm({
       </div>
 
       {isGala ? (
-        <div className="border-2 border-neon-amber bg-background p-3">
-          <p className="kicker text-neon-amber">Fixed Entry</p>
+        <div className="rounded-md border border-border bg-background p-3">
+          <p className="kicker">Fixed entry</p>
           <p className="mt-1 text-lg">
-            <span className="tabular text-neon-amber">
+            <span className="tabular font-semibold text-primary">
               {format(fixedStake ?? "0", currencyName)}
             </span>{" "}
             <span className="text-muted-foreground">to enter · you have</span>{" "}
@@ -162,8 +163,9 @@ export function BetForm({
             className="tabular"
           />
           <p className="dateline">
-            Max <span className="tabular">{format(maxBet, currencyName)}</span> · You
-            have <span className="tabular">{format(availableBalance, currencyName)}</span>
+            Min <span className="tabular">{format(minBet, currencyName)}</span> · Max{" "}
+            <span className="tabular">{format(maxBet, currencyName)}</span> · You have{" "}
+            <span className="tabular">{format(availableBalance, currencyName)}</span>
           </p>
         </div>
       )}
@@ -183,7 +185,7 @@ export function BetForm({
       {state.error ? (
         <p
           role="alert"
-          className="border-2 border-danger bg-danger/10 px-3 py-2 text-sm font-medium text-danger"
+          className="rounded-md border border-danger bg-danger/10 px-3 py-2 text-sm font-medium text-danger"
         >
           {state.error}
         </p>

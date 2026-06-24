@@ -37,32 +37,32 @@ export default async function BetsPage({
     <AppShell profile={profile}>
       <div className="flex flex-col gap-6">
         <div>
-          <p className="kicker text-neon-cyan">Play Log</p>
-          <h1 className="headline mt-1 text-3xl sm:text-5xl">MY BETS</h1>
+          <p className="kicker text-muted-foreground">Bet history</p>
+          <h1 className="headline mt-1 text-3xl sm:text-5xl">My bets</h1>
           <hr className="rule-thick mt-3" />
           <p className="dateline mt-2">
-            Every glorious win and questionable call in {clan.name}
+            Every win and questionable call in {clan.name}
           </p>
         </div>
 
         {allBets ? (
           <Tabs defaultValue="mine">
             <TabsList>
-              <TabsTrigger value="mine">MY BETS</TabsTrigger>
-              <TabsTrigger value="all">ALL BETS</TabsTrigger>
+              <TabsTrigger value="mine">My bets</TabsTrigger>
+              <TabsTrigger value="all">All bets</TabsTrigger>
             </TabsList>
             <TabsContent value="mine">
-              <p className="kicker mb-2">MY BETS</p>
+              <p className="kicker mb-2">My bets</p>
               <BetHistoryTable rows={myBets} currencyName={clan.currencyName} />
             </TabsContent>
             <TabsContent value="all">
-              <p className="kicker mb-2">ALL BETS</p>
+              <p className="kicker mb-2">All bets</p>
               <BetHistoryTable rows={allBets} currencyName={clan.currencyName} showPlayer />
             </TabsContent>
           </Tabs>
         ) : (
           <div>
-            <p className="kicker mb-2">MY BETS</p>
+            <p className="kicker mb-2">My bets</p>
             <BetHistoryTable rows={myBets} currencyName={clan.currencyName} />
           </div>
         )}

@@ -15,6 +15,13 @@
       "when": 1781055190184,
       "tag": "0001_loud_living_mummy",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1782263241383,
+      "tag": "0002_clean_serpent_society",
+      "breakpoints": true
     }
   ]
 }

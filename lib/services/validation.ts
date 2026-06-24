@@ -15,6 +15,13 @@ export function assertPositiveStake(stake: Money): void {
   }
 }
 
+/** Stake must be at least the effective min bet (match override or clan default). */
+export function assertAtLeastMinBet(stake: Money, minBet: Money): void {
+  if (cmp(stake, minBet) < 0) {
+    throw validation(`Bet must be at least ${minBet}.`);
+  }
+}
+
 /** Stake must not exceed the effective max bet (match override or clan default). */
 export function assertWithinMaxBet(stake: Money, maxBet: Money): void {
   if (cmp(stake, maxBet) > 0) {

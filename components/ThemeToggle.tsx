@@ -17,10 +17,10 @@ function applyMode(mode: Mode) {
 
 /** Cycles dark → light → system; persists to localStorage. */
 export function ThemeToggle({ className }: { className?: string }) {
-  const [mode, setMode] = useState<Mode>("dark");
+  const [mode, setMode] = useState<Mode>("system");
 
   useEffect(() => {
-    const stored = (localStorage.getItem("bb-theme") as Mode | null) ?? "dark";
+    const stored = (localStorage.getItem("bb-theme") as Mode | null) ?? "system";
     setMode(stored);
   }, []);
 
@@ -55,7 +55,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       onClick={cycle}
       aria-label={label}
       title={label}
-      className={`inline-flex h-8 w-8 items-center justify-center border-2 border-grid text-neon-cyan transition-colors hover:bg-muted ${className ?? ""}`}
+      className={`inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground ${className ?? ""}`}
     >
       <Icon className="h-4 w-4" />
     </button>

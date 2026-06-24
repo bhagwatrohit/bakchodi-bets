@@ -5,11 +5,18 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["tests/**/*.test.ts"],
+    // The postgres client connects lazily, so a dummy URL lets server modules
+    // import cleanly in unit tests without a live database.
+    env: {
+      DATABASE_URL: "postgres://test:test@localhost:5432/test",
+      AUTH_SECRET: "test-secret-test-secret-test-secret-1234",
+    },
   },
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./", import.meta.url)),
-      // The runtime guard only makes sense inside Next; stub it for unit tests.
+      // `server-only` throws outside a Server Component; stub it so server-side
+      // service modules can be unit-tested directly.
       "server-only": fileURLToPath(new URL("./tests/stubs/server-only.ts", import.meta.url)),
     },
   },

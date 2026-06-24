@@ -8,12 +8,27 @@ import type {
   MatchDetail,
   MatchListItem,
   MatchOutcome,
+  MatchStage,
   MatchStatus,
   ViewerBet,
 } from "@/lib/types";
 import type { BetRow, MatchOutcomeRow, MatchRow } from "@/lib/db/schema";
 
 const VALID_STATUS: MatchStatus[] = ["open", "locked", "final", "settled"];
+
+/**
+ * Outcome labels for a match. Group games allow a Draw (3 outcomes); knockout
+ * games can't end level, so they get just the two teams.
+ */
+export function buildOutcomeLabels(opts: {
+  labelA: string;
+  labelB: string;
+  stage: MatchStage;
+}): string[] {
+  return opts.stage === "knockout"
+    ? [opts.labelA, opts.labelB]
+    : [opts.labelA, "Draw", opts.labelB];
+}
 
 async function loadOutcomes(matchId: string): Promise<MatchOutcome[]> {
   const rows = await db
@@ -49,7 +64,9 @@ export async function createMatch(input: {
   teamB: string;
   startsAt: string; // ISO string
   maxBet?: string;
-  includeDraw: boolean;
+  minBet?: string;
+  stage: MatchStage;
+  round?: string;
   outcomeALabel?: string;
   outcomeBLabel?: string;
 }): Promise<{ matchId: string }> {
@@ -61,13 +78,17 @@ export async function createMatch(input: {
   const startsAt = new Date(input.startsAt);
   if (Number.isNaN(startsAt.getTime())) throw validation("Enter a valid start time.");
 
-  let maxBet: string | null = null;
-  if (input.maxBet && input.maxBet.trim() !== "") {
-    const m = parseMoney(input.maxBet);
-    if (!m || !isPositive(m)) throw validation("Max bet must be greater than zero.");
-    maxBet = m;
-  }
+  const parseOptionalLimit = (raw: string | undefined, label: string): string | null => {
+    if (!raw || raw.trim() === "") return null;
+    const m = parseMoney(raw);
+    if (!m || !isPositive(m)) throw validation(`${label} must be greater than zero.`);
+    return m;
+  };
+  const maxBet = parseOptionalLimit(input.maxBet, "Max bet");
+  const minBet = parseOptionalLimit(input.minBet, "Min bet");
 
+  const stage: MatchStage = input.stage === "knockout" ? "knockout" : "group";
+  const round = input.round?.trim() || null;
   const title = (input.title?.trim() || `${teamA} vs ${teamB}`).slice(0, 200);
   const labelA = input.outcomeALabel?.trim() || teamA;
   const labelB = input.outcomeBLabel?.trim() || teamB;
@@ -82,18 +103,17 @@ export async function createMatch(input: {
         teamB,
         startsAt,
         maxBet,
+        minBet,
+        stage,
+        round,
         status: "open",
         createdBy: admin.userId,
       })
       .returning({ id: schema.matches.id });
 
-    const outcomeValues = [
-      { matchId: match.id, label: labelA, sortOrder: 0 },
-      ...(input.includeDraw
-        ? [{ matchId: match.id, label: "Draw", sortOrder: 1 }]
-        : []),
-      { matchId: match.id, label: labelB, sortOrder: 2 },
-    ];
+    const outcomeValues = buildOutcomeLabels({ labelA, labelB, stage }).map(
+      (label, sortOrder) => ({ matchId: match.id, label, sortOrder }),
+    );
     await tx.insert(schema.matchOutcomes).values(outcomeValues);
     return match.id;
   });
@@ -159,8 +179,9 @@ export async function setMatchStatus(matchId: string, status: MatchStatus): Prom
     .where(eq(schema.matches.id, matchId));
 }
 
-function effectiveMaxBet(matchMaxBet: string | null, clanDefault: string): string {
-  return matchMaxBet ?? clanDefault;
+/** A per-match limit override falls back to the clan default when unset. */
+function effectiveLimit(matchOverride: string | null, clanDefault: string): string {
+  return matchOverride ?? clanDefault;
 }
 
 /** Status to display: open match past kickoff in a lock-at-start clan → locked. */
@@ -178,6 +199,7 @@ function deriveDisplayStatus(
 
 async function buildListItem(
   match: MatchRow,
+  clanDefaultMinBet: string,
   clanDefaultMaxBet: string,
   myUserId: string,
   clanLockAtStart: boolean,
@@ -208,8 +230,12 @@ async function buildListItem(
       new Date(),
     ),
     marketType: match.marketType as MatchListItem["marketType"],
+    stage: match.stage as MatchStage,
+    round: match.round,
+    groupLabel: match.groupLabel,
     fixedStake: match.fixedStake,
-    maxBet: effectiveMaxBet(match.maxBet, clanDefaultMaxBet),
+    minBet: effectiveLimit(match.minBet, clanDefaultMinBet),
+    maxBet: effectiveLimit(match.maxBet, clanDefaultMaxBet),
     outcomes,
     winningOutcomeId: match.winningOutcomeId,
     myBet: viewerBet(myBetRow, outcomes),
@@ -230,7 +256,13 @@ export async function listMatches(clanId: string): Promise<MatchListItem[]> {
   const items: MatchListItem[] = [];
   for (const m of matchRows) {
     items.push(
-      await buildListItem(m, clan.defaultMaxBet, membership.userId, clan.lockBetsAtMatchStart),
+      await buildListItem(
+        m,
+        clan.defaultMinBet,
+        clan.defaultMaxBet,
+        membership.userId,
+        clan.lockBetsAtMatchStart,
+      ),
     );
   }
   return items;
@@ -246,6 +278,7 @@ export async function getMatchDetail(clanId: string, matchId: string): Promise<M
   if (!match) throw notFound("Match not found.");
   const base = await buildListItem(
     match,
+    clan.defaultMinBet,
     clan.defaultMaxBet,
     membership.userId,
     clan.lockBetsAtMatchStart,

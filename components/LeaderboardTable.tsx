@@ -33,19 +33,19 @@ export function LeaderboardTable({
         <TableRow>
           <TableHead className="w-12">Rank</TableHead>
           <TableHead>Player</TableHead>
-          <TableHead className="text-right">Balance</TableHead>
+          <TableHead className="text-right">Points</TableHead>
           <TableHead className="text-right">Bets</TableHead>
           <TableHead className="text-right">Wins</TableHead>
           <TableHead className="text-right">Losses</TableHead>
-          <TableHead className="text-right">Net change</TableHead>
           <TableHead className="text-right">Biggest win</TableHead>
+          <TableHead className="text-right text-muted-foreground">Credits</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {rows.map((row) => {
-          const net = Number(row.netChange);
+          const net = Number(row.netPoints);
           const netUp = net >= 0;
-          const netLabel = `${net > 0 ? "+" : ""}${format(row.netChange, currencyName)}`;
+          const netLabel = `${net > 0 ? "+" : ""}${format(row.netPoints, currencyName)}`;
           return (
             <TableRow key={row.userId} className={row.isMe ? "bg-muted" : undefined}>
               <TableCell className="tabular font-semibold text-muted-foreground">
@@ -61,16 +61,16 @@ export function LeaderboardTable({
                 {row.displayName}
                 {row.isMe ? <span className="text-muted-foreground"> — you</span> : ""}
               </TableCell>
-              <TableCell className="tabular text-right font-semibold">
-                {format(row.balance, currencyName)}
+              <TableCell className={`tabular text-right font-semibold ${netUp ? "text-gain" : "text-loss"}`}>
+                {netLabel}
               </TableCell>
               <TableCell className="tabular text-right">{row.betsPlaced}</TableCell>
               <TableCell className="tabular text-right">{row.wins}</TableCell>
               <TableCell className="tabular text-right">{row.losses}</TableCell>
-              <TableCell className={`tabular text-right font-medium ${netUp ? "text-gain" : "text-loss"}`}>
-                {netLabel}
-              </TableCell>
               <TableCell className="tabular text-right">{format(row.biggestWin, currencyName)}</TableCell>
+              <TableCell className="tabular text-right text-muted-foreground">
+                {format(row.balance, currencyName)}
+              </TableCell>
             </TableRow>
           );
         })}

@@ -54,7 +54,9 @@ export async function createMatchAction(
       teamB: String(fd.get("teamB") ?? ""),
       startsAt: String(fd.get("startsAt") ?? ""),
       maxBet: String(fd.get("maxBet") ?? "") || undefined,
-      includeDraw: fd.get("includeDraw") === "on",
+      minBet: String(fd.get("minBet") ?? "") || undefined,
+      stage: fd.get("stage") === "knockout" ? "knockout" : "group",
+      round: String(fd.get("round") ?? "") || undefined,
       outcomeALabel: String(fd.get("outcomeALabel") ?? "") || undefined,
       outcomeBLabel: String(fd.get("outcomeBLabel") ?? "") || undefined,
     });

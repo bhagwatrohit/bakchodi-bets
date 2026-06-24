@@ -3,6 +3,7 @@ import type { Money } from "@/lib/money";
 export type ClanRole = "admin" | "member";
 export type MatchStatus = "open" | "locked" | "final" | "settled";
 export type MarketType = "match" | "tournament_winner";
+export type MatchStage = "group" | "knockout";
 export type BetStatus = "pending" | "won" | "lost" | "void";
 export type LedgerType =
   | "initial_balance"
@@ -93,8 +94,15 @@ export interface MatchListItem {
    */
   displayStatus: MatchStatus;
   marketType: MarketType;
+  /** 'group' games allow a Draw; 'knockout' games don't. */
+  stage: MatchStage;
+  /** Knockout round label, e.g. "Round of 32" (null for group games). */
+  round: string | null;
+  /** Group label, e.g. "A" (null for knockouts / non-WC matches). */
+  groupLabel: string | null;
   /** Grand Gala only: the fixed entry stake everyone antes (else null). */
   fixedStake: Money | null;
+  minBet: Money; // effective: match override or clan default
   maxBet: Money; // effective: match override or clan default
   outcomes: MatchOutcome[];
   winningOutcomeId: string | null;
@@ -133,7 +141,9 @@ export interface LeaderboardRow {
   betsPlaced: number;
   wins: number;
   losses: number;
-  netChange: Money; // balance - startingBalance
+  /** Net result across SETTLED bets only (won profit minus lost stakes). The
+   *  leaderboard ranking key — performance, not credit pile. */
+  netPoints: Money;
   biggestWin: Money; // largest single payout-profit
   isMe: boolean;
 }

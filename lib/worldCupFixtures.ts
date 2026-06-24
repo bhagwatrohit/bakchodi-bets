@@ -1,9 +1,11 @@
 import fixturesData from "@/scripts/wc2026-fixtures.json";
+import knockoutsData from "@/scripts/wc2026-knockouts.json";
 
 /*
-  The real 2026 FIFA World Cup group-stage fixtures, imported (not fs-read) so
-  they're bundled into the server build and available on Vercel. Used to
-  pre-load every new clan with the full match card.
+  The real 2026 FIFA World Cup fixtures, imported (not fs-read) so they're
+  bundled into the server build and available on Vercel. Used to pre-load every
+  new clan with the full match card: 72 group games + the 32-match knockout
+  bracket (matchups TBD until the group stage finishes).
 */
 
 export interface WcFixture {
@@ -15,12 +17,26 @@ export interface WcFixture {
   team_b: string;
 }
 
+export interface WcKnockout {
+  round: string; // "Round of 32" … "Final"
+  match_no: number;
+  date: string; // YYYY-MM-DD
+  kickoff_et: string; // HH:MM, US Eastern
+  venue: string;
+  team_a: string; // "TBD" until known
+  team_b: string;
+}
+
 export const WORLD_CUP_FIXTURES: WcFixture[] = (
   fixturesData as { matches: WcFixture[] }
 ).matches;
 
+export const WORLD_CUP_KNOCKOUTS: WcKnockout[] = (
+  knockoutsData as { matches: WcKnockout[] }
+).matches;
+
 /** Kickoff instant — fixtures are in US Eastern (EDT, UTC-4 in June/July). */
-export function fixtureStartsAt(f: WcFixture): Date {
+export function fixtureStartsAt(f: { date: string; kickoff_et: string }): Date {
   return new Date(`${f.date}T${f.kickoff_et}:00-04:00`);
 }
 

@@ -9,6 +9,7 @@ import type { Clan, ClanCardData, ClanMember, ClanRole, ClanSettings } from "@/l
 import type { ClanRow, ClanMemberRow } from "@/lib/db/schema";
 import {
   WORLD_CUP_FIXTURES,
+  WORLD_CUP_KNOCKOUTS,
   fixtureStartsAt,
   WORLD_CUP_TEAMS,
   GRAND_GALA_TITLE,
@@ -125,6 +126,8 @@ export async function createClan(input: {
             teamB: f.team_b,
             startsAt: fixtureStartsAt(f),
             status: "open" as const,
+            stage: "group" as const,
+            groupLabel: f.group,
             createdBy: me.id,
           })),
         )
@@ -140,6 +143,34 @@ export async function createClan(input: {
         ];
       });
       await tx.insert(schema.matchOutcomes).values(outcomeValues);
+
+      // Knockout bracket: 32 matches, matchups TBD until groups finish. No Draw
+      // (knockouts can't end level); admins set team names per match later.
+      const koRows = await tx
+        .insert(schema.matches)
+        .values(
+          WORLD_CUP_KNOCKOUTS.map((k) => ({
+            clanId: clan.id,
+            title: `${k.round} · Match ${k.match_no}`,
+            teamA: k.team_a,
+            teamB: k.team_b,
+            startsAt: fixtureStartsAt(k),
+            status: "open" as const,
+            stage: "knockout" as const,
+            round: k.round,
+            createdBy: me.id,
+          })),
+        )
+        .returning({ id: schema.matches.id });
+      const koOutcomes = koRows.flatMap((row, i) => {
+        const k = WORLD_CUP_KNOCKOUTS[i];
+        // Distinct placeholder labels so the two "TBD" sides aren't identical.
+        return [
+          { matchId: row.id, label: k.team_a === "TBD" ? "TBD (A)" : k.team_a, sortOrder: 0 },
+          { matchId: row.id, label: k.team_b === "TBD" ? "TBD (B)" : k.team_b, sortOrder: 1 },
+        ];
+      });
+      await tx.insert(schema.matchOutcomes).values(koOutcomes);
 
       // Grand Gala: pick the World Cup champion. Fixed entry stake (default =
       // clan max bet, admin-editable), open until the knockouts begin.

@@ -129,6 +129,7 @@ export async function updateMatch(
     teamB?: string;
     startsAt?: string;
     maxBet?: string | null;
+    minBet?: string | null;
     fixedStake?: string | null;
   },
 ): Promise<void> {
@@ -162,7 +163,46 @@ export async function updateMatch(
       values.fixedStake = m;
     }
   }
-  await db.update(schema.matches).set(values).where(eq(schema.matches.id, matchId));
+  if (patch.minBet !== undefined) {
+    if (patch.minBet === null || patch.minBet === "") values.minBet = null;
+    else {
+      const m = parseMoney(patch.minBet);
+      if (!m || !isPositive(m)) throw validation("Min bet must be greater than zero.");
+      values.minBet = m;
+    }
+  }
+
+  await db.transaction(async (tx) => {
+    await tx.update(schema.matches).set(values).where(eq(schema.matches.id, matchId));
+
+    // Keep the two team outcomes in sync with renamed teams. Critical for the
+    // auto-loaded knockout bracket, where matchups start as "TBD" and admins
+    // fill in real names once the groups finish. The "Draw" outcome (group
+    // games) sits between them by sortOrder and is left untouched.
+    if (match.marketType === "match" && (values.teamA != null || values.teamB != null)) {
+      const outcomes = await tx
+        .select()
+        .from(schema.matchOutcomes)
+        .where(eq(schema.matchOutcomes.matchId, matchId))
+        .orderBy(asc(schema.matchOutcomes.sortOrder));
+      if (outcomes.length >= 2) {
+        const first = outcomes[0];
+        const last = outcomes[outcomes.length - 1];
+        if (values.teamA != null) {
+          await tx
+            .update(schema.matchOutcomes)
+            .set({ label: values.teamA as string })
+            .where(eq(schema.matchOutcomes.id, first.id));
+        }
+        if (values.teamB != null) {
+          await tx
+            .update(schema.matchOutcomes)
+            .set({ label: values.teamB as string })
+            .where(eq(schema.matchOutcomes.id, last.id));
+        }
+      }
+    }
+  });
 }
 
 /** Lock / unlock / mark final. Settling is done via settlement.settleMatch. */

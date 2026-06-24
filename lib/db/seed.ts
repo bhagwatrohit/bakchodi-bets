@@ -40,15 +40,25 @@ interface Fixture {
   team_b: string;
 }
 
-// Real 2026 FIFA World Cup group-stage fixtures (kickoffs in US Eastern = EDT, UTC-4 in June).
-function loadFixtures(): Fixture[] {
-  const here = dirname(fileURLToPath(import.meta.url));
-  const path = resolve(here, "../../scripts/wc2026-fixtures.json");
-  const data = JSON.parse(readFileSync(path, "utf8")) as { matches: Fixture[] };
-  return data.matches;
+interface Knockout {
+  round: string;
+  match_no: number;
+  date: string;
+  kickoff_et: string;
+  venue: string;
+  team_a: string;
+  team_b: string;
 }
 
-const SEED_MATCHES = loadFixtures();
+function loadJson<T>(file: string): T[] {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const path = resolve(here, `../../scripts/${file}`);
+  return (JSON.parse(readFileSync(path, "utf8")) as { matches: T[] }).matches;
+}
+
+// Real 2026 FIFA World Cup fixtures (kickoffs in US Eastern = EDT, UTC-4 in June/July).
+const SEED_MATCHES = loadJson<Fixture>("wc2026-fixtures.json");
+const SEED_KNOCKOUTS = loadJson<Knockout>("wc2026-knockouts.json");
 
 async function main() {
   const url = process.env.DATABASE_URL;
@@ -133,7 +143,7 @@ async function main() {
   });
   if (existingMatches.length === 0) {
     for (const m of SEED_MATCHES) {
-      // Kickoff is US Eastern; June is EDT (UTC-4).
+      // Kickoff is US Eastern; June/July is EDT (UTC-4).
       const startsAt = new Date(`${m.date}T${m.kickoff_et}:00-04:00`);
       const [match] = await db
         .insert(schema.matches)
@@ -144,6 +154,8 @@ async function main() {
           teamB: m.team_b,
           startsAt,
           status: "open",
+          stage: "group",
+          groupLabel: m.group,
           createdBy: adminId,
         })
         .returning({ id: schema.matches.id });
@@ -151,6 +163,29 @@ async function main() {
         { matchId: match.id, label: m.team_a, sortOrder: 0 },
         { matchId: match.id, label: "Draw", sortOrder: 1 },
         { matchId: match.id, label: m.team_b, sortOrder: 2 },
+      ]);
+    }
+
+    // Knockout bracket — 32 matches, matchups TBD until groups finish, no Draw.
+    for (const k of SEED_KNOCKOUTS) {
+      const startsAt = new Date(`${k.date}T${k.kickoff_et}:00-04:00`);
+      const [match] = await db
+        .insert(schema.matches)
+        .values({
+          clanId: clan.id,
+          title: `${k.round} · Match ${k.match_no}`,
+          teamA: k.team_a,
+          teamB: k.team_b,
+          startsAt,
+          status: "open",
+          stage: "knockout",
+          round: k.round,
+          createdBy: adminId,
+        })
+        .returning({ id: schema.matches.id });
+      await db.insert(schema.matchOutcomes).values([
+        { matchId: match.id, label: k.team_a === "TBD" ? "TBD (A)" : k.team_a, sortOrder: 0 },
+        { matchId: match.id, label: k.team_b === "TBD" ? "TBD (B)" : k.team_b, sortOrder: 1 },
       ]);
     }
 
@@ -253,7 +288,9 @@ async function main() {
 
   console.log("Seed complete.");
   console.log(`  Clan: Bakchodi World Cup  (invite code: ${SEED_INVITE})`);
-  console.log(`  Matches: ${SEED_MATCHES.length} (2026 FIFA World Cup group stage) + 1 demo`);
+  console.log(
+    `  Matches: ${SEED_MATCHES.length} group + ${SEED_KNOCKOUTS.length} knockout (2026 FIFA World Cup) + 1 demo`,
+  );
   console.log(`  Demo match "Bakchodi XI vs Internet FC" has 3 bets — settle it to test payouts.`);
   console.log(`  Logins (password "${PASSWORD}"):`);
   for (const u of SEED_USERS) console.log(`    ${u.email}  [${u.role}]`);

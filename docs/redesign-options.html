@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bakchodi Bets — Redesign (Robinhood / Kalshi style)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Inter, system-ui, sans-serif; background: #0c0d10; color: #e7e9ee; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  .page { max-width: 1040px; margin: 0 auto; padding: 28px 18px 90px; }
+  .intro h1 { font-size: 1.75rem; margin: 0 0 8px; letter-spacing: -0.02em; }
+  .intro p { color: #a8aebc; margin: 0 0 6px; max-width: 820px; }
+  .intro .hint { color: #7e8696; font-size: 0.9rem; }
+  .nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 8px; position: sticky; top: 0; background: #0c0d10; padding: 12px 0; z-index: 50; border-bottom: 1px solid #1d1f26; }
+  .nav a { font-size: 0.82rem; text-decoration: none; color: #cdd2dd; border: 1px solid #2a2d36; border-radius: 999px; padding: 7px 14px; }
+  .nav a:hover { background: #1b1d24; }
+  .nav a.rec { border-color: #00c805; color: #00c805; }
+
+  .option { margin-top: 40px; }
+  .option-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; margin-bottom: 6px; }
+  .option-head .num { font-size: 0.72rem; font-weight: 800; color: #0c0d10; background: #cdd2dd; border-radius: 6px; padding: 3px 9px; }
+  .option-head .num.rec { background: #00c805; }
+  .option-head h2 { margin: 0; font-size: 1.3rem; letter-spacing: -0.01em; }
+  .badge-rec { font-size: 0.68rem; font-weight: 700; color: #00c805; border: 1px solid #00c805; border-radius: 999px; padding: 2px 9px; }
+  .verdict { font-size: 0.86rem; color: #8a92a3; margin: 2px 0 14px; max-width: 780px; }
+
+  /* ===================== shared realistic screen skeleton ===================== */
+  .frame { border-radius: 18px; overflow: hidden; border: 1px solid #20222b; }
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; }
+  .brand { display: flex; align-items: center; gap: 9px; }
+  .brand .tr { font-size: 1.25rem; }
+  .brand b { font-weight: 800; font-size: 1.05rem; letter-spacing: -0.02em; }
+  .tabs { display: flex; gap: 22px; padding: 0 20px; }
+  .tab { font-size: 0.9rem; font-weight: 600; padding: 12px 0; cursor: pointer; position: relative; }
+  .filters2 { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 14px 20px 4px; }
+  .chipf { font-size: 0.8rem; padding: 6px 13px; cursor: pointer; white-space: nowrap; }
+  .search { margin-left: auto; font-size: 0.82rem; padding: 8px 14px; min-width: 160px; }
+  .daterow { display: flex; align-items: center; gap: 10px; padding: 18px 20px 6px; }
+  .dlabel { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em; font-weight: 700; }
+  .dline { flex: 1; height: 1px; opacity: 0.5; }
+  .foot { padding: 18px 20px 22px; font-size: 0.72rem; opacity: 0.55; }
+
+  /* row layout */
+  .m { display: grid; grid-template-columns: 58px 1fr auto; align-items: center; gap: 14px; }
+  .kt { font-variant-numeric: tabular-nums; font-size: 0.92rem; font-weight: 600; text-align: center; line-height: 1.1; }
+  .kt small { display: block; font-size: 0.64rem; font-weight: 500; opacity: 0.6; margin-top: 1px; }
+  .teams { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .tm { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 1.02rem; }
+  .fl { font-size: 1.1rem; }
+  .sub { font-size: 0.74rem; opacity: 0.62; margin-top: 3px; }
+  .right { text-align: right; display: flex; flex-direction: column; gap: 7px; align-items: flex-end; }
+  .stat { font-size: 0.64rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 3px 9px; }
+  .cta { font-size: 0.82rem; font-weight: 700; padding: 8px 16px; cursor: pointer; border: none; white-space: nowrap; }
+  .nextflag { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.07em; padding: 2px 8px; align-self: flex-start; margin-bottom: 2px; }
+  .ko-note { font-style: italic; }
+
+  /* ============================================================= */
+  /* 1 — ROBINHOOD (dark, near-black, single green accent) [REC]    */
+  /* ============================================================= */
+  .rh { background: #000; color: #f5f5f7; }
+  .rh .bar { border-bottom: 1px solid #1a1a1a; }
+  .rh .brand b i { color: #00c805; font-style: normal; }
+  .rh .credits { font-size: 0.9rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .rh .tabs { border-bottom: 1px solid #1a1a1a; }
+  .rh .tab { color: #8b8b90; }
+  .rh .tab.sel { color: #f5f5f7; }
+  .rh .tab.sel::after { content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px; background:#00c805; }
+  .rh .chipf { border-radius: 999px; background: #131314; border: 1px solid #232325; color: #c9c9ce; }
+  .rh .chipf.sel { background: #00c805; color: #00220a; border-color: #00c805; font-weight: 700; }
+  .rh .search { border-radius: 999px; background: #131314; border: 1px solid #232325; color: #8b8b90; }
+  .rh .dlabel { color: #8b8b90; }
+  .rh .dline { background: #232325; }
+  /* borderless rows w/ hairline dividers — very Robinhood */
+  .rh .list { padding: 0 8px; }
+  .rh .m { padding: 16px 12px; border-bottom: 1px solid #161617; }
+  .rh .m.next { background: linear-gradient(90deg, rgba(0,200,5,0.06), transparent); }
+  .rh .nextflag { background: rgba(0,200,5,0.16); color: #00c805; border-radius: 4px; }
+  .rh .stat.open { color: #00c805; }
+  .rh .stat.lock { color: #ffb340; }
+  .rh .cta { border-radius: 8px; background: #00c805; color: #00220a; }
+  .rh .cta.ghost { background: #1c1c1e; color: #f5f5f7; }
+  .rh .foot { color: #6a6a70; }
+
+  /* ============================================================= */
+  /* 2 — KALSHI (light, clean, emerald accent, rounded cards)       */
+  /* ============================================================= */
+  .ks { background: #f7f8f9; color: #11161c; }
+  .ks .bar { background: #fff; border-bottom: 1px solid #e8ebee; }
+  .ks .brand b i { color: #00a866; font-style: normal; }
+  .ks .credits { font-size: 0.9rem; font-weight: 700; font-variant-numeric: tabular-nums; color: #11161c; }
+  .ks .tabs { background:#fff; border-bottom: 1px solid #e8ebee; }
+  .ks .tab { color: #6b7480; }
+  .ks .tab.sel { color: #11161c; }
+  .ks .tab.sel::after { content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px; background:#00a866; }
+  .ks .chipf { border-radius: 8px; background: #fff; border: 1px solid #dde2e7; color: #44505c; }
+  .ks .chipf.sel { background: #11161c; color: #fff; border-color: #11161c; font-weight: 700; }
+  .ks .search { border-radius: 8px; background: #fff; border: 1px solid #dde2e7; color: #8a939d; }
+  .ks .dlabel { color: #6b7480; }
+  .ks .dline { background: #dde2e7; }
+  /* rounded cards w/ subtle shadow — very Kalshi */
+  .ks .list { padding: 4px 16px; display: flex; flex-direction: column; gap: 10px; }
+  .ks .m { padding: 16px; background: #fff; border: 1px solid #e8ebee; border-radius: 14px; box-shadow: 0 1px 2px rgba(17,22,28,0.04); }
+  .ks .m.next { border-color: #00a866; box-shadow: 0 2px 10px rgba(0,168,102,0.12); }
+  .ks .nextflag { background: #d8f5e7; color: #007a4a; border-radius: 6px; }
+  .ks .stat.open { background: #d8f5e7; color: #007a4a; border-radius: 999px; }
+  .ks .stat.lock { background: #fdeecf; color: #946200; border-radius: 999px; }
+  .ks .cta { border-radius: 10px; background: #00a866; color: #fff; }
+  .ks .cta.ghost { background: #fff; color: #44505c; border: 1px solid #dde2e7; }
+  .ks .sub { color: #6b7480; opacity: 1; }
+  .ks .foot { color: #8a939d; }
+
+  /* ============================================================= */
+  /* 3 — ARCADE (current, reference)                                */
+  /* ============================================================= */
+  .arcade { background: #0a0e1a; color:#d8ffe9; position: relative;
+    background-image: linear-gradient(#161f3c 1px, transparent 1px), linear-gradient(90deg,#161f3c 1px, transparent 1px);
+    background-size: 54px 54px, 54px 54px; }
+  .arcade .bar { border-bottom: 2px solid #21e6ff; }
+  .arcade .brand b { font-size: 0.95rem; color:#39ff14; }
+  .arcade .brand b i { color:#ff2bd6; font-style:normal; }
+  .arcade .credits { color:#21e6ff; border:2px solid #21e6ff; padding:1px 9px; font-weight:600; }
+  .arcade .tabs { border-bottom: 2px solid #2a3a66; }
+  .arcade .tab { color:#93a6cf; text-transform:uppercase; }
+  .arcade .tab.sel { color:#39ff14; }
+  .arcade .chipf { background:transparent; border:2px solid #2a3a66; color:#d8ffe9; }
+  .arcade .chipf.sel { background:#39ff14; color:#04210a; border-color:#39ff14; }
+  .arcade .search { background:transparent; border:2px solid #2a3a66; color:#93a6cf; }
+  .arcade .dlabel { color:#21e6ff; }
+  .arcade .dline { background:#2a3a66; }
+  .arcade .list { padding: 4px 16px; display:flex; flex-direction:column; gap:10px; }
+  .arcade .m { padding:14px; background:#121a35; border:2px solid #2a3a66; }
+  .arcade .m.next { border-color:#39ff14; box-shadow:0 0 12px rgba(57,255,20,0.4); }
+  .arcade .nextflag { background:#39ff14; color:#04210a; }
+  .arcade .tm { text-transform:uppercase; }
+  .arcade .stat.open { color:#39ff14; border:2px solid #39ff14; }
+  .arcade .stat.lock { color:#ffd23f; border:2px solid #ffd23f; }
+  .arcade .cta { background:#39ff14; color:#04210a; text-transform:uppercase; }
+  .arcade .cta.ghost { background:transparent; color:#21e6ff; border:2px solid #2a3a66; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="intro">
+    <h1>🏆 Bakchodi Bets — clean fintech redesign</h1>
+    <p>Modelled on <strong>Robinhood</strong> and <strong>Kalshi</strong>: minimal, lots of whitespace, one accent colour, crisp type, big tabular numbers, no clutter. Same redesigned “Matches” screen in each so you compare the real thing.</p>
+    <p class="hint">Both show the agreed fixes: matches <strong>grouped by day</strong>, a <strong>“Next up”</strong> highlight, <strong>tabs + filters + search</strong>, kickoff in <strong>your timezone (IST)</strong>, a <strong>Min</strong> bet, and a <strong>knockout</strong> game with <strong>no Draw</strong>. Reply <strong>1</strong> (dark) or <strong>2</strong> (light) — or “1 but support light mode too”.</p>
+    <div class="nav">
+      <a class="rec" href="#rh">1 · Robinhood (dark) ★</a>
+      <a href="#ks">2 · Kalshi (light)</a>
+      <a href="#arcade">3 · Arcade (current)</a>
+    </div>
+  </div>
+
+  <!-- ===================== 1 — ROBINHOOD ===================== -->
+  <section class="option" id="rh">
+    <div class="option-head"><span class="num rec">1</span><h2>Robinhood — dark</h2><span class="badge-rec">★ recommended</span></div>
+    <p class="verdict">Near-black canvas, a single confident green, borderless rows split by hairlines, big tabular numbers. Feels like a serious modern markets app — sleek, fast, never noisy.</p>
+    <div class="frame"><div class="rh">
+      <div class="bar"><span class="brand"><span class="tr">🏆</span><b>Bakchodi<i> Bets</i></b></span><span class="credits">1,000 credits</span></div>
+      <div class="tabs"><span class="tab sel">Matches</span><span class="tab">Grand Gala</span><span class="tab">Leaderboard</span></div>
+      <div class="filters2">
+        <span class="chipf sel">Upcoming</span><span class="chipf">Today</span><span class="chipf">Live</span><span class="chipf">Done</span><span class="chipf">Group ▾</span>
+        <span class="search">🔎 Search teams…</span>
+      </div>
+      <div class="daterow"><span class="dlabel">Today · 14 Jun</span><span class="dline"></span></div>
+      <div class="list">
+        <div class="m next">
+          <div class="kt">8:30<small>PM IST</small></div>
+          <div class="teams"><span class="nextflag">Next up</span>
+            <div class="tm"><span class="fl">🇮🇳</span> India</div>
+            <div class="tm"><span class="fl">🇵🇰</span> Pakistan</div>
+            <div class="sub">Group A · Min 10 · Max 100 · Pot 1,240</div>
+          </div>
+          <div class="right"><span class="stat open">● Open</span><button class="cta">Place bet</button></div>
+        </div>
+        <div class="m">
+          <div class="kt">11:00<small>PM IST</small></div>
+          <div class="teams">
+            <div class="tm"><span class="fl">🇧🇷</span> Brazil</div>
+            <div class="tm"><span class="fl">🇦🇷</span> Argentina</div>
+            <div class="sub">Group C · Min 10 · Max 100 · ✓ your pick: Brazil (50)</div>
+          </div>
+          <div class="right"><span class="stat open">● Open</span><button class="cta ghost">Edit pick</button></div>
+        </div>
+      </div>
+      <div class="daterow"><span class="dlabel">Sat · 5 Jul · Knockouts</span><span class="dline"></span></div>
+      <div class="list">
+        <div class="m">
+          <div class="kt">9:30<small>PM IST</small></div>
+          <div class="teams">
+            <div class="tm"><span class="fl">🇫🇷</span> France</div>
+            <div class="tm"><span class="fl">🇪🇸</span> Spain</div>
+            <div class="sub">Round of 16 · <span class="ko-note">winner advances — no draw</span></div>
+          </div>
+          <div class="right"><span class="stat lock">Locks 9:30</span><button class="cta ghost">View</button></div>
+        </div>
+      </div>
+      <div class="foot">Fictional credits only · no cash value · times shown in your local timezone</div>
+    </div></div>
+  </section>
+
+  <!-- ===================== 2 — KALSHI ===================== -->
+  <section class="option" id="ks">
+    <div class="option-head"><span class="num">2</span><h2>Kalshi — light</h2></div>
+    <p class="verdict">Bright and clean, emerald accent, soft rounded cards on a near-white canvas. Reads like a modern prediction-market app — friendly, legible, premium. Same skeleton as #1, just light.</p>
+    <div class="frame"><div class="ks">
+      <div class="bar"><span class="brand"><span class="tr">🏆</span><b>Bakchodi<i> Bets</i></b></span><span class="credits">1,000 credits</span></div>
+      <div class="tabs"><span class="tab sel">Matches</span><span class="tab">Grand Gala</span><span class="tab">Leaderboard</span></div>
+      <div class="filters2">
+        <span class="chipf sel">Upcoming</span><span class="chipf">Today</span><span class="chipf">Live</span><span class="chipf">Done</span><span class="chipf">Group ▾</span>
+        <span class="search">🔎 Search teams…</span>
+      </div>
+      <div class="daterow"><span class="dlabel">Today · 14 Jun</span><span class="dline"></span></div>
+      <div class="list">
+        <div class="m next">
+          <div class="kt">8:30<small>PM IST</small></div>
+          <div class="teams"><span class="nextflag">Next up</span>
+            <div class="tm"><span class="fl">🇮🇳</span> India</div>
+            <div class="tm"><span class="fl">🇵🇰</span> Pakistan</div>
+            <div class="sub">Group A · Min 10 · Max 100 · Pot 1,240</div>
+          </div>
+          <div class="right"><span class="stat open">Open</span><button class="cta">Place bet</button></div>
+        </div>
+        <div class="m">
+          <div class="kt">11:00<small>PM IST</small></div>
+          <div class="teams">
+            <div class="tm"><span class="fl">🇧🇷</span> Brazil</div>
+            <div class="tm"><span class="fl">🇦🇷</span> Argentina</div>
+            <div class="sub">Group C · Min 10 · Max 100 · ✓ your pick: Brazil (50)</div>
+          </div>
+          <div class="right"><span class="stat open">Open</span><button class="cta ghost">Edit pick</button></div>
+        </div>
+      </div>
+      <div class="daterow"><span class="dlabel">Sat · 5 Jul · Knockouts</span><span class="dline"></span></div>
+      <div class="list">
+        <div class="m">
+          <div class="kt">9:30<small>PM IST</small></div>
+          <div class="teams">
+            <div class="tm"><span class="fl">🇫🇷</span> France</div>
+            <div class="tm"><span class="fl">🇪🇸</span> Spain</div>
+            <div class="sub">Round of 16 · <span class="ko-note">winner advances — no draw</span></div>
+          </div>
+          <div class="right"><span class="stat lock">Locks 9:30</span><button class="cta ghost">View</button></div>
+        </div>
+      </div>
+      <div class="foot">Fictional credits only · no cash value · times shown in your local timezone</div>
+    </div></div>
+  </section>
+
+  <!-- ===================== 3 — ARCADE ===================== -->
+  <section class="option" id="arcade">
+    <div class="option-head"><span class="num">3</span><h2>Arcade <span style="font-weight:400;opacity:0.6;font-size:0.9rem">— current</span></h2></div>
+    <p class="verdict">What's live now (neon / pixel / scanlines), on the new layout for reference. The “too gamey / stale” one we're replacing.</p>
+    <div class="frame"><div class="arcade">
+      <div class="bar"><span class="brand"><span class="tr">🏆</span><b>BAKCHODI<i> BETS</i></b></span><span class="credits">1,000 ฿</span></div>
+      <div class="tabs"><span class="tab sel">MATCHES</span><span class="tab">GRAND GALA</span><span class="tab">SCORES</span></div>
+      <div class="filters2">
+        <span class="chipf sel">UPCOMING</span><span class="chipf">TODAY</span><span class="chipf">LIVE</span><span class="chipf">DONE</span><span class="chipf">GROUP ▾</span>
+        <span class="search">SEARCH…</span>
+      </div>
+      <div class="daterow"><span class="dlabel">TODAY · 14 JUN</span><span class="dline"></span></div>
+      <div class="list">
+        <div class="m next">
+          <div class="kt">8:30<small>PM IST</small></div>
+          <div class="teams"><span class="nextflag">NEXT UP</span>
+            <div class="tm"><span class="fl">🇮🇳</span> India</div>
+            <div class="tm"><span class="fl">🇵🇰</span> Pakistan</div>
+            <div class="sub">GROUP A · MIN 10 · MAX 100 · POT 1,240</div>
+          </div>
+          <div class="right"><span class="stat open">OPEN</span><button class="cta">BET</button></div>
+        </div>
+      </div>
+      <div class="daterow"><span class="dlabel">SAT · 5 JUL · KNOCKOUTS</span><span class="dline"></span></div>
+      <div class="list">
+        <div class="m">
+          <div class="kt">9:30<small>PM IST</small></div>
+          <div class="teams">
+            <div class="tm"><span class="fl">🇫🇷</span> France</div>
+            <div class="tm"><span class="fl">🇪🇸</span> Spain</div>
+            <div class="sub">ROUND OF 16 · WINNER ADVANCES — NO DRAW</div>
+          </div>
+          <div class="right"><span class="stat lock">LOCKS 9:30</span><button class="cta ghost">VIEW</button></div>
+        </div>
+      </div>
+      <div class="foot">FICTIONAL CREDITS ONLY · NO CASH VALUE</div>
+    </div></div>
+  </section>
+
+</div>
+</body>
+</html>

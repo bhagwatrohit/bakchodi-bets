@@ -28,6 +28,7 @@ export async function updateClanSettingsAction(
     await updateClanSettings(clanId, {
       name: String(fd.get("name") ?? ""),
       currencyName: String(fd.get("currencyName") ?? ""),
+      defaultMinBet: String(fd.get("defaultMinBet") ?? ""),
       defaultMaxBet: String(fd.get("defaultMaxBet") ?? ""),
       lockBetsAtMatchStart: fd.get("lockBetsAtMatchStart") === "on",
       showBetsBeforeLock: fd.get("showBetsBeforeLock") === "on",

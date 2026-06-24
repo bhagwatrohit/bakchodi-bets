@@ -182,6 +182,7 @@ export default async function GrandGalaPage({
                     clanId={clanId}
                     matchId={gala.id}
                     outcomes={gala.outcomes}
+                    minBet={gala.minBet}
                     maxBet={gala.maxBet}
                     availableBalance={gala.availableBalance}
                     currencyName={gala.currencyName}

@@ -22,6 +22,7 @@ export interface ClanSettings {
   lockBetsAtMatchStart: boolean;
   showBetsBeforeLock: boolean;
   showBetsAfterLock: boolean;
+  defaultMinBet: Money;
   defaultMaxBet: Money;
   currencyName: string;
   name: string;
@@ -33,6 +34,7 @@ export interface Clan {
   createdBy: string;
   currencyName: string;
   startingBalance: Money;
+  defaultMinBet: Money;
   defaultMaxBet: Money;
   lockBetsAtMatchStart: boolean;
   showBetsBeforeLock: boolean;

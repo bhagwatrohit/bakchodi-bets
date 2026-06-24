@@ -22,15 +22,15 @@ function Toggle({
   defaultChecked?: boolean;
 }) {
   return (
-    <label className="flex cursor-pointer items-start gap-3 border border-grid p-3 transition-colors hover:bg-muted">
+    <label className="flex cursor-pointer items-start gap-3 rounded-md border border-border p-3 transition-colors hover:bg-muted">
       <input
         type="checkbox"
         name={name}
         defaultChecked={defaultChecked}
-        className="mt-0.5 h-4 w-4 shrink-0 accent-accent"
+        className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--primary)]"
       />
       <span className="flex flex-col gap-0.5">
-        <span className="font-condensed text-sm font-semibold uppercase tracking-wide">{label}</span>
+        <span className="text-sm font-semibold">{label}</span>
         <span className="text-xs text-muted-foreground">{hint}</span>
       </span>
     </label>
@@ -55,16 +55,31 @@ export function ClanSettingsForm({ clan }: { clan: Clan }) {
         <Input id="settings-name" name="name" required minLength={2} defaultValue={clan.name} />
       </div>
 
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="settings-currency">Currency name</Label>
+        <Input
+          id="settings-currency"
+          name="currencyName"
+          defaultValue={clan.currencyName}
+          placeholder="credits"
+        />
+        <p className="text-xs text-muted-foreground">Fictional credits only — no cash value.</p>
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="settings-currency">Currency name</Label>
+          <Label htmlFor="settings-minbet">Default min bet</Label>
           <Input
-            id="settings-currency"
-            name="currencyName"
-            defaultValue={clan.currencyName}
-            placeholder="credits"
+            id="settings-minbet"
+            name="defaultMinBet"
+            type="number"
+            min="1"
+            step="any"
+            defaultValue={clan.defaultMinBet}
+            required
+            className="tabular"
           />
-          <p className="text-xs text-muted-foreground">Fictional credits only — no cash value.</p>
+          <p className="text-xs text-muted-foreground">Floor per bet unless a match overrides it.</p>
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="settings-maxbet">Default max bet</Label>
@@ -109,7 +124,7 @@ export function ClanSettingsForm({ clan }: { clan: Clan }) {
       ) : null}
 
       <Button type="submit" disabled={pending}>
-        {pending ? "Saving…" : "SAVE SETTINGS"}
+        {pending ? "Saving…" : "Save settings"}
       </Button>
     </form>
   );

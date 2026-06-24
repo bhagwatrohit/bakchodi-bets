@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { BetForm } from "@/components/BetForm";
 import { Flag } from "@/components/Flag";
+import { LocalTime } from "@/components/LocalTime";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,25 +22,18 @@ import { format } from "@/lib/money";
 import type { BetHistoryRow, MatchDetail, MatchStatus } from "@/lib/types";
 
 const STATUS_META: Record<MatchStatus, { label: string; color: string }> = {
-  open: { label: "OPEN", color: "text-neon-green" },
-  locked: { label: "LOCKED", color: "text-neon-amber" },
-  final: { label: "FINAL", color: "text-neon-cyan" },
-  settled: { label: "SETTLED", color: "text-muted-foreground" },
+  open: { label: "Open", color: "text-primary" },
+  locked: { label: "Live", color: "text-[var(--accent-amber)]" },
+  final: { label: "Final", color: "text-muted-foreground" },
+  settled: { label: "Settled", color: "text-muted-foreground" },
 };
 
 const BET_STATUS_META: Record<string, { label: string; color: string }> = {
-  pending: { label: "PENDING", color: "text-muted-foreground" },
-  won: { label: "WON", color: "text-neon-green" },
-  lost: { label: "LOST", color: "text-neon-pink" },
-  void: { label: "VOID", color: "text-muted-foreground" },
+  pending: { label: "Pending", color: "text-muted-foreground" },
+  won: { label: "Won", color: "text-primary" },
+  lost: { label: "Lost", color: "text-danger" },
+  void: { label: "Void", color: "text-muted-foreground" },
 };
-
-function formatTime(date: Date): string {
-  return new Intl.DateTimeFormat("en-US", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(date));
-}
 
 /** Betting/editing window: open, and not past lock. Existing pick can still be changed. */
 function bettable(match: MatchDetail): boolean {
@@ -87,15 +81,15 @@ export default async function MatchDetailPage({
         <div className="flex flex-col gap-3">
           <Link
             href={`/clans/${clanId}/matches`}
-            className="dateline hover:text-neon-cyan"
+            className="dateline hover:text-foreground"
           >
-            « MATCH SELECT
+            ← Matches
           </Link>
-          <div className="flex flex-wrap items-start justify-between gap-3 border-b-2 border-grid pb-3">
+          <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border pb-4">
             <div className="flex flex-col gap-1">
               {isGala ? (
                 <>
-                  <p className="kicker text-neon-amber">🏆 Grand Gala</p>
+                  <p className="kicker">🏆 Grand Gala</p>
                   <h1 className="headline text-2xl sm:text-4xl">World Cup Winner</h1>
                   <p className="dateline mt-1">
                     Pick the champion · entry closes when the knockouts begin
@@ -103,14 +97,20 @@ export default async function MatchDetailPage({
                 </>
               ) : (
                 <>
-                  <p className="kicker">MATCH</p>
-                  <h1 className="matchup flex flex-col gap-2 text-3xl sm:text-5xl">
+                  {match.round ? (
+                    <p className="kicker">{match.round}</p>
+                  ) : match.groupLabel ? (
+                    <p className="kicker">Group {match.groupLabel}</p>
+                  ) : (
+                    <p className="kicker">Match</p>
+                  )}
+                  <h1 className="matchup flex flex-col gap-2 text-2xl sm:text-4xl">
                     <span className="flex items-center gap-3">
                       <Flag team={match.teamA} size="lg" />
                       <span className="min-w-0">{match.teamA}</span>
                     </span>
                     <span className="flex items-center gap-3">
-                      <span className="font-pixel text-xs text-neon-magenta glow-magenta">vs</span>
+                      <span className="text-sm font-medium text-muted-foreground">vs</span>
                       <Flag team={match.teamB} size="lg" />
                       <span className="min-w-0">{match.teamB}</span>
                     </span>
@@ -118,22 +118,22 @@ export default async function MatchDetailPage({
                   {match.title !== `${match.teamA} vs ${match.teamB}` ? (
                     <p className="dateline">{match.title}</p>
                   ) : null}
-                  <p className="dateline mt-1">{formatTime(match.startsAt)}</p>
+                  <LocalTime value={match.startsAt} className="dateline mt-1" />
                 </>
               )}
             </div>
-            <span className={`stamp ${status.color}`}>
-              {status.label}
-            </span>
+            <span className={`stamp ${status.color}`}>{status.label}</span>
           </div>
         </div>
 
         <Card>
-          <CardContent className="grid grid-cols-2 gap-y-3 py-5 sm:grid-cols-4 sm:divide-x sm:divide-grid">
+          <CardContent className="grid grid-cols-2 gap-y-3 py-5 sm:grid-cols-4 sm:divide-x sm:divide-border">
             <div className="sm:px-4 sm:first:pl-0">
-              <p className="kicker">{isGala ? "Entry" : "Max Bet"}</p>
+              <p className="kicker">{isGala ? "Entry" : "Bet range"}</p>
               <p className="tabular text-lg font-semibold">
-                {format(isGala ? (match.fixedStake ?? "0") : match.maxBet, match.currencyName)}
+                {isGala
+                  ? format(match.fixedStake ?? "0", match.currencyName)
+                  : `${format(match.minBet, match.currencyName)}–${format(match.maxBet, match.currencyName)}`}
               </p>
             </div>
             <div className="sm:px-4">
@@ -156,14 +156,14 @@ export default async function MatchDetailPage({
         </Card>
 
         {match.status === "settled" && winningOutcome ? (
-          <Card className="border-2 border-neon-green">
+          <Card className="border-primary">
             <CardHeader>
-              <p className="kicker">FINAL SCORE</p>
-              <CardTitle className="headline text-2xl">GAME OVER</CardTitle>
+              <p className="kicker">Result</p>
+              <CardTitle className="text-xl">Final</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
-              <p className="kicker">Winning Outcome</p>
-              <span className="stamp w-fit text-neon-green text-base">
+              <p className="kicker">Winning outcome</p>
+              <span className="stamp w-fit text-primary text-base">
                 {winningOutcome.label}
               </span>
             </CardContent>
@@ -171,10 +171,10 @@ export default async function MatchDetailPage({
         ) : null}
 
         {match.myBet && !showBetForm ? (
-          <Card className="border-2 border-dashed border-neon-cyan bg-card">
+          <Card>
             <CardHeader>
-              <p className="kicker">SAVED</p>
-              <CardTitle className="headline text-2xl">YOUR BET</CardTitle>
+              <p className="kicker">Saved</p>
+              <CardTitle className="text-xl">Your bet</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-3 text-sm">
               <hr className="rule-hair" />
@@ -227,10 +227,10 @@ export default async function MatchDetailPage({
           <Card>
             <CardHeader>
               <p className="kicker">
-                {match.myBet ? "CHANGE IT UP" : isGala ? "ENTER THE POOL" : "MAKE YOUR PICK"}
+                {match.myBet ? "Change it up" : isGala ? "Enter the pool" : "Make your pick"}
               </p>
-              <CardTitle className="headline text-2xl">
-                {match.myBet ? "EDIT YOUR PICK" : isGala ? "GRAND GALA" : "PLACE YOUR BET"}
+              <CardTitle className="text-xl">
+                {match.myBet ? "Edit your pick" : isGala ? "Grand Gala" : "Place your bet"}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -238,6 +238,7 @@ export default async function MatchDetailPage({
                 clanId={clanId}
                 matchId={matchId}
                 outcomes={match.outcomes}
+                minBet={match.minBet}
                 maxBet={match.maxBet}
                 availableBalance={match.availableBalance}
                 currencyName={match.currencyName}
@@ -254,10 +255,8 @@ export default async function MatchDetailPage({
         ) : !match.myBet && match.status === "open" ? (
           <Card>
             <CardContent className="py-6 text-center">
-              <p className="kicker text-neon-amber">Lines Closed</p>
-              <p className="mt-1 dateline">
-                The book is shut on this match.
-              </p>
+              <p className="kicker">Betting closed</p>
+              <p className="mt-1 dateline">This match is locked.</p>
             </CardContent>
           </Card>
         ) : null}
@@ -265,8 +264,8 @@ export default async function MatchDetailPage({
         {allBets && allBets.length > 0 ? (
           <Card>
             <CardHeader>
-              <p className="kicker">ON THE RECORD</p>
-              <CardTitle className="headline text-2xl">ALL BETS</CardTitle>
+              <p className="kicker">On the record</p>
+              <CardTitle className="text-xl">All bets</CardTitle>
             </CardHeader>
             <CardContent className="pt-0">
               <Table>
@@ -311,7 +310,7 @@ export default async function MatchDetailPage({
         {match.myBet ? (
           <div>
             <Link href={`/clans/${clanId}/matches`}>
-              <Button variant="outline">« MATCH SELECT</Button>
+              <Button variant="outline">← Matches</Button>
             </Link>
           </div>
         ) : null}

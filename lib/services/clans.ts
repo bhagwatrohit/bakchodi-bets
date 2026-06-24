@@ -4,7 +4,7 @@ import { customAlphabet } from "nanoid";
 import { db, schema } from "@/lib/db";
 import { requireSessionProfile } from "@/lib/services/auth";
 import { conflict, forbidden, notFound, validation } from "@/lib/errors";
-import { parseMoney, isPositive, gte, add } from "@/lib/money";
+import { parseMoney, isPositive, gte, add, cmp } from "@/lib/money";
 import type { Clan, ClanCardData, ClanMember, ClanRole, ClanSettings } from "@/lib/types";
 import type { ClanRow, ClanMemberRow } from "@/lib/db/schema";
 import {
@@ -26,6 +26,7 @@ function mapClan(row: ClanRow): Clan {
     createdBy: row.createdBy ?? "",
     currencyName: row.currencyName,
     startingBalance: row.startingBalance,
+    defaultMinBet: row.defaultMinBet,
     defaultMaxBet: row.defaultMaxBet,
     lockBetsAtMatchStart: row.lockBetsAtMatchStart,
     showBetsBeforeLock: row.showBetsBeforeLock,
@@ -62,6 +63,7 @@ export async function createClan(input: {
   name: string;
   currencyName: string;
   startingBalance: string;
+  defaultMinBet?: string;
   defaultMaxBet: string;
   lockBetsAtMatchStart?: boolean;
   showBetsBeforeLock?: boolean;
@@ -74,12 +76,17 @@ export async function createClan(input: {
   const currencyName = input.currencyName.trim() || "credits";
   const startingBalance = parseMoney(input.startingBalance);
   const defaultMaxBet = parseMoney(input.defaultMaxBet);
+  const defaultMinBet = parseMoney(input.defaultMinBet ?? "100");
 
   if (name.length < 2) throw validation("Clan name is too short.");
   if (!startingBalance || !isPositive(startingBalance))
     throw validation("Starting balance must be greater than zero.");
   if (!defaultMaxBet || !isPositive(defaultMaxBet))
     throw validation("Default max bet must be greater than zero.");
+  if (!defaultMinBet || !isPositive(defaultMinBet))
+    throw validation("Default min bet must be greater than zero.");
+  if (cmp(defaultMinBet, defaultMaxBet) > 0)
+    throw validation("Default min bet can't be greater than the max bet.");
 
   const clanId = await db.transaction(async (tx) => {
     const [clan] = await tx
@@ -89,6 +96,7 @@ export async function createClan(input: {
         createdBy: me.id,
         currencyName,
         startingBalance,
+        defaultMinBet,
         defaultMaxBet,
         lockBetsAtMatchStart: input.lockBetsAtMatchStart ?? true,
         showBetsBeforeLock: input.showBetsBeforeLock ?? false,
@@ -388,10 +396,23 @@ export async function updateClanSettings(
   }
   if (patch.currencyName !== undefined)
     values.currencyName = patch.currencyName.trim() || "credits";
+  if (patch.defaultMinBet !== undefined) {
+    const m = parseMoney(patch.defaultMinBet);
+    if (!m || !isPositive(m)) throw validation("Default min bet must be greater than zero.");
+    values.defaultMinBet = m;
+  }
   if (patch.defaultMaxBet !== undefined) {
     const m = parseMoney(patch.defaultMaxBet);
     if (!m || !isPositive(m)) throw validation("Default max bet must be greater than zero.");
     values.defaultMaxBet = m;
+  }
+  // Guard against min > max (whether either is being changed now or already set).
+  if (values.defaultMinBet != null || values.defaultMaxBet != null) {
+    const existing = await db.query.clans.findFirst({ where: eq(schema.clans.id, clanId) });
+    const min = (values.defaultMinBet as string) ?? existing?.defaultMinBet ?? "0";
+    const max = (values.defaultMaxBet as string) ?? existing?.defaultMaxBet ?? "0";
+    if (cmp(min, max) > 0)
+      throw validation("Default min bet can't be greater than the max bet.");
   }
   if (patch.lockBetsAtMatchStart !== undefined)
     values.lockBetsAtMatchStart = patch.lockBetsAtMatchStart;

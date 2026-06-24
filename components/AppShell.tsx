@@ -5,7 +5,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import type { SessionProfile } from "@/lib/types";
 
 /**
- * Arcade cabinet header. Every authenticated page sits under the marquee.
+ * App header. Every authenticated page sits under it.
  */
 export function AppShell({
   profile,
@@ -16,56 +16,62 @@ export function AppShell({
 }) {
   return (
     <>
-      <header className="border-b-2 border-neon-cyan box-glow bg-bg-2/70">
+      <header className="border-b border-border bg-card/60 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
-          <Link href={profile ? "/dashboard" : "/"} className="flex items-center gap-3">
-            <Trophy className="h-9 w-9" />
+          <Link href={profile ? "/dashboard" : "/"} className="flex items-center gap-2.5">
+            <Trophy className="h-7 w-7" />
             <span className="flex flex-col leading-none">
-              <span className="font-pixel text-sm sm:text-lg text-neon-green glow-green">
-                BAKCHODI<span className="text-neon-magenta glow-magenta"> BETS</span>
+              <span className="text-base font-extrabold tracking-tight sm:text-lg">
+                Bakchodi<span className="text-primary"> Bets</span>
               </span>
-              <span className="mt-1 hidden font-condensed uppercase tracking-[0.25em] text-xs text-neon-amber sm:block">
-                Khoob Khelo, Khoob Jeeto
+              <span className="mt-0.5 hidden text-xs text-muted-foreground sm:block">
+                World Cup ’26 prediction pool
               </span>
             </span>
           </Link>
 
           {profile ? (
-            <div className="flex items-center gap-3 font-pixel text-[0.6rem] uppercase">
-              <span className="hidden text-neon-cyan sm:inline">1P · {profile.displayName}</span>
+            <div className="flex items-center gap-3 text-sm">
+              <span className="hidden text-muted-foreground sm:inline">{profile.displayName}</span>
               <ThemeToggle />
               <form action={signOutAction}>
-                <button type="submit" className="cursor-pointer text-muted-foreground hover:text-neon-pink">
-                  Quit
+                <button
+                  type="submit"
+                  className="cursor-pointer font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Log out
                 </button>
               </form>
             </div>
           ) : (
-            <div className="flex items-center gap-3 font-pixel text-[0.6rem] uppercase">
+            <div className="flex items-center gap-3 text-sm">
               <ThemeToggle />
-              <Link href="/login" className="text-neon-cyan hover:glow-cyan">
+              <Link href="/login" className="font-medium text-muted-foreground hover:text-foreground">
                 Log in
               </Link>
-              <Link href="/signup" className="text-neon-green hover:glow-green">
-                Insert coin
+              <Link
+                href="/signup"
+                className="font-semibold text-primary hover:opacity-80"
+              >
+                Sign up
               </Link>
             </div>
           )}
         </div>
         {profile ? (
-          <div className="border-t-2 border-grid bg-background/60">
+          <div className="border-t border-border">
             <div className="mx-auto max-w-5xl px-4 py-1.5">
               <Link
                 href="/dashboard"
-                className="font-pixel text-[0.55rem] uppercase text-neon-cyan hover:glow-cyan"
+                className="text-xs font-medium text-muted-foreground hover:text-foreground"
               >
-                « Select Game
+                ← All pools
               </Link>
             </div>
           </div>
         ) : null}
       </header>
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-7">{children}</main>
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">{children}</main>
     </>
   );
 }

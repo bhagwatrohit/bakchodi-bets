@@ -1,10 +1,9 @@
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
-import { MatchesTabs } from "@/components/MatchesTabs";
+import { MatchBrowser } from "@/components/MatchBrowser";
 import { getSessionProfile } from "@/lib/services/auth";
 import { getClanContext } from "@/lib/services/clans";
 import { listMatches } from "@/lib/services/matches";
-import type { MatchListItem } from "@/lib/types";
 
 export default async function MatchesPage({
   params,
@@ -24,32 +23,19 @@ export default async function MatchesPage({
   // The Grand Gala lives on its own page (/gala) — keep it out of the list.
   const regular = matches.filter((m) => m.marketType === "match");
 
-  const open: MatchListItem[] = [];
-  const locked: MatchListItem[] = [];
-  const settled: MatchListItem[] = [];
-  for (const m of regular) {
-    if (m.displayStatus === "open") open.push(m);
-    else if (m.displayStatus === "locked" || m.displayStatus === "final") locked.push(m);
-    else if (m.displayStatus === "settled") settled.push(m);
-  }
-
   return (
     <AppShell profile={profile}>
-      <div className="flex flex-col gap-6">
-        <header className="flex flex-col gap-2">
-          <p className="kicker">MATCHES · {ctx.clan.name}</p>
-          <h1 className="headline text-3xl sm:text-5xl">MATCH SELECT</h1>
+      <div className="flex flex-col gap-5">
+        <header className="flex flex-col gap-1.5">
+          <p className="kicker">{ctx.clan.name}</p>
+          <h1 className="headline text-2xl sm:text-3xl">Matches</h1>
           <p className="dateline">
-            Drop your fake-credit picks and climb the high-score board — every
-            call goes on the record.
+            Pick your games, lock in before kickoff, climb the leaderboard.
           </p>
-          <hr className="rule-thick mt-1" />
         </header>
 
-        <MatchesTabs
-          open={open}
-          locked={locked}
-          settled={settled}
+        <MatchBrowser
+          matches={regular}
           clanId={clanId}
           currencyName={ctx.clan.currencyName}
         />

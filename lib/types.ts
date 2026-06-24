@@ -65,6 +65,15 @@ export interface ClanCardData {
   role: ClanRole;
 }
 
+/** Bookmaker odds for a match, pre-formatted for display (American lines). */
+export interface MatchOddsView {
+  a: string | null; // line for teamA as listed on the match
+  draw: string | null;
+  b: string | null;
+  summary: string | null; // fallback when per-outcome lines are missing
+  provider: string | null;
+}
+
 export interface MatchOutcome {
   id: string;
   label: string;

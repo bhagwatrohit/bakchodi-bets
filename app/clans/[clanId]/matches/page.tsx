@@ -4,6 +4,8 @@ import { MatchBrowser } from "@/components/MatchBrowser";
 import { getSessionProfile } from "@/lib/services/auth";
 import { getClanContext } from "@/lib/services/clans";
 import { listMatches } from "@/lib/services/matches";
+import { getWorldCupOdds, oddsViewFor } from "@/lib/services/worldcup-feed";
+import type { MatchOddsView } from "@/lib/types";
 
 export default async function MatchesPage({
   params,
@@ -23,6 +25,16 @@ export default async function MatchesPage({
   // The Grand Gala lives on its own page (/gala) — keep it out of the list.
   const regular = matches.filter((m) => m.marketType === "match");
 
+  // Bookmaker lines, best-effort (absent when the feed is down). Keyed by match id.
+  const oddsEntries = await getWorldCupOdds();
+  const odds: Record<string, MatchOddsView> = {};
+  if (oddsEntries) {
+    for (const m of regular) {
+      const view = oddsViewFor(oddsEntries, m.teamA, m.teamB);
+      if (view) odds[m.id] = view;
+    }
+  }
+
   return (
     <AppShell profile={profile}>
       <div className="flex flex-col gap-5">
@@ -38,6 +50,7 @@ export default async function MatchesPage({
           matches={regular}
           clanId={clanId}
           currencyName={ctx.clan.currencyName}
+          odds={odds}
         />
       </div>
     </AppShell>

@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { Flag } from "@/components/Flag";
 import { LocalTime } from "@/components/LocalTime";
+import { OddsStrip } from "@/components/OddsStrip";
 import { Button } from "@/components/ui/button";
 import { format } from "@/lib/money";
 import { cn } from "@/lib/utils";
-import type { MatchListItem, MatchStatus } from "@/lib/types";
+import type { MatchListItem, MatchOddsView, MatchStatus } from "@/lib/types";
 
 const STATUS_META: Record<MatchStatus, { label: string; className: string }> = {
   open: { label: "Open", className: "text-primary" },
@@ -26,11 +27,13 @@ export function MatchRow({
   clanId,
   currencyName,
   isNext = false,
+  odds,
 }: {
   match: MatchListItem;
   clanId: string;
   currencyName: string;
   isNext?: boolean;
+  odds?: MatchOddsView;
 }) {
   const href = `/clans/${clanId}/matches/${match.id}`;
   const status = STATUS_META[match.displayStatus];
@@ -118,6 +121,10 @@ export function MatchRow({
           </Link>
         </div>
       </div>
+
+      {odds ? (
+        <OddsStrip teamA={match.teamA} teamB={match.teamB} odds={odds} className="mt-3" />
+      ) : null}
     </div>
   );
 }

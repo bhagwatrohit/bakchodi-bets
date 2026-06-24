@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { MatchRow } from "@/components/MatchRow";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import type { MatchListItem, MatchStatus } from "@/lib/types";
+import type { MatchListItem, MatchOddsView, MatchStatus } from "@/lib/types";
 
 type StatusFilter = "upcoming" | "today" | "live" | "done";
 
@@ -53,10 +53,12 @@ export function MatchBrowser({
   matches,
   clanId,
   currencyName,
+  odds = {},
 }: {
   matches: MatchListItem[];
   clanId: string;
   currencyName: string;
+  odds?: Record<string, MatchOddsView>;
 }) {
   const [status, setStatus] = useState<StatusFilter>("upcoming");
   const [group, setGroup] = useState("all");
@@ -191,6 +193,7 @@ export function MatchBrowser({
                 clanId={clanId}
                 currencyName={currencyName}
                 isNext={m.id === nextUpId}
+                odds={odds[m.id]}
               />
             ))}
           </section>

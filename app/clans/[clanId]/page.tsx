@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import { getSessionProfile } from "@/lib/services/auth";
 import { getClanContext } from "@/lib/services/clans";
 import { listMatches } from "@/lib/services/matches";
@@ -7,6 +8,7 @@ import { getLeaderboard } from "@/lib/services/bets";
 import { AppShell } from "@/components/AppShell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InviteCopy } from "@/components/InviteCopy";
+import { ClanWire, WireSkeleton } from "@/components/WorldCupWire";
 import { Trophy } from "@/components/Trophy";
 import { Flag } from "@/components/Flag";
 import { LocalTime } from "@/components/LocalTime";
@@ -80,6 +82,16 @@ export default async function ClanHomePage({
     .sort((a, b) => b.startsAt.getTime() - a.startsAt.getTime())
     .slice(0, 3);
   const topFive = leaderboard.slice(0, 5);
+  const wireMatches = matches
+    .filter((m) => m.marketType === "match" && m.displayStatus === "open")
+    .slice(0, 3)
+    .map((m) => ({
+      clanId,
+      matchId: m.id,
+      teamA: m.teamA,
+      teamB: m.teamB,
+      startsAt: m.startsAt,
+    }));
   const myRow = leaderboard.find((r) => r.isMe);
   const isAdmin = membership.role === "admin";
   const gala = matches.find((m) => m.marketType === "tournament_winner");
@@ -227,6 +239,11 @@ export default async function ClanHomePage({
             </CardContent>
           </Card>
         </div>
+
+        {/* News + odds for this clan's upcoming matches */}
+        <Suspense fallback={<WireSkeleton />}>
+          <ClanWire clanId={clanId} matches={wireMatches} headlineCount={4} />
+        </Suspense>
 
         {/* Final Scores */}
         {recent.length ? (

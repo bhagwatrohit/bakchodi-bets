@@ -16,17 +16,12 @@ export function AppShell({
 }) {
   return (
     <>
-      <header className="border-b border-border bg-card/60 backdrop-blur">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
-          <Link href={profile ? "/dashboard" : "/"} className="flex items-center gap-2.5">
-            <Trophy className="h-7 w-7" />
-            <span className="flex flex-col leading-none">
-              <span className="text-base font-extrabold tracking-tight sm:text-lg">
-                Bakchodi<span className="text-primary"> Bets</span>
-              </span>
-              <span className="mt-0.5 hidden text-xs text-muted-foreground sm:block">
-                World Cup ’26 prediction pool
-              </span>
+      <header className="sticky top-0 z-30 border-b border-border bg-card/80 backdrop-blur">
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-2">
+          <Link href={profile ? "/dashboard" : "/"} className="flex items-center gap-2">
+            <Trophy className="h-6 w-6" />
+            <span className="text-base font-extrabold tracking-tight sm:text-lg">
+              Bakchodi<span className="text-primary"> Bets</span>
             </span>
           </Link>
 
@@ -58,20 +53,8 @@ export function AppShell({
             </div>
           )}
         </div>
-        {profile ? (
-          <div className="border-t border-border">
-            <div className="mx-auto max-w-5xl px-4 py-1.5">
-              <Link
-                href="/dashboard"
-                className="text-xs font-medium text-muted-foreground hover:text-foreground"
-              >
-                ← All pools
-              </Link>
-            </div>
-          </div>
-        ) : null}
       </header>
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6">{children}</main>
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-5">{children}</main>
     </>
   );
 }

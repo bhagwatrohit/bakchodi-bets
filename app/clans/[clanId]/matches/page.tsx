@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
+import { ClanNav } from "@/components/ClanNav";
 import { MatchBrowser } from "@/components/MatchBrowser";
 import { getSessionProfile } from "@/lib/services/auth";
 import { getClanContext } from "@/lib/services/clans";
@@ -37,13 +38,15 @@ export default async function MatchesPage({
 
   return (
     <AppShell profile={profile}>
-      <div className="flex flex-col gap-5">
-        <header className="flex flex-col gap-1.5">
-          <p className="kicker">{ctx.clan.name}</p>
-          <h1 className="headline text-2xl sm:text-3xl">Matches</h1>
-          <p className="dateline">
-            Pick your games, lock in before kickoff, climb the leaderboard.
-          </p>
+      <ClanNav
+        clanId={clanId}
+        clanName={ctx.clan.name}
+        isAdmin={ctx.membership.role === "admin"}
+      />
+      <div className="flex flex-col gap-4">
+        <header className="flex flex-col gap-1">
+          <h1 className="headline text-xl sm:text-2xl">Matches</h1>
+          <p className="dateline">Pick your games, lock in before kickoff, climb the leaderboard.</p>
         </header>
 
         <MatchBrowser

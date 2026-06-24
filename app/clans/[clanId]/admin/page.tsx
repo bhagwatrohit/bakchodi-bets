@@ -7,6 +7,7 @@ import { listMatches } from "@/lib/services/matches";
 import { listAllBets, getLeaderboard } from "@/lib/services/bets";
 import { RemoveMemberButton } from "@/components/admin/RemoveMemberButton";
 import { AppShell } from "@/components/AppShell";
+import { ClanNav } from "@/components/ClanNav";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
@@ -66,21 +67,14 @@ export default async function ClanAdminPage({
 
   return (
     <AppShell profile={profile}>
+      <ClanNav clanId={clanId} clanName={clan.name} isAdmin />
       <div className="flex flex-col gap-6">
         {/* Masthead */}
-        <div className="flex flex-col gap-2">
-          <Link
-            href={`/clans/${clanId}`}
-            className="dateline inline-flex w-fit items-center gap-1 hover:text-foreground"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" /> Back to {clan.name}
-          </Link>
+        <div className="flex flex-col gap-1">
           <div className="flex items-center gap-3">
-            <p className="kicker text-muted-foreground">Admin</p>
+            <h1 className="headline text-xl sm:text-2xl">Admin console</h1>
             <span className="stamp text-danger">Admins only</span>
           </div>
-          <h1 className="headline text-3xl sm:text-5xl">Admin console</h1>
-          <hr className="rule-thick" />
           <p className="dateline">
             Manage settings, add matches, and settle results for this clan.
           </p>

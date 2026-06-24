@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
+import { ClanNav } from "@/components/ClanNav";
 import { BetForm } from "@/components/BetForm";
 import { Flag } from "@/components/Flag";
 import { Trophy } from "@/components/Trophy";
@@ -67,10 +67,12 @@ export default async function GrandGalaPage({
 
   return (
     <AppShell profile={profile}>
+      <ClanNav
+        clanId={clanId}
+        clanName={ctx.clan.name}
+        isAdmin={ctx.membership.role === "admin"}
+      />
       <div className="flex flex-col gap-6">
-        <Link href={`/clans/${clanId}`} className="dateline hover:text-accent">
-          « {ctx.clan.name}
-        </Link>
 
         {!gala ? (
           <Card>

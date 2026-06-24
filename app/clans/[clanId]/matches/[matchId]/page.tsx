@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
+import { ClanNav } from "@/components/ClanNav";
 import { BetForm } from "@/components/BetForm";
+import { SettleMatchForm } from "@/components/admin/SettleMatchForm";
 import { Flag } from "@/components/Flag";
 import { LocalTime } from "@/components/LocalTime";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -65,6 +67,7 @@ export default async function MatchDetailPage({
   const status = STATUS_META[match.displayStatus];
   const showBetForm = bettable(match);
   const isGala = match.marketType === "tournament_winner";
+  const isAdmin = ctx.membership.role === "admin";
   const winningOutcome = match.winningOutcomeId
     ? match.outcomes.find((o) => o.id === match.winningOutcomeId)
     : null;
@@ -86,6 +89,7 @@ export default async function MatchDetailPage({
 
   return (
     <AppShell profile={profile}>
+      <ClanNav clanId={clanId} clanName={ctx.clan.name} isAdmin={isAdmin} />
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-3">
           <Link
@@ -163,6 +167,14 @@ export default async function MatchDetailPage({
             </div>
           </CardContent>
         </Card>
+
+        {/* Admin: set the result / lock / void right here, no need to visit the admin page. */}
+        {isAdmin && !isGala ? (
+          <div className="flex flex-col gap-2">
+            <p className="kicker text-danger">Admin · manage this match</p>
+            <SettleMatchForm clanId={clanId} match={match} />
+          </div>
+        ) : null}
 
         {odds ? (
           <div className="flex flex-col gap-2">

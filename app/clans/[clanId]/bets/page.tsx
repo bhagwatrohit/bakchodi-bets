@@ -3,6 +3,7 @@ import { getSessionProfile } from "@/lib/services/auth";
 import { getClanContext } from "@/lib/services/clans";
 import { listAllBets, listMyBets } from "@/lib/services/bets";
 import { AppShell } from "@/components/AppShell";
+import { ClanNav } from "@/components/ClanNav";
 import { BetHistoryTable } from "@/components/BetHistoryTable";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { BetHistoryRow } from "@/lib/types";
@@ -35,14 +36,11 @@ export default async function BetsPage({
 
   return (
     <AppShell profile={profile}>
-      <div className="flex flex-col gap-6">
-        <div>
-          <p className="kicker text-muted-foreground">Bet history</p>
-          <h1 className="headline mt-1 text-3xl sm:text-5xl">My bets</h1>
-          <hr className="rule-thick mt-3" />
-          <p className="dateline mt-2">
-            Every win and questionable call in {clan.name}
-          </p>
+      <ClanNav clanId={clanId} clanName={clan.name} isAdmin={ctx.membership.role === "admin"} />
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1">
+          <h1 className="headline text-xl sm:text-2xl">My bets</h1>
+          <p className="dateline">Every win and questionable call in {clan.name}</p>
         </div>
 
         {allBets ? (

@@ -11,6 +11,7 @@ import {
 } from "@/app/actions/admin";
 import { Button } from "@/components/ui/button";
 import { Flag } from "@/components/Flag";
+import { LocalTime } from "@/components/LocalTime";
 import type { MatchListItem } from "@/lib/types";
 
 const initial: AdminActionState = {};
@@ -18,13 +19,13 @@ const initial: AdminActionState = {};
 function statusBadge(status: MatchListItem["status"]) {
   switch (status) {
     case "open":
-      return <span className="stamp text-neon-cyan">Open</span>;
+      return <span className="stamp text-primary">Open</span>;
     case "locked":
       return <span className="stamp text-muted-foreground">Locked</span>;
     case "final":
-      return <span className="stamp text-neon-amber">Final</span>;
+      return <span className="stamp text-[var(--accent-amber)]">Final</span>;
     case "settled":
-      return <span className="stamp text-neon-green">Settled</span>;
+      return <span className="stamp text-primary">Settled</span>;
   }
 }
 
@@ -76,7 +77,7 @@ export function SettleMatchForm({
   const winningOutcome = match.outcomes.find((o) => o.id === match.winningOutcomeId);
 
   return (
-    <div className="flex flex-col gap-3 border-2 border-grid p-4">
+    <div className="flex flex-col gap-3 rounded-lg border border-border p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="flex items-center gap-1.5 truncate font-semibold">
@@ -85,16 +86,23 @@ export function SettleMatchForm({
             <Flag team={match.teamB} size="sm" />
           </p>
           <p className="dateline mt-0.5">
+            <LocalTime value={match.startsAt} />
+            {" · "}
             {match.betCount} bet{match.betCount === 1 ? "" : "s"}
             {settled && winningOutcome ? ` · won by ${winningOutcome.label}` : null}
           </p>
+          {match.stage === "knockout" ? (
+            <p className="dateline mt-0.5 text-muted-foreground">
+              Knockout{match.round ? ` · ${match.round}` : ""}
+            </p>
+          ) : null}
         </div>
         {statusBadge(match.status)}
       </div>
 
       {settled ? (
         <p className="text-sm text-muted-foreground">
-          Game over — nothing more to do here.
+          Settled — nothing more to do here.
         </p>
       ) : (
         <>
@@ -108,7 +116,7 @@ export function SettleMatchForm({
                 okMessage="Betting locked."
               >
                 <Button type="submit" variant="outline" size="sm">
-                  LOCK
+                  Lock
                 </Button>
               </ActionForm>
             ) : (
@@ -119,7 +127,7 @@ export function SettleMatchForm({
                 okMessage="Betting re-opened."
               >
                 <Button type="submit" variant="outline" size="sm">
-                  RE-OPEN
+                  Re-open
                 </Button>
               </ActionForm>
             )}
@@ -131,21 +139,21 @@ export function SettleMatchForm({
               okMessage="Match voided — everyone got their stake back."
             >
               <Button type="submit" variant="danger" size="sm">
-                VOID
+                Void
               </Button>
             </ActionForm>
           </div>
 
           {/* Settle */}
-          <form action={settleAction} className="flex flex-col gap-2 border-t-2 border-grid pt-3">
+          <form action={settleAction} className="flex flex-col gap-2 border-t border-border pt-3">
             <input type="hidden" name="clanId" value={clanId} />
             <input type="hidden" name="matchId" value={match.id} />
-            <p className="kicker">Call the Result</p>
+            <p className="kicker">Set the result</p>
             <div className="flex flex-col gap-1.5">
               {match.outcomes.map((o) => (
                 <label
                   key={o.id}
-                  className="flex cursor-pointer items-center gap-2 border border-grid px-3 py-2 text-sm transition-colors hover:bg-muted"
+                  className="flex cursor-pointer items-center gap-2 rounded-md border border-border px-3 py-2 text-sm transition-colors hover:bg-muted"
                 >
                   <input
                     type="radio"
@@ -162,7 +170,7 @@ export function SettleMatchForm({
               <p className="stamp w-fit text-danger">{settleState.error}</p>
             ) : null}
             <Button type="submit" variant="success" size="sm" disabled={settlePending}>
-              {settlePending ? "Settling…" : "SETTLE"}
+              {settlePending ? "Settling…" : "Settle match"}
             </Button>
           </form>
         </>

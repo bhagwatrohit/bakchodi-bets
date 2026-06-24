@@ -45,7 +45,7 @@ export function AdjustBalanceForm({
           id="adjust-member"
           name="targetUserId"
           required
-          className="flex h-11 w-full border border-grid bg-card px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex h-11 w-full rounded-md border border-border bg-card px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <option value="">Pick a member…</option>
           {members.map((m) => (
@@ -74,7 +74,7 @@ export function AdjustBalanceForm({
 
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="adjust-reason">Reason</Label>
-        <Input id="adjust-reason" name="reason" required placeholder="Won the side bet, paid the tax…" />
+        <Input id="adjust-reason" name="reason" required placeholder="e.g. Manual correction, side bet payout" />
       </div>
 
       {state.error ? (
@@ -82,7 +82,7 @@ export function AdjustBalanceForm({
       ) : null}
 
       <Button type="submit" disabled={pending}>
-        {pending ? "Adjusting…" : "ADJUST"}
+        {pending ? "Adjusting…" : "Adjust balance"}
       </Button>
     </form>
   );

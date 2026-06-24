@@ -33,40 +33,36 @@ export default async function LandingPage() {
         {/* Marquee */}
         <div className="flex flex-col items-center pt-4 text-center sm:pt-10">
           <Trophy className="h-20 w-20" />
-          <h1 className="headline mt-5 text-2xl sm:text-4xl">BAKCHODI BETS</h1>
-          <p className="mt-4 font-condensed uppercase tracking-[0.3em] text-lg text-neon-amber glow-amber">
-            Khoob Khelo, Khoob Jeeto
-          </p>
-          <p className="kicker mt-2">World Cup &apos;26 · Prediction Arcade</p>
+          <h1 className="headline mt-5 text-2xl sm:text-4xl">
+            Bakchodi <span className="text-primary">Bets</span>
+          </h1>
+          <p className="kicker mt-3">World Cup &apos;26 prediction pool</p>
         </div>
 
         {/* flag ticker */}
-        <div className="mt-7 flex flex-wrap items-center justify-center gap-2 border-y-2 border-grid py-3">
+        <div className="mt-7 flex flex-wrap items-center justify-center gap-2 border-y border-border py-3">
           {TICKER.map((t) => (
-            <Flag key={t} team={t} size="md" className="border-grid" />
+            <Flag key={t} team={t} size="md" className="border-border" />
           ))}
         </div>
 
         {/* Pitch */}
         <div className="mt-9 text-center">
-          <p className="mx-auto max-w-2xl text-xl leading-relaxed text-phosphor">
+          <p className="mx-auto max-w-2xl text-xl leading-relaxed text-foreground">
             Run a private World Cup prediction pool with your friends. Spin up a
-            clan, talk trash, bet fake credits, settle the matches, and grind for
-            the top of the leaderboard.
-          </p>
-          <p className="mt-4 font-pixel text-[0.6rem] uppercase text-neon-amber blink">
-            ▶ Insert fake coin to play
+            clan, talk trash, bet fake credits, settle the matches, and climb
+            the leaderboard.
           </p>
         </div>
 
         {/* CTAs */}
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Link href={profile ? "/clans/new" : "/signup"}>
-            <Button size="lg">Start Your Clan</Button>
+          <Link href={profile ? "/clans/new" : "/signup"} className="w-full sm:w-auto">
+            <Button size="lg" className="w-full sm:w-auto">Start your clan</Button>
           </Link>
-          <Link href={profile ? "/dashboard" : "/login"}>
-            <Button size="lg" variant="outline">
-              Join With Code
+          <Link href={profile ? "/dashboard" : "/login"} className="w-full sm:w-auto">
+            <Button size="lg" variant="outline" className="w-full sm:w-auto">
+              Join with code
             </Button>
           </Link>
         </div>
@@ -74,13 +70,12 @@ export default async function LandingPage() {
         {/* How it plays */}
         <div className="mt-12 grid gap-4 sm:grid-cols-3">
           {[
-            ["1·UP", "Your crew, your rules", "Set the bankroll, the max bet, and who can peek at the wagers."],
-            ["POT", "Pot-split payouts", "Winners carve up the losing pot in proportion to their stake."],
-            ["HI-SCORE", "Leaderboard of shame", "Wins, losses, biggest hits — all on the high-score board."],
-          ].map(([tag, h, b]) => (
-            <div key={h} className="border-2 border-grid bg-card p-4">
-              <p className="font-pixel text-[0.55rem] text-neon-magenta glow-magenta">{tag}</p>
-              <h3 className="mt-3 font-pixel text-[0.7rem] uppercase text-neon-green leading-relaxed">
+            ["Your crew, your rules", "Set the bankroll, the max bet, and who can peek at the wagers."],
+            ["Pot-split payouts", "Winners carve up the losing pot in proportion to their stake."],
+            ["Leaderboard", "Wins, losses, biggest hits — all tracked on the leaderboard."],
+          ].map(([h, b]) => (
+            <div key={h} className="rounded-lg border border-border bg-card p-4">
+              <h3 className="font-pixel text-base text-foreground leading-relaxed">
                 {h}
               </h3>
               <p className="mt-2 text-base text-muted-foreground">{b}</p>

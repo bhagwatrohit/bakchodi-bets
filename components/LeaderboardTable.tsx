@@ -17,9 +17,9 @@ export function LeaderboardTable({
 }) {
   if (rows.length === 0) {
     return (
-      <div className="border-2 border-grid bg-card p-8 text-center">
-        <p className="kicker">No Scores Yet</p>
-        <p className="headline mt-1 text-xl">No high scores yet</p>
+      <div className="rounded-lg border border-border bg-card p-8 text-center">
+        <p className="kicker">No scores yet</p>
+        <p className="headline mt-1 text-xl">Nobody on the board</p>
         <p className="mt-2 text-sm text-muted-foreground">
           The board is empty. Place a bet to get your name on it.
         </p>
@@ -50,8 +50,8 @@ export function LeaderboardTable({
             <TableRow key={row.userId} className={row.isMe ? "bg-muted" : undefined}>
               <TableCell className="tabular font-semibold text-muted-foreground">
                 {row.rank === 1 ? (
-                  <span className="inline-flex items-center gap-1.5 stamp text-neon-amber">
-                    <Trophy className="h-3.5 w-3.5" /> 1ST
+                  <span className="inline-flex items-center gap-1 rounded-md bg-muted px-1.5 py-0.5 text-[var(--accent-amber)]">
+                    <Trophy className="h-3.5 w-3.5" /> 1st
                   </span>
                 ) : (
                   `#${row.rank}`

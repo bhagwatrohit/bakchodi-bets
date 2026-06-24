@@ -10,7 +10,7 @@ export function ClanCard({ clan }: { clan: ClanCardData }) {
   const isAdmin = clan.role === "admin";
 
   return (
-    <Card className="flex flex-col border-2 border-grid transition-shadow hover:border-neon-cyan hover:box-glow">
+    <Card className="flex flex-col rounded-lg border border-border transition-colors hover:border-primary">
       <CardHeader className="gap-1">
         <p className="kicker flex items-center gap-1">
           {isAdmin ? (
@@ -29,7 +29,7 @@ export function ClanCard({ clan }: { clan: ClanCardData }) {
       <CardContent className="flex flex-1 flex-col gap-3">
         <div>
           <p className="dateline">Your balance</p>
-          <p className="tabular glow-green mt-0.5 text-2xl font-bold tracking-tight text-neon-green">
+          <p className="tabular mt-0.5 text-2xl font-bold tracking-tight text-primary">
             {format(clan.balance, clan.currencyName)}
           </p>
         </div>
@@ -39,21 +39,21 @@ export function ClanCard({ clan }: { clan: ClanCardData }) {
         <dl className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <div className="flex flex-col">
             <dt className="dateline">Rank</dt>
-            <dd className="tabular text-sm font-semibold text-neon-amber glow-amber">RANK #{clan.rank}</dd>
+            <dd className="tabular text-sm font-semibold text-[var(--accent-amber)]">#{clan.rank}</dd>
           </div>
-          <div className="flex flex-col border-l border-grid pl-4">
+          <div className="flex flex-col border-l border-border pl-4">
             <dt className="dateline flex items-center gap-1">
               <Users className="h-3 w-3" /> Players
             </dt>
-            <dd className="tabular text-sm font-semibold text-neon-cyan">
+            <dd className="tabular text-sm font-semibold text-muted-foreground">
               {clan.memberCount} {clan.memberCount === 1 ? "player" : "players"}
             </dd>
           </div>
-          <div className="flex flex-col border-l border-grid pl-4">
+          <div className="flex flex-col border-l border-border pl-4">
             <dt className="dateline flex items-center gap-1">
               <Swords className="h-3 w-3" /> Open
             </dt>
-            <dd className="tabular text-sm font-semibold text-neon-cyan">{clan.openMatchCount} matches</dd>
+            <dd className="tabular text-sm font-semibold text-muted-foreground">{clan.openMatchCount} matches</dd>
           </div>
         </dl>
       </CardContent>

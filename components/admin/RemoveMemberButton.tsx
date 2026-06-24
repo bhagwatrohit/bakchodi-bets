@@ -29,9 +29,9 @@ export function RemoveMemberButton({
       <button
         type="submit"
         disabled={pending}
-        className="border-2 border-neon-pink px-3 py-1 font-pixel text-[0.55rem] uppercase tracking-wide text-neon-pink transition-colors hover:bg-neon-pink hover:text-background disabled:opacity-40"
+        className="rounded-md border border-danger px-3 py-1.5 text-sm font-medium text-danger transition-colors hover:bg-danger hover:text-danger-foreground disabled:opacity-40"
       >
-        {pending ? "…" : "Remove"}
+        {pending ? "Removing…" : "Remove"}
       </button>
     </form>
   );

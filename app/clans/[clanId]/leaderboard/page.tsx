@@ -26,13 +26,13 @@ export default async function LeaderboardPage({
     <AppShell profile={profile}>
       <div className="flex flex-col gap-6">
         <div>
-          <p className="kicker text-neon-cyan">Top Players</p>
+          <p className="kicker text-muted-foreground">Top players</p>
           <h1 className="headline mt-1 flex items-center gap-3 text-3xl sm:text-5xl">
-            <Trophy className="h-9 w-9 shrink-0" /> HIGH SCORES
+            <Trophy className="h-9 w-9 shrink-0" /> Leaderboard
           </h1>
           <hr className="rule-thick mt-3" />
           <p className="dateline mt-2">
-            Who&apos;s flush and who&apos;s broke in {clan.name} · Bragging rights only · No cash value
+            Standings for {clan.name} · bragging rights only · no cash value
           </p>
         </div>
         <LeaderboardTable rows={rows} currencyName={clan.currencyName} />

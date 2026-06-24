@@ -23,10 +23,10 @@ import { format } from "@/lib/money";
 import type { BetHistoryRow } from "@/lib/types";
 
 const BET_STATUS_META: Record<string, { label: string; variant: "default" | "success" | "danger" | "outline" }> = {
-  pending: { label: "IN", variant: "outline" },
-  won: { label: "CHAMPION", variant: "success" },
-  lost: { label: "OUT", variant: "danger" },
-  void: { label: "REFUNDED", variant: "default" },
+  pending: { label: "In", variant: "outline" },
+  won: { label: "Champion", variant: "success" },
+  lost: { label: "Out", variant: "danger" },
+  void: { label: "Refunded", variant: "default" },
 };
 
 export default async function GrandGalaPage({
@@ -68,35 +68,35 @@ export default async function GrandGalaPage({
   return (
     <AppShell profile={profile}>
       <div className="flex flex-col gap-6">
-        <Link href={`/clans/${clanId}`} className="dateline hover:text-neon-cyan">
+        <Link href={`/clans/${clanId}`} className="dateline hover:text-accent">
           « {ctx.clan.name}
         </Link>
 
         {!gala ? (
           <Card>
             <CardContent className="py-10 text-center">
-              <p className="kicker text-neon-amber">No Grand Gala</p>
+              <p className="kicker text-[var(--accent-amber)]">No Grand Gala</p>
               <p className="mt-2 dateline">This clan doesn&apos;t have a Grand Gala pot.</p>
             </CardContent>
           </Card>
         ) : (
           <>
             {/* Marquee */}
-            <div className="flex flex-col items-center gap-3 border-2 border-neon-amber bg-card p-6 text-center">
+            <div className="flex flex-col items-center gap-3 rounded-lg border border-border bg-card p-6 text-center">
               <Trophy className="h-16 w-16" />
-              <p className="kicker text-neon-amber">Grand Gala</p>
-              <h1 className="headline text-2xl sm:text-4xl">World Cup Winner</h1>
+              <p className="kicker text-[var(--accent-amber)]">Grand Gala</p>
+              <h1 className="headline text-2xl sm:text-4xl">World Cup winner</h1>
               <p className="dateline">
                 Pick the champion · entry closes when the knockouts begin
               </p>
               <Badge variant={gala.displayStatus === "open" ? "success" : "outline"}>
-                {gala.displayStatus === "open" ? "ENTRIES OPEN" : "ENTRIES CLOSED"}
+                {gala.displayStatus === "open" ? "Entries open" : "Entries closed"}
               </Badge>
             </div>
 
             {/* Stat band */}
             <Card>
-              <CardContent className="grid grid-cols-2 gap-y-3 py-5 sm:grid-cols-4 sm:divide-x sm:divide-grid">
+              <CardContent className="grid grid-cols-2 gap-y-3 py-5 sm:grid-cols-4 sm:divide-x sm:divide-border">
                 <div className="sm:px-4 sm:first:pl-0">
                   <p className="kicker">Entry</p>
                   <p className="tabular text-lg font-semibold">
@@ -104,14 +104,14 @@ export default async function GrandGalaPage({
                   </p>
                 </div>
                 <div className="sm:px-4">
-                  <p className="kicker">Your Balance</p>
+                  <p className="kicker">Your balance</p>
                   <p className="tabular text-lg font-semibold">
                     {format(gala.availableBalance, gala.currencyName)}
                   </p>
                 </div>
                 <div className="sm:px-4">
-                  <p className="kicker">Prize Pot</p>
-                  <p className="tabular text-lg font-semibold text-neon-amber">
+                  <p className="kicker">Prize pot</p>
+                  <p className="tabular text-lg font-semibold text-[var(--accent-amber)]">
                     {format(gala.totalPot, gala.currencyName)}
                   </p>
                 </div>
@@ -133,10 +133,10 @@ export default async function GrandGalaPage({
 
             {/* Champion result */}
             {gala.status === "settled" && winningOutcome ? (
-              <Card className="border-2 border-neon-green">
+              <Card className="border border-primary">
                 <CardHeader>
-                  <p className="kicker">CHAMPIONS</p>
-                  <CardTitle className="headline text-2xl">WE HAVE A WINNER</CardTitle>
+                  <p className="kicker">Champion</p>
+                  <CardTitle className="headline text-2xl">We have a winner</CardTitle>
                 </CardHeader>
                 <CardContent className="flex items-center gap-3">
                   <Flag team={winningOutcome.label} size="xl" />
@@ -149,7 +149,7 @@ export default async function GrandGalaPage({
             {gala.myBet && !canEnter ? (
               <Card>
                 <CardHeader>
-                  <p className="kicker">YOUR PICK</p>
+                  <p className="kicker">Your pick</p>
                 </CardHeader>
                 <CardContent className="flex flex-wrap items-center gap-4">
                   <span className="flex items-center gap-2 matchup text-xl">
@@ -172,9 +172,9 @@ export default async function GrandGalaPage({
             {canEnter ? (
               <Card>
                 <CardHeader>
-                  <p className="kicker">{gala.myBet ? "CHANGE YOUR CALL" : "ENTER THE POOL"}</p>
+                  <p className="kicker">{gala.myBet ? "Change your call" : "Enter the pool"}</p>
                   <CardTitle className="headline text-2xl">
-                    {gala.myBet ? "EDIT YOUR PICK" : "PICK THE CHAMPION"}
+                    {gala.myBet ? "Edit your pick" : "Pick the champion"}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -199,7 +199,7 @@ export default async function GrandGalaPage({
             ) : !gala.myBet && gala.status !== "settled" ? (
               <Card>
                 <CardContent className="py-6 text-center">
-                  <p className="kicker text-neon-amber">Entries Closed</p>
+                  <p className="kicker text-[var(--accent-amber)]">Entries closed</p>
                   <p className="mt-1 dateline">The knockouts have begun — no new entries.</p>
                 </CardContent>
               </Card>
@@ -209,7 +209,7 @@ export default async function GrandGalaPage({
             {allBets && allBets.length > 0 ? (
               <Card>
                 <CardHeader>
-                  <CardTitle className="headline text-xl">THE FIELD</CardTitle>
+                  <CardTitle className="headline text-xl">The field</CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0">
                   <Table>

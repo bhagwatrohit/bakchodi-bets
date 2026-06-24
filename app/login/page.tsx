@@ -25,27 +25,26 @@ export default async function LoginPage({
 
   return (
     <div className="mx-auto w-full max-w-md flex-1 px-4 py-10">
-      <div className="mb-5 border-b-2 border-neon-cyan pb-3 text-center">
-        <p className="dateline">Player 1 · Continue</p>
-        <p className="kicker mt-2 text-neon-magenta glow-magenta">Log In</p>
-        <h1 className="headline mt-1 text-2xl sm:text-3xl">Welcome back, player.</h1>
+      <div className="mb-5 border-b border-border pb-3 text-center">
+        <p className="kicker">Log in</p>
+        <h1 className="headline mt-1 text-2xl sm:text-3xl">Welcome back.</h1>
         <p className="mt-2 text-base text-muted-foreground">
-          Enter your credentials and jump back into the game.
+          Enter your credentials to get back to your clans.
         </p>
       </div>
 
       <Card className="w-full">
         <CardHeader>
-          <CardTitle className="text-xl">Continue</CardTitle>
+          <CardTitle className="text-xl">Log in</CardTitle>
           <CardDescription>Log in to get back to your clans.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-5">
           <AuthForm mode="login" action={signInAction} next={next} />
           <hr className="rule-hair" />
-          <p className="text-center font-pixel text-[0.6rem] uppercase tracking-wide text-muted-foreground">
-            New player?{" "}
-            <Link href={signupHref} className="text-neon-cyan underline underline-offset-4 decoration-2 hover:glow-cyan">
-              Insert coin.
+          <p className="text-center text-sm text-muted-foreground">
+            New here?{" "}
+            <Link href={signupHref} className="text-primary underline underline-offset-4 hover:text-primary">
+              Sign up.
             </Link>
           </p>
         </CardContent>

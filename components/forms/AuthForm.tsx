@@ -67,20 +67,20 @@ export function AuthForm({
       {state.error ? (
         <p
           role="alert"
-          className="border-2 border-neon-pink px-3 py-2 font-pixel text-[0.6rem] uppercase tracking-wide text-neon-pink"
+          className="rounded-md border border-danger bg-danger/10 px-3 py-2 text-sm font-medium text-danger"
         >
-          ✶ Game over — {state.error}
+          {state.error}
         </p>
       ) : null}
 
       <Button type="submit" size="lg" disabled={pending} className="mt-1 w-full">
         {pending
           ? isSignup
-            ? "Inserting coin…"
-            : "Loading…"
+            ? "Signing up…"
+            : "Logging in…"
           : isSignup
-            ? "Insert Coin"
-            : "Press Start"}
+            ? "Sign up"
+            : "Log in"}
       </Button>
     </form>
   );

@@ -1,21 +1,20 @@
 import { cn } from "@/lib/utils";
 
 /**
- * Original pixel-art trophy cup (NOT the FIFA logo — trademark-safe).
- * Neon-gold with a glow; fits the arcade theme.
+ * Original trophy cup (NOT the FIFA logo — trademark-safe).
+ * Drawn on a blocky 24x28 grid in gold tones.
  */
 export function Trophy({ className }: { className?: string }) {
   const gold = "#ffd23f";
   const goldDim = "#e0a800";
-  // pixel blocks on a 24x28 grid
+  // blocks on a 24x28 grid
   const px = (x: number, y: number, w: number, h: number, fill = gold) => (
     <rect key={`${x}-${y}-${w}-${h}`} x={x} y={y} width={w} height={h} fill={fill} />
   );
   return (
     <svg
       viewBox="0 0 24 28"
-      className={cn("pixelated", className)}
-      style={{ filter: "drop-shadow(0 0 6px rgba(255,210,63,0.8))" }}
+      className={cn(className)}
       shapeRendering="crispEdges"
       aria-hidden
     >

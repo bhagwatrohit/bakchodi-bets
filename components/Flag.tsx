@@ -9,8 +9,8 @@ const SIZES = {
 } as const;
 
 /**
- * A team's national flag. Pixel-bordered to fit the arcade theme.
- * Teams without a flag (e.g. demo sides) get a "?" tile fallback.
+ * A team's national flag. Teams without a flag (e.g. demo sides) get a
+ * "?" tile fallback.
  */
 export function Flag({
   team,
@@ -29,7 +29,7 @@ export function Flag({
       <span
         aria-hidden
         className={cn(
-          "inline-flex items-center justify-center border-2 border-current bg-black/40 font-pixel text-[0.5rem] leading-none",
+          "inline-flex items-center justify-center rounded-sm border border-border bg-muted text-[0.5rem] leading-none",
           box,
           className,
         )}
@@ -45,7 +45,7 @@ export function Flag({
       src={src}
       alt={`${team} flag`}
       loading="lazy"
-      className={cn("inline-block border-2 border-current object-cover", box, className)}
+      className={cn("inline-block rounded-sm border border-border object-cover", box, className)}
     />
   );
 }

@@ -9,18 +9,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InviteCopy } from "@/components/InviteCopy";
 import { Trophy } from "@/components/Trophy";
 import { Flag } from "@/components/Flag";
+import { LocalTime } from "@/components/LocalTime";
 import { format } from "@/lib/money";
 import type { MatchListItem } from "@/lib/types";
-
-function formatKickoff(d: Date): string {
-  return new Intl.DateTimeFormat("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(d);
-}
 
 function MatchRow({
   clanId,
@@ -37,7 +28,7 @@ function MatchRow({
       className="flex items-start justify-between gap-3 border-b border-hairline pb-3 transition-colors last:border-b-0 last:pb-0 hover:text-accent"
     >
       <div className="min-w-0">
-        <p className="dateline">{formatKickoff(match.startsAt)}</p>
+        <LocalTime value={match.startsAt} className="dateline" />
         <div className="mt-0.5 flex items-center gap-2">
           <Flag team={match.teamA} size="sm" />
           <p className="matchup truncate text-lg sm:text-xl">{match.title}</p>
@@ -54,7 +45,7 @@ function MatchRow({
         )}
       </div>
       <span
-        className={`stamp shrink-0 ${match.displayStatus === "locked" ? "text-neon-amber" : "text-neon-green"}`}
+        className={`stamp shrink-0 ${match.displayStatus === "locked" ? "text-[var(--accent-amber)]" : "text-primary"}`}
       >
         {match.displayStatus === "locked" ? "Locked" : "Open"}
       </span>
@@ -108,7 +99,7 @@ export default async function ClanHomePage({
               {isAdmin ? "Player 1 · Admin" : "Player"} · {profile.displayName}
             </span>
             <span>
-              Credits: <span className="tabular text-neon-green">{format(membership.balance, clan.currencyName)}</span>
+              Credits: <span className="tabular text-primary">{format(membership.balance, clan.currencyName)}</span>
             </span>
             <span>
               {myRow ? `Rank ${myRow.rank}` : "Unranked"} of {leaderboard.length}
@@ -118,26 +109,26 @@ export default async function ClanHomePage({
         </div>
 
         {/* Section nav rail */}
-        <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-y-2 border-grid py-2 font-pixel uppercase tracking-widest text-[0.55rem]">
-          <Link href={`/clans/${clanId}/matches`} className="text-neon-cyan hover:glow-cyan">
+        <nav className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-y border-border py-2 text-sm">
+          <Link href={`/clans/${clanId}/matches`} className="text-muted-foreground hover:text-foreground">
             Matches
           </Link>
-          <span className="text-grid">·</span>
-          <Link href={`/clans/${clanId}/gala`} className="text-neon-amber hover:glow-amber">
+          <span className="text-border">·</span>
+          <Link href={`/clans/${clanId}/gala`} className="text-[var(--accent-amber)] hover:text-foreground">
             🏆 Grand Gala
           </Link>
-          <span className="text-grid">·</span>
-          <Link href={`/clans/${clanId}/leaderboard`} className="text-neon-cyan hover:glow-cyan">
-            High Scores
+          <span className="text-border">·</span>
+          <Link href={`/clans/${clanId}/leaderboard`} className="text-muted-foreground hover:text-foreground">
+            Leaderboard
           </Link>
-          <span className="text-grid">·</span>
-          <Link href={`/clans/${clanId}/bets`} className="text-neon-cyan hover:glow-cyan">
-            My Bets
+          <span className="text-border">·</span>
+          <Link href={`/clans/${clanId}/bets`} className="text-muted-foreground hover:text-foreground">
+            My bets
           </Link>
           {isAdmin ? (
             <>
-              <span className="text-grid">·</span>
-              <Link href={`/clans/${clanId}/admin`} className="text-neon-magenta hover:glow-magenta">
+              <span className="text-border">·</span>
+              <Link href={`/clans/${clanId}/admin`} className="text-danger hover:text-foreground">
                 Admin
               </Link>
             </>
@@ -146,7 +137,7 @@ export default async function ClanHomePage({
 
         {/* Clan code column */}
         <div className="mx-auto w-full max-w-md">
-          <p className="kicker mb-2 text-center">Clan Code — Recruit Your Crew</p>
+          <p className="kicker mb-2 text-center">Clan code — invite your crew</p>
           <InviteCopy inviteCode={clan.inviteCode} />
         </div>
 
@@ -154,18 +145,18 @@ export default async function ClanHomePage({
         {gala && gala.status !== "settled" ? (
           <Link
             href={`/clans/${clanId}/gala`}
-            className="flex items-center justify-between gap-3 border-2 border-neon-amber bg-card p-4 transition-colors hover:bg-muted"
+            className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card p-4 transition-colors hover:bg-muted"
           >
             <span className="flex items-center gap-3">
               <span className="text-3xl">🏆</span>
               <span>
-                <span className="kicker text-neon-amber">Grand Gala</span>
-                <span className="block matchup text-lg">Pick the World Cup Winner</span>
+                <span className="kicker text-[var(--accent-amber)]">Grand Gala</span>
+                <span className="block matchup text-lg">Pick the World Cup winner</span>
               </span>
             </span>
             <span className="text-right">
               <span className="block dateline">Pot</span>
-              <span className="tabular text-neon-amber">
+              <span className="tabular text-[var(--accent-amber)]">
                 {format(gala.totalPot, clan.currencyName)}
               </span>
             </span>
@@ -176,12 +167,12 @@ export default async function ClanHomePage({
           {/* Now Playing */}
           <Card>
             <CardHeader className="flex-row items-center justify-between">
-              <CardTitle>Now Playing</CardTitle>
+              <CardTitle>Upcoming matches</CardTitle>
               <Link
                 href={`/clans/${clanId}/matches`}
-                className="font-pixel uppercase tracking-widest text-[0.55rem] text-neon-cyan hover:glow-cyan"
+                className="text-sm text-muted-foreground hover:text-foreground"
               >
-                All Matches →
+                All matches →
               </Link>
             </CardHeader>
             <CardContent className="flex flex-col gap-3">
@@ -198,15 +189,15 @@ export default async function ClanHomePage({
             </CardContent>
           </Card>
 
-          {/* High Scores preview */}
+          {/* Leaderboard preview */}
           <Card>
             <CardHeader className="flex-row items-center justify-between">
-              <CardTitle>High Scores</CardTitle>
+              <CardTitle>Leaderboard</CardTitle>
               <Link
                 href={`/clans/${clanId}/leaderboard`}
-                className="font-pixel uppercase tracking-widest text-[0.55rem] text-neon-cyan hover:glow-cyan"
+                className="text-sm text-muted-foreground hover:text-foreground"
               >
-                Full Table →
+                Full table →
               </Link>
             </CardHeader>
             <CardContent>
@@ -215,13 +206,13 @@ export default async function ClanHomePage({
                   {topFive.map((row) => (
                     <li
                       key={row.userId}
-                      className={`flex items-center justify-between gap-3 border-b border-grid py-2 text-sm last:border-b-0 ${
-                        row.isMe ? "font-semibold text-neon-green glow-green" : ""
+                      className={`flex items-center justify-between gap-3 border-b border-border py-2 text-sm last:border-b-0 ${
+                        row.isMe ? "font-semibold text-primary" : ""
                       }`}
                     >
                       <span className="flex min-w-0 items-center gap-3">
                         <span className="tabular w-6 shrink-0 text-muted-foreground">{row.rank}</span>
-                        <span className="truncate font-condensed uppercase tracking-wide">
+                        <span className="truncate">
                           {row.displayName}
                           {row.isMe ? " (you)" : ""}
                         </span>
@@ -241,7 +232,7 @@ export default async function ClanHomePage({
         {recent.length ? (
           <Card>
             <CardHeader>
-              <CardTitle>Final Scores</CardTitle>
+              <CardTitle>Final scores</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-3">
               {recent.map((m) => {
@@ -250,10 +241,10 @@ export default async function ClanHomePage({
                   <Link
                     key={m.id}
                     href={`/clans/${clanId}/matches/${m.id}`}
-                    className="flex items-start justify-between gap-3 border-b border-grid pb-3 transition-colors last:border-b-0 last:pb-0 hover:text-neon-cyan"
+                    className="flex items-start justify-between gap-3 border-b border-border pb-3 transition-colors last:border-b-0 last:pb-0 hover:text-accent"
                   >
                     <div className="min-w-0">
-                      <p className="dateline">{formatKickoff(m.startsAt)}</p>
+                      <LocalTime value={m.startsAt} className="dateline" />
                       <div className="mt-0.5 flex items-center gap-2">
                         <Flag team={m.teamA} size="sm" />
                         <p className="matchup truncate text-lg sm:text-xl">{m.title}</p>
@@ -268,9 +259,9 @@ export default async function ClanHomePage({
                         <p
                           className={`mt-0.5 text-xs ${
                             m.myBet.status === "won"
-                              ? "text-neon-green"
+                              ? "text-primary"
                               : m.myBet.status === "lost"
-                                ? "text-neon-pink"
+                                ? "text-danger"
                                 : "text-muted-foreground"
                           }`}
                         >
@@ -279,7 +270,7 @@ export default async function ClanHomePage({
                       ) : null}
                     </div>
                     <span
-                      className={`stamp shrink-0 ${winner ? "text-neon-green" : "text-neon-amber"}`}
+                      className={`stamp shrink-0 ${winner ? "text-primary" : "text-[var(--accent-amber)]"}`}
                     >
                       {winner ? "Result" : "Settled"}
                     </span>

@@ -34,7 +34,11 @@ function MatchRow({
         <LocalTime value={match.startsAt} className="dateline" />
         <div className="mt-0.5 flex items-center gap-2">
           <Flag team={match.teamA} size="sm" />
-          <p className="matchup truncate text-lg sm:text-xl">{match.title}</p>
+          {/* Show the matchup from the teams, not match.title: knockout titles
+              are the round label ("Round of 16 · Match 1"), not the teams. */}
+          <p className="matchup truncate text-lg sm:text-xl">
+            {match.teamA} vs {match.teamB}
+          </p>
           <Flag team={match.teamB} size="sm" />
         </div>
         {match.myBet ? (

@@ -75,24 +75,33 @@ export default async function ClanHomePage({
     getLeaderboard(clanId),
   ]);
 
+  // Next matches still open for betting, soonest kickoff first. Guard on the
+  // future explicitly: clans that don't lock at kickoff leave past games "open",
+  // and listMatches returns them oldest-first — without this the card fills with
+  // long-finished group games (e.g. June 11) instead of what's coming up.
+  const now = Date.now();
   const upcoming = matches
-    .filter((m) => m.displayStatus === "open" || m.displayStatus === "locked")
+    .filter(
+      (m) =>
+        m.marketType === "match" &&
+        m.displayStatus === "open" &&
+        m.startsAt.getTime() > now,
+    )
+    .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime())
     .slice(0, 3);
   const recent = matches
     .filter((m) => m.displayStatus === "settled")
     .sort((a, b) => b.startsAt.getTime() - a.startsAt.getTime())
     .slice(0, 3);
   const topFive = leaderboard.slice(0, 5);
-  const wireMatches = matches
-    .filter((m) => m.marketType === "match" && m.displayStatus === "open")
-    .slice(0, 3)
-    .map((m) => ({
-      clanId,
-      matchId: m.id,
-      teamA: m.teamA,
-      teamB: m.teamB,
-      startsAt: m.startsAt,
-    }));
+  // News + odds wire follows the same upcoming games.
+  const wireMatches = upcoming.map((m) => ({
+    clanId,
+    matchId: m.id,
+    teamA: m.teamA,
+    teamB: m.teamB,
+    startsAt: m.startsAt,
+  }));
   const myRow = leaderboard.find((r) => r.isMe);
   const isAdmin = membership.role === "admin";
   const gala = matches.find((m) => m.marketType === "tournament_winner");

@@ -5,6 +5,7 @@ import { getLeaderboard } from "@/lib/services/bets";
 import { AppShell } from "@/components/AppShell";
 import { ClanNav } from "@/components/ClanNav";
 import { LeaderboardTable } from "@/components/LeaderboardTable";
+import { LeaderboardAnalytics } from "@/components/LeaderboardAnalytics";
 import { Trophy } from "@/components/Trophy";
 
 export default async function LeaderboardPage({
@@ -33,6 +34,7 @@ export default async function LeaderboardPage({
           </h1>
           <p className="dateline">Ranked by net points from settled bets · bragging rights only</p>
         </div>
+        <LeaderboardAnalytics rows={rows} currencyName={clan.currencyName} />
         <LeaderboardTable rows={rows} currencyName={clan.currencyName} />
       </div>
     </AppShell>

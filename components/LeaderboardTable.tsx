@@ -1,12 +1,39 @@
+"use client";
+
+import { useMemo, useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Trophy } from "@/components/Trophy";
+import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { format } from "@/lib/money";
+import { cn } from "@/lib/utils";
 import type { LeaderboardRow } from "@/lib/types";
 
+type SortKey = keyof Pick<
+  LeaderboardRow,
+  "rank" | "displayName" | "netPoints" | "betsPlaced" | "wins" | "losses" | "biggestWin" | "balance"
+>;
+
+type Dir = "asc" | "desc";
+
+const COLUMNS: { key: SortKey; label: string; align: "left" | "right"; headClass?: string }[] = [
+  { key: "rank", label: "Rank", align: "left", headClass: "w-12" },
+  { key: "displayName", label: "Player", align: "left" },
+  { key: "netPoints", label: "Points", align: "right" },
+  { key: "betsPlaced", label: "Bets", align: "right" },
+  { key: "wins", label: "Wins", align: "right" },
+  { key: "losses", label: "Losses", align: "right" },
+  { key: "biggestWin", label: "Biggest win", align: "right" },
+  { key: "balance", label: "Credits", align: "right" },
+];
+
+// Text sorts A→Z by default; everything else (points, credits, wins…) is more
+// useful highest-first, so numeric columns default to descending.
+const defaultDir = (key: SortKey): Dir => (key === "rank" || key === "displayName" ? "asc" : "desc");
+
 /**
- * Presentational leaderboard table. Highlights the caller's own row.
- * Net change is colored green when >= 0, red otherwise, and prefixed with
- * "+" for positive values for a little flavor.
+ * Leaderboard table with click-to-sort column headers. Defaults to rank order;
+ * clicking a header sorts by that column (numeric columns start high→low),
+ * clicking the active header again flips direction. Highlights the caller's row.
  */
 export function LeaderboardTable({
   rows,
@@ -15,6 +42,26 @@ export function LeaderboardTable({
   rows: LeaderboardRow[];
   currencyName: string;
 }) {
+  const [sort, setSort] = useState<{ key: SortKey; dir: Dir }>({ key: "rank", dir: "asc" });
+
+  const sorted = useMemo(() => {
+    const { key, dir } = sort;
+    const factor = dir === "asc" ? 1 : -1;
+    return [...rows].sort((a, b) => {
+      const cmp =
+        key === "displayName"
+          ? a.displayName.localeCompare(b.displayName)
+          : Number(a[key]) - Number(b[key]);
+      // Stable tiebreak on rank so equal values keep a deterministic order.
+      return factor * cmp || a.rank - b.rank;
+    });
+  }, [rows, sort]);
+
+  const onSort = (key: SortKey) =>
+    setSort((prev) =>
+      prev.key === key ? { key, dir: prev.dir === "asc" ? "desc" : "asc" } : { key, dir: defaultDir(key) },
+    );
+
   if (rows.length === 0) {
     return (
       <div className="rounded-lg border border-border bg-card p-8 text-center">
@@ -31,18 +78,34 @@ export function LeaderboardTable({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-12">Rank</TableHead>
-          <TableHead>Player</TableHead>
-          <TableHead className="text-right">Points</TableHead>
-          <TableHead className="text-right">Bets</TableHead>
-          <TableHead className="text-right">Wins</TableHead>
-          <TableHead className="text-right">Losses</TableHead>
-          <TableHead className="text-right">Biggest win</TableHead>
-          <TableHead className="text-right text-muted-foreground">Credits</TableHead>
+          {COLUMNS.map((col) => {
+            const active = sort.key === col.key;
+            const Icon = !active ? ArrowUpDown : sort.dir === "asc" ? ArrowUp : ArrowDown;
+            return (
+              <TableHead
+                key={col.key}
+                className={cn(col.align === "right" && "text-right", col.headClass)}
+                aria-sort={active ? (sort.dir === "asc" ? "ascending" : "descending") : "none"}
+              >
+                <button
+                  type="button"
+                  onClick={() => onSort(col.key)}
+                  className={cn(
+                    "inline-flex items-center gap-1 uppercase tracking-wide transition-colors hover:text-foreground",
+                    col.align === "right" && "flex-row-reverse",
+                    active && "text-foreground",
+                  )}
+                >
+                  {col.label}
+                  <Icon className={cn("h-3 w-3", active ? "opacity-100" : "opacity-40")} />
+                </button>
+              </TableHead>
+            );
+          })}
         </TableRow>
       </TableHeader>
       <TableBody>
-        {rows.map((row) => {
+        {sorted.map((row) => {
           const net = Number(row.netPoints);
           const netUp = net >= 0;
           const netLabel = `${net > 0 ? "+" : ""}${format(row.netPoints, currencyName)}`;
